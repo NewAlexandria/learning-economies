@@ -1,6 +1,6 @@
 # Scope
 
-chinese edcation breadth, and US strategy
+chinese education breadth, and US strategy
 
 - tiktok making wrong programming
 - value of learn internal drivers from social motivators
