@@ -166,5 +166,6 @@ This repository represents ongoing research into the transformation of education
 This appears to be a personal research repository. For questions or collaboration opportunities, please refer to the individual document authors.
 
 ---
-
+## Exsiting Research
+https://scholar.google.com/scholar?hl=en&as_sdt=0%2C39&q=Ai+in+education&btnG=
 _Last updated: Based on repository contents as of current state_
