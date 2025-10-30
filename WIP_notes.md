@@ -59,7 +59,10 @@ NIST standards 800-161 refer to the "Supply Chain Risk Management Practices for 
 
 For cybersecurity education frameworks, the relevant NIST standard is NIST Special Publication 800-181, known as the "National Initiative for Cybersecurity Education (NICE) Cybersecurity Workforce Framework." This framework defines the knowledge, skills, abilities, and tasks required for cybersecurity roles and is widely used to guide curriculum development and workforce training in the field.
 
-Teaching Goals and objective example
+Teaching Goals and objective Example
+
 Introduction to Cybersecurity
+
 <img width="961" height="803" alt="image" src="https://github.com/user-attachments/assets/91b40611-a1a1-4188-87f0-1e821090d4de" />
 
+Each objective has mapping to evaluations based on a rubric. Students are assesed via quizes, homework assignment and exams. In addtion, student feedback is continuously soliciated to insure knowledge transfer.  Finally, attendance and participation is recorded.  
