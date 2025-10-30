@@ -93,6 +93,20 @@ Brief outline for a presentation covering:
 
 Short proposal for creating a demo of the Learning Economies system, noting the need to scope the ontology of curriculum.
 
+#### 📄 [ASU Microcredential Model: Subset Economy Example](./ASU-microcredential-subset-economy.md)
+
+**Real-world implementation of the Subset Learning Economy**
+
+Detailed analysis of Arizona State University's microcredential model as a practical implementation of Subset Economy principles:
+
+- **Modular, stackable credentials** supporting career transitions
+- **Rapid retraining** compressed from years to months
+- **Industry-aligned, digitally-badged** competencies
+- **Clear pathways** to larger credentials
+- **Lifelong learning** adaptation for working professionals
+
+This document provides concrete evidence that the Subset economy is already being implemented successfully, offering a roadmap for other institutions.
+
 #### 📄 [Work in Progress Notes](./WIP_notes.md)
 
 **Research notes and observations**
@@ -105,6 +119,7 @@ Collection of research notes covering:
 - Student outcome tracking
 - Curriculum design principles
 - Relationship to NIST standards (800-161 and 800-181)
+- ASU microcredential system as Subset economy model
 
 ## Key Concepts
 

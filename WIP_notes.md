@@ -1,5 +1,11 @@
 # Scope
 
+## Eval-as-Assist by IBM
+
+https://ibm.github.io/eval-assist/
+https://github.com/IBM/eval-assist
+https://www.youtube.com/watch?v=MoYG2xpXHkA
+
 ## LERN conference, Feb 2026, ASU
 
 https://learningengineering.asu.edu/
@@ -20,7 +26,9 @@ https://learningengineering.asu.edu/
 
 support depth race to PhD per-student
 
-cost model fo schools charing students
+### school programs
+
+cost model for schools charging students
 value model of degree programs
 
 track the students and where they go after college
@@ -28,7 +36,10 @@ track the students and where they go after college
 foundational AI labs/companies track progress of students
 
 admins can look at AI as a black box. Magic wands that enables all this
+
 educators need to know how to use the AI tools to support students, at the speed/depth, breadth, subset, superset, network-form
+
+### Methods and protocol
 
 - how to think critically
 - how to think across all the breadths
@@ -36,7 +47,7 @@ educators need to know how to use the AI tools to support students, at the speed
 more scientific method and outcome-based strategy for the social sciences
 more ethics and behavioral science in the STEM fields
 
-curriculum == measured outcomes
+### curriculum == measured outcomes
 
 - student outcomes
 - educator outcomes

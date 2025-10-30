@@ -11,6 +11,28 @@
 - Related Tasks (T)
 - Success Criteria
 
+### KSA integrations
+
+KSA drives objectives
+
+- objectiveives
+- rubric
+- quizzes
+- measurements
+
+which then need orientation to a Learning Economy
+
+- matches speed to depth
+- matches breadth
+- etc
+
+which are then structured and aparceled for
+
+- student type
+- alternative teaching techniques
+
+## Cases
+
 ### Breadth (Multi-Subject / Multi-Degree)
 
 1)
