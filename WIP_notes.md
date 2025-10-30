@@ -58,3 +58,8 @@ when more text is autocompleted, it should prompt new and different semantics
 NIST standards 800-161 refer to the "Supply Chain Risk Management Practices for Federal Information Systems and Organizations," a publication by the National Institute of Standards and Technology (NIST). This standard provides comprehensive guidelines for managing cybersecurity risks associated with the supply chain, particularly for federal agencies and organizations handling sensitive information. It outlines best practices for identifying, assessing, and mitigating risks that arise from third-party vendors, suppliers, and service providers, ensuring the integrity, security, and resilience of information systems throughout their lifecycle.
 
 For cybersecurity education frameworks, the relevant NIST standard is NIST Special Publication 800-181, known as the "National Initiative for Cybersecurity Education (NICE) Cybersecurity Workforce Framework." This framework defines the knowledge, skills, abilities, and tasks required for cybersecurity roles and is widely used to guide curriculum development and workforce training in the field.
+
+Teaching Goals and objective example
+Introduction to Cybersecurity
+<img width="961" height="803" alt="image" src="https://github.com/user-attachments/assets/91b40611-a1a1-4188-87f0-1e821090d4de" />
+
