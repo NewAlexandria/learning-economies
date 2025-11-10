@@ -19,3 +19,5 @@ what does teacher do it not the expert in anything?
   - journal peer review is the authority over book content
   - educational publishes i the the authority over book organization
 - industry board of advisors
+
+[Compare with PLTR no-college plan](https://www.wsj.com/business/palantir-thinks-college-might-be-a-waste-so-its-hiring-high-school-grads-aed267d5)`

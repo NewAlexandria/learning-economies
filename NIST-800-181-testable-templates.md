@@ -15,7 +15,7 @@
 
 KSA drives objectives
 
-- objectiveives
+- objectives
 - rubric
 - quizzes
 - measurements
