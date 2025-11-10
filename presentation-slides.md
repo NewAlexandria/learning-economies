@@ -6,9 +6,7 @@
 
 ---
 
-## Slide 1: Title Slide
-
-**Learning Economies: Transforming Education in the AI Era**
+# Learning Economies: Transforming Education in the AI Era
 
 _Five Fundamental Modes of Human Capital Creation_
 
@@ -20,9 +18,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 2: The Challenge We Face
-
-**AI is fundamentally changing how humans learn and create value**
+# AI is fundamentally changing how humans learn and create value
 
 - Traditional education models assume **linear progression** through single domains
 - AI accelerates learning by **10-100x** across all knowledge areas
@@ -31,7 +27,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 3: What Are "Learning Economies"?
+# What Are "Learning Economies"?
 
 **A Framework for Understanding Learning Speed and Quality**
 
@@ -49,7 +45,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 4: The Five Learning Economies Framework
+# The Five Learning Economies Framework
 
 **A new taxonomy for understanding human capital creation**
 
@@ -63,7 +59,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 5: The Breadth Economy
+# The Breadth Economy
 
 **Multi-Subject / Multi-Degree Mastery**
 
@@ -86,7 +82,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 6: The Depth Economy
+# The Depth Economy
 
 **Acceleration to Mastery**
 
@@ -109,7 +105,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 7: The Subset Economy
+# The Subset Economy
 
 **Vocational / Career Re-Training**
 
@@ -134,7 +130,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 7a: Real-World Example - ASU Microcredentials
+# Real-World Example - ASU Microcredentials
 
 **The Subset Economy in Practice**
 
@@ -158,7 +154,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 8: The Superset Economy
+# The Superset Economy
 
 **Field Reinvention / Obviation**
 
@@ -185,7 +181,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 9: The Network-form Economy
+# The Network-form Economy
 
 **Multi-Scale Knowledge Routing**
 
@@ -208,7 +204,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 10: Resonance - The Universal Transfer Mechanism
+# Resonance - The Universal Transfer Mechanism
 
 **How knowledge flows between economies**
 
@@ -228,7 +224,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 11: AI as Learning Economy Accelerator
+# AI as Learning Economy Accelerator
 
 **Beyond "Symbiosis" Models**
 
@@ -249,7 +245,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 12: Economic Implications
+# Economic Implications
 
 **When learning velocity increases 10-100x**
 
@@ -267,7 +263,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 13: Institutional Challenges
+# Institutional Challenges
 
 **The Credential Lag Problem**
 
@@ -287,7 +283,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 14: Practical Applications for Educators
+# Practical Applications for Educators
 
 **From Knowledge Transmission to Learning Economy Architecture**
 
@@ -306,7 +302,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 15: Practical Applications for Administrators
+# Practical Applications for Administrators
 
 **Building Learning Economy Infrastructure**
 
@@ -324,7 +320,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 16: Practical Applications for Policymakers
+# Practical Applications for Policymakers
 
 **Learning Economy Infrastructure Development**
 
@@ -342,7 +338,7 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-## Slide 17: The Learning Economy Production Function
+# The Learning Economy Production Function
 
 **A Unified Theory of Learning Value**
 
@@ -360,7 +356,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 18: Testable Hypotheses Framework
+# Testable Hypotheses Framework
 
 **From Theory to Practice**
 
@@ -375,7 +371,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 19: Implementation Roadmap
+# Implementation Roadmap
 
 **Getting Started with Learning Economies**
 
@@ -399,7 +395,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 20: Success Metrics
+# Success Metrics
 
 **How to Measure Learning Economy Implementation**
 
@@ -420,7 +416,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 21: The Future of Human Capital
+# The Future of Human Capital
 
 **Meta-Competencies in the AI Era**
 
@@ -440,7 +436,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 22: Call to Action
+# Call to Action
 
 **What You Can Do Today**
 
@@ -464,7 +460,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 23: Resources & Next Steps
+# Resources & Next Steps
 
 **Getting Started**
 
@@ -485,7 +481,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 24: Questions & Discussion
+# Questions & Discussion
 
 **Let's Explore Together**
 
@@ -501,9 +497,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 25: Backup Slides
-
-**Additional Context and Examples**
+# Additional Context and Examples
 
 **Historical Subset Transitions:**
 
@@ -516,9 +510,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-## Slide 26: Backup Slides
-
-**Detailed Metrics for Each Economy**
+# Detailed Metrics for Each Economy
 
 **Breadth Metrics:**
 
