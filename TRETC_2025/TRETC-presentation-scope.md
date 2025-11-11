@@ -1,4 +1,10 @@
-# TRETC proposal
+# TRETC Presentation scope
+
+
+1. ...
+2. AI corp ecosystem interconnection map — bubble, vs non bubble
+3. ...
+
 
 get a demo together of this
 needs to scope onotoogy of curriculum

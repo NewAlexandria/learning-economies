@@ -541,3 +541,34 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Scale traversals navigated
 - Knowledge topology compression
 - Emergent property discovery rate
+
+---
+
+# GenAI + Immersive Content for Adaptive Learning
+
+**Emerging Technologies for Educators**
+
+**Immersive Scenario Design:**
+
+- Using GenAI to create VR/AR training experiences tailored to individual learners
+- Dynamic content generation based on learning economy alignment
+- Personalized scenarios that adapt to student performance in real-time
+
+**Adaptive Content Delivery:**
+
+- Matching learning styles with appropriate modalities (text, voice, visual, immersive)
+- Multi-modal learning experiences orchestrated by agentic AI systems
+- Real-time scenario generation for challenging situations
+
+**Practical Applications:**
+
+- **High-Stakes Training:** Ransomware negotiation training via VR scenarios
+- **Safe Practice Environments:** Immersive training for situations difficult to replicate in real life
+- **Adaptive Learning Styles:** Systems that support diverse learning preferences across modalities
+- **Agentic AI Integration:** Orchestrating GenAI content generation with immersive delivery platforms
+
+**Future Work:**
+
+- Augmented reality integration for adaptive learning styles
+- Immersive training scenarios for challenging cybersecurity situations
+- Agentic AI systems that generate and adapt immersive content based on learning economy metrics
