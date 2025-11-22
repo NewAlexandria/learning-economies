@@ -85,28 +85,36 @@ Speed to learning can be very fast.
 
 ---
 
-# The Breadth Economy
+# The Breadth Economy: Multi-Subject / Multi-Degree Mastery
 
-**Multi-Subject / Multi-Degree Mastery**
-
+::::: columns
+::: column
 **Current State:**
 
-- High school requires broad exposure (GPA measures breadth navigation)
-- Undergraduate programs emphasize single-field depth
+- Broad exposure required (high school)
+- Single-field depth emphasis (undergrad)
+- GPA measures breadth navigation
 
+
+:::
+::: column
 **AI-Accelerated Future:**
 
-- **Double major, triple major** - students acquire multiple degrees simultaneously
-- Future: **4-5 simultaneous majors**
-- Portfolio breadth becomes the new metric
-- **LLM routing** between different knowledge domains
-- **Temperature** creates variance and crossover between segments
+- **Double/triple majors** → **4-5 simultaneous**
+- Multiple degrees acquired simultaneously
+- Portfolio breadth as primary metric
+- **LLM routing** between knowledge domains
+- **Temperature** creates crossover between segments
+:::
+:::::
 
+::: notes
 **Metrics:**
 
-- Number of parallel intellectual pipelines sustained
+- Parallel intellectual pipelines sustained
 - Diversity index of fields mastered
-- Time to proficiency across unrelated subjects
+- Time to proficiency across subjects
+:::
 
 ---
 
@@ -118,129 +126,171 @@ Speed to learning can be very fast.
 - the personalized learning plan + measurement guide based on 181
 :::
 
-# The Depth Economy
+# The Depth Economy: Acceleration to Mastery
 
-**Acceleration to Mastery**
-
+::::: columns
+::: column
 **Current State:**
 
-- Some students "blast through" high school → undergrad → PhD rapidly
-- Traditional bottlenecks: lectures, lab failures, bureaucratic prerequisites
+- Some students "blast through" to PhD rapidly
+- Traditional bottlenecks: lectures, lab failures, prerequisites
 
+
+:::
+::: column
 **AI-Accelerated Future:**
 
-- Personalized acceleration normalizes PhD-level mastery in late teens
+- **More students** reach advanced mastery levels
+- AI/LLM enable acceleration for broader population
+- PhD-level mastery normalized in late teens
 - AI scaffolding removes time bottlenecks
-- Think: Single-threaded processor optimized for maximum speed
+- Personalized acceleration pathways
+:::
+:::::
 
-- targeting model based existing phd paper
+::: notes
+**Metrics:**
 
 - Shortest time to PhD-level mastery
-
-**Metrics:**
+- Hours to independent problem-solving
+:::
 
 
 ---
 
-# The Subset Economy
+# The Subset Economy: Vocational / Career Re-Training
 
-**Vocational / Career Re-Training**
-
+::::: columns
+::: column
 **Current State:**
 
-- Professionals switch careers 2-3 times in life
-- Retraining takes years (coding bootcamps, nursing certifications)
+- Career switches 2-3 times in life
+- Retraining takes years
+- Coding bootcamps, certifications
 
+
+:::
+::: column
 **AI-Accelerated Future:**
 
-- Real-time vocational retraining
-- Career pivots compressed to months or weeks
-- Think: Multi-adapter socket—how many fields can you plug into?
+- Vocational retraining compressed to months/weeks
+- **Work in multiple trades** simultaneously
+- **Adjacent trades** easier to acquire
+- One trade provides **cognitive scaffolding** for next
+- Skills transfer between vocational domains
+:::
+:::::
 
-**Key Enabler:** **Resonance** - granular skills and cognitive patterns that transfer between domains
-
+::: notes
 **Metrics:**
 
-- Number of distinct professional fields mastered
-- Average retraining time to employability
-- Frequency and speed of successful career pivots
+- Distinct professional fields mastered
+- Retraining time to employability
+- Career pivot frequency and speed
+:::
 
 ---
 
-# Real-World Example - ASU Microcredentials
+::: {.optional}
+# Real-World Example - ASU Microcredentials: The Subset Economy in Practice
 
-**The Subset Economy in Practice**
-
+::::: columns
+::: column
 **Arizona State University's Model:**
 
-- **Modular micro-badges:** 10-15 hour focused skill courses
-- **Stackable design:** Multiple badges = full microcredential
-- **Leveled progression:** Levels 1-4 from introduction to advanced application
-- **Industry-aligned:** Direct connection to workforce needs
-- **Pathways to degrees:** Credentials can stack toward graduate programs
-
+- **Modular micro-badges:** 10-15 hour courses
+- **Stackable design:** badges → microcredential
+- **Leveled progression:** Levels 1-4
+- **Industry-aligned:** workforce connection
+- **Pathways to degrees:** stack toward programs
+:::
+::: column
 **Why It Works:**
 
-- Low barrier to entry for career transitions
-- Rapid skill acquisition (weeks, not years)
-- Digital badges for portable credentials
+- Low barrier to career transitions
+- Rapid skill acquisition (weeks)
+- Digital badges for portability
 - Flexible, affordable, accessible
-- Agility to respond to market changes
+- Market-responsive agility
 
-**Result:** Thousands of credentials issued, supporting rapid career pivots and lifelong learning
+**Result:** Real-world micro-credentialing at scale
+:::
+:::::
+:::
 
 ---
 
-# The Superset Economy
+# The Superset Economy: Field Reinvention / Obviation
 
-**Field Reinvention / Obviation**
-
-**The Most Transformative Economy**
-
+::::: columns
+::: column
 **Historical Examples:**
 
-- Jacquard loom eliminated artisanal weaving
-- Digital calculator obsoleted logarithmic tables
-- GPS obviated celestial navigation
-- Digital photography eliminated darkroom chemistry
+- artisanal weaving → loom
+- loom → carbon fiber
+- log tables → calculator
+- calculator → CPU/GPU
+- celestial nav → GPS
+- GPS → atomic clocks
 
+:::
+::: column
 **AI-Accelerated Future:**
 
-- AI-generated code may obviate day-to-day programming
-- AI medical diagnostics could transform radiology
-- Field-level disruption compressed from decades to years
+- AI-generated code → day-to-day programming
+- AI diagnostics → radiology workflows
+- Field-level disruption: decades → years
+- Technology leapfrogging accelerates
+- Creative destruction normalized
+:::
+:::::
 
+::: notes
 **Metrics:**
 
-- Number of fields successfully obsoleted
-- Time from field exposure to creating its replacement
-- Economic impact multiplier of field reinvention
+- Fields successfully obsoleted
+- Time from exposure to replacement
+- Economic impact multiplier
+:::
 
 ---
 
-# The Network-form Economy
+# The Network-form Economy: Multi-Scale Knowledge Routing
 
-**Multi-Scale Knowledge Routing**
-
+::::: columns
+::: column
 **Current State:**
 
-- Emerging in hyperlinked knowledge systems (Wikipedia, GitHub, academic citations)
-- Knowledge graphs mapping granular findings to field-wide models
+- Hyperlinked knowledge systems
+- Wikipedia, GitHub, citations
+- Knowledge graphs: granular → field-wide
 
+
+:::
+::: column
 **AI-Accelerated Future:**
 
-- AI optimizes connections between knowledge scales
-- Multi-scale navigation becomes core competency
-- Think: GPS that works conceptually—finding optimal paths between different scales of understanding
+- **AI transforms scientific discovery**
+- Insights from one area → unrelated fields
+- What savants/geniuses did → **now accessible to all**
+- AI optimizes cross-scale connections
+- Multi-scale navigation as core competency
 
+_Note: "Network-form" is provisional terminology_
+:::
+:::::
+
+::: notes
 **Metrics:**
 
-- Number of distinct scale traversals navigated
-- Compression ratio achieved through knowledge topology
-- Discovery rate of emergent properties through cross-scale navigation
+- Scale traversals navigated
+- Knowledge topology compression ratio
+- Emergent property discovery rate
+:::
 
 ---
 
+::: {.optional}
 # Resonance - The Universal Transfer Mechanism
 
 **How knowledge flows between economies**
@@ -258,27 +308,32 @@ Speed to learning can be very fast.
 - Enabling synthesis across domains and scales
 
 **Key Insight:** Resonance isn't just "skill transfer"—it's recognition of deep structural similarities that allow knowledge to flow and recombine.
+:::
 
 ---
 
-# AI as Learning Economy Accelerator
+# AI as Learning Economy Accelerator: LLM Structure Enables Learning Acceleration
 
-**Beyond "Symbiosis" Models**
-
+::::: columns
+::: column
 **What AI Actually Does:**
 
-- **Accelerates existing principles** rather than creating new economies
-- **Differential capabilities:** Speed, scale, pattern recognition
-- **Multi-scale granule routing** optimization
-- **Dynamic pathway generation** between knowledge domains
-
+- Accelerates existing principles
+- Differential capabilities: speed, scale, pattern recognition
+- Multi-scale granule routing optimization
+- Dynamic pathway generation across domains
+- **Technical structure of LLMs** enables these learning modes
+:::
+::: column
 **What AI Doesn't Do:**
 
 - Create fundamentally new learning economies
 - Replace human cross-domain pattern recognition
-- Eliminate the need for meta-competencies
+- Eliminate need for meta-competencies
 
-**Result:** AI amplifies all five economies simultaneously, making learning velocity the primary competitive advantage.
+**Result:** AI amplifies all five economies simultaneously—learning velocity becomes competitive advantage
+:::
+:::::
 
 ---
 
