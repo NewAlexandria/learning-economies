@@ -56,7 +56,20 @@ Speed to learning can be very fast.
 
 ---
 
-# What Are "Learning Economies" 2
+# LLM Architecture {layout="Title and Content"}
+
+Go with the grain: LLM architecture -> learning
+
+- **Addressing** → Multidisciplinarity.
+- **Compression** → Conceptual leaps, connections.
+- **Routing** → Concept linkage and context.
+- **Temperature** → Inspiration and creativity.
+- **Stabilization** → Loop between Educator and Learner.
+- **Transformers** → Non-linearity and new structures.
+
+---
+
+# "Learning Economies" targets {layout="Title and Content"}
 
 **Framework for Learning Speed and Quality**
 
@@ -80,7 +93,7 @@ Speed to learning can be very fast.
 1. **Breadth** - Multi-subject mastery and parallel domain competency
 2. **Depth** - Time-to-competence optimization and acceleration
 3. **Subset** - Career mobility through rapid retraining
-4. **Superset** - Field reinvention and creative destruction
+4. **Superset** - Field reinvention and creative restructuring
 5. **'Network-form'** - Multi-scale knowledge routing and synthesis
 
 ---
@@ -140,7 +153,7 @@ Speed to learning can be very fast.
 ::: column
 **AI-Accelerated Future:**
 
-- **More students** reach advanced mastery levels
+- **More students** at mastery levels
 - AI/LLM enable acceleration for broader population
 - PhD-level mastery normalized in late teens
 - AI scaffolding removes time bottlenecks
@@ -220,41 +233,45 @@ Speed to learning can be very fast.
 
 ---
 
-# The Superset Economy: Field Reinvention / Obviation
-
+# The Superset Economy
 ::::: columns
 ::: column
-**Historical Examples:**
+**Field Reinvention:**
 
-- artisanal weaving → loom
-- loom → carbon fiber
-- log tables → calculator
-- calculator → CPU/GPU
-- celestial nav → GPS
-- GPS → atomic clocks
+- Re-addressing what knowledge means
+- Fields obsoleted by re-framing fundamentals
+- Examples:
+  - loom → carbon fiber
+  - calculator → CPU/GPU
+  - celestial nav → GPS
 
+Leapfrogging. Fast reinvention.
 :::
 ::: column
-**AI-Accelerated Future:**
+**Cross-Scale Navigation (Transformation):**
 
-- AI-generated code → day-to-day programming
-- AI diagnostics → radiology workflows
-- Field-level disruption: decades → years
-- Technology leapfrogging accelerates
-- Creative destruction normalized
+- micro/macro, constellation
+- analogous insights across fields
+- ‘Savant-level’ as Accessibility
+- 4+ order-of-magnitude GPT:
+  - molecular biology → ecosystems
+  - physics principles → economics
+
 :::
 :::::
 
 ::: notes
-**Metrics:**
+**Combined Insight:** Superset merges field obsolescence (Addressing) with cross-scale synthesis (Transformation). AI enables both simultaneously—redefining fields while creating connections across scales.
 
-- Fields successfully obsoleted
-- Time from exposure to replacement
-- Economic impact multiplier
+**Metrics:**
+- Fields successfully re-addressed
+- Cross-scale synthesis discoveries
+- Time from insight to field transformation
 :::
 
 ---
 
+::: {.optional}
 # The Network-form Economy: Multi-Scale Knowledge Routing
 
 ::::: columns
@@ -265,20 +282,19 @@ Speed to learning can be very fast.
 - Wikipedia, GitHub, citations
 - Knowledge graphs: granular → field-wide
 
-
 :::
 ::: column
 **AI-Accelerated Future:**
 
-- **AI transforms scientific discovery**
-- Insights from one area → unrelated fields
-- What savants/geniuses did → **now accessible to all**
-- AI optimizes cross-scale connections
-- Multi-scale navigation as core competency
+- c.f. AI scientific discovery
+- Insights from one area → analogous fields
+- Cross-scale connections; focus
+- 'Scaling savants thinking'
 
-_Note: "Network-form" is provisional terminology_
+_needs better nomenclature_
 :::
 :::::
+:::
 
 ::: notes
 **Metrics:**
@@ -312,26 +328,25 @@ _Note: "Network-form" is provisional terminology_
 
 ---
 
-# AI as Learning Economy Accelerator: LLM Structure Enables Learning Acceleration
+# AI as Learning Economy Accelerator
 
 ::::: columns
 ::: column
-**What AI Actually Does:**
+**Go With the Grain:**
 
-- Accelerates existing principles
-- Differential capabilities: speed, scale, pattern recognition
-- Multi-scale granule routing optimization
-- Dynamic pathway generation across domains
-- **Technical structure of LLMs** enables these learning modes
+- Accelerate native to the tooling.
+- Find human things that don't align.
+- Humanize the compression (language).
+- Seek new Technical structure for LLMs.
 :::
 ::: column
-**What AI Doesn't Do:**
+**What AI Doesn't / Shouldn't Do:**
 
-- Create fundamentally new learning economies
+- Create fundamentally new cognitive economics
 - Replace human cross-domain pattern recognition
 - Eliminate need for meta-competencies
+- Replace gut-reactions
 
-**Result:** AI amplifies all five economies simultaneously—learning velocity becomes competitive advantage
 :::
 :::::
 
@@ -343,19 +358,25 @@ _Note: "Network-form" is provisional terminology_
 
 # Economic Implications
 
+::::: columns
+::: column
 **When learning velocity increases 10-100x**
 
 **Labor Market Transformations:**
 
 - **End of Career Specialization:** Workers become Learning Economy Portfolio Managers
-- **Superset-Driven Creative Destruction:** Industry disruption compressed from decades to years
+- **Superset-Driven Creative Restructing:** Industry disruption compressed from decades to years
 - **Network-form Premium:** Multi-scale navigators command salary premiums
+:::
 
+::: column
 **New Forms of Knowledge Capital:**
 
 - **Dynamic Competency Assets:** Human capital becomes liquid and real-time adjustable
 - **Resonance Multipliers:** Pattern-recognition specialists command premium compensation
 - **Learning Velocity as Currency:** Organizations invest in individuals' learning potential
+:::
+:::::
 
 ---
 
