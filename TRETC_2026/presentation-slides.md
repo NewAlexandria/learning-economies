@@ -364,17 +364,23 @@ _needs better nomenclature_
 
 **Labor Market Transformations:**
 
-- **End of Career Specialization:** Workers become Learning Economy Portfolio Managers
-- **Superset-Driven Creative Restructing:** Industry disruption compressed from decades to years
-- **Network-form Premium:** Multi-scale navigators command salary premiums
+- **End of Career Specialization:**
+- Workers become Learning Economy Portfolio Managers
+- **Superset-Driven Creative Restructing:**
+- Industry disruption compressed from decades to years
+- **Network-form Premium:**
+- Multi-scale navigators command salary premiums
 :::
 
 ::: column
 **New Forms of Knowledge Capital:**
 
-- **Dynamic Competency Assets:** Human capital becomes liquid and real-time adjustable
-- **Resonance Multipliers:** Pattern-recognition specialists command premium compensation
-- **Learning Velocity as Currency:** Organizations invest in individuals' learning potential
+- **Dynamic Competency Assets:**
+- Human capital becomes liquid and real-time adjustable
+- **Resonance Multipliers:**
+- Pattern-recognition specialists command premium compensation
+- **Learning Velocity as Currency:**
+- Organizations invest in individuals' learning potential
 :::
 :::::
 
