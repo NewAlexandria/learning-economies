@@ -13,7 +13,9 @@
 _Five modes, measures, and a roadmap for leveraging AI in the classroom._
 
 John Franolich
+
 Zachary Jones
+
 Conference: GuildCon 2025
 
 ---
@@ -34,19 +36,19 @@ Conference: GuildCon 2025
 
 ---
 
-# AI is fundamentally changing how humans learn and create value {layout="Title and Content"}
+# AI Transforms Learning and Value Creation {layout="Title and Content"}
 
-- Traditional education models assume **linear progression** through single domains
-- AI accelerates learning by **10-100x** across all knowledge areas
-- Current credentialing systems become **obsolete** as learning velocity increases
-- **Question:** How do we prepare learners for an economy where learning speed determines competitive advantage?
+- **Linear progression** through single domains - problem in traditional models
+- **Multidisciplinarity** challenges yet strengthens learning approaches
+- **10-100x acceleration** across knowledge areas
+- **Credentialing systems** become obsolete as velocity increases
 
 ---
 
 # What Are "Learning Economies"? {layout="Title and Content"}
 
 - LLM has a bias based on training
-- Design curricula and edu support to work with the bias
+- Design curricula and Edu support to work with the bias
     - example: ontology hydrations for cyber assets vs. flow
     - think of a coin sorting machine that has no slot for dimes.
 
@@ -54,19 +56,16 @@ Speed to learning can be very fast.
 
 ---
 
-**A Framework for Understanding Learning Speed and Quality**
+# What Are "Learning Economies" 2
 
-**Definition:** "Learning Economies" can be thought of as:
-- **Learning efficiencies** - How effectively knowledge is acquired
-- **Learning dynamics** - The patterns and flows of knowledge creation
-- **Competency frameworks** - Structures for measuring and developing capabilities
+**Framework for Learning Speed and Quality**
 
-**Core Focus:** The adaptation and systemics of learning speed and quality
-
-**Key Questions This Framework Addresses:**
-- What modifications to instructional or pedagogical models occur when we accelerate these 'learning economies'?
-- What knowledge architectures best support Agentic AI to support learners + educators?
-- How do we reconsider mastery models and learning progressions in an AI-accelerated world?
+- **Core competency frameworks**
+- **Learning efficiencies**
+- **Learning dynamics**
+- **Key questions** about instructional models
+- **Knowledge architectures** supporting Agentic AI
+- **Mastery models** in AI-accelerated world
 
 ---
 
@@ -76,15 +75,13 @@ Speed to learning can be very fast.
 
 # The Five Learning Economies Framework
 
-**A new taxonomy for understanding human capital creation**
+**New taxonomy for learning**
 
 1. **Breadth** - Multi-subject mastery and parallel domain competency
 2. **Depth** - Time-to-competence optimization and acceleration
 3. **Subset** - Career mobility through rapid retraining
 4. **Superset** - Field reinvention and creative destruction
-5. **Network-form** - Multi-scale knowledge routing and synthesis
-
-**Key Insight:** These aren't competing alternatives—they form an integrated system where **Resonance** enables flow between economies.
+5. **'Network-form'** - Multi-scale knowledge routing and synthesis
 
 ---
 
@@ -99,9 +96,11 @@ Speed to learning can be very fast.
 
 **AI-Accelerated Future:**
 
-- Students acquire multiple undergraduate/graduate degrees simultaneously
+- **Double major, triple major** - students acquire multiple degrees simultaneously
+- Future: **4-5 simultaneous majors**
 - Portfolio breadth becomes the new metric
-- Think: Multi-core processor vs single-thread performance
+- **LLM routing** between different knowledge domains
+- **Temperature** creates variance and crossover between segments
 
 **Metrics:**
 
