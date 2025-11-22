@@ -2,6 +2,13 @@
 
 Accelerate workforce readiness by leveraging ML for adaptive learning
 
+
+## GuildCon 2205
+
+a shortage of skilled labor, not a shortage of interest / workforce
+
+['chat with paper' as curriculum means](https://chatpaper.com/paper/207336)
+
 ## abstract
 
 This talk proposes a novel approach to AI-enabled learning models, which uncover efficiencies and economics of the learning process.  We will discuss how this open the doors to a new approach to student learning.

@@ -1,20 +1,36 @@
-# Learning Economies: Transforming Education in the AI Era
+ # Learning Economies: Transforming Education in the AI Era
 
 ## A Framework for Educators, Administrators, and Policymakers
 
-**30-Minute Presentation for Educator Conference**
+**30-Minute Presentation target**
 
 ---
 
-# Learning Economies: Transforming Education in the AI Era
+# Learning Economies {layout="Welcome Slide"}
 
-_Five Fundamental Modes of Human Capital Creation_
+## New Shapes of Education in the AI Era
 
-**Objective:** A practical roadmap for leveraging AI in the classroom, and design measurements for learning.
+_Five modes, measures, and a roadmap for leveraging AI in the classroom._
 
-**Presented by:** [Your Name]
-**Conference:** [Conference Name]
-**Date:** [Date]
+John Franolich
+Zachary Jones
+Conference: GuildCon 2025
+
+---
+
+## Main Concepts {layout="Title and Content"}
+
+- Basis of 'Learning Economies'
+- The 'Learning Economies'
+- Futurism
+- Guides
+- Implementing and Testing
+- Going Forward
+- Q&A
+
+---
+
+# Basis of 'Learning Economies'
 
 ---
 
@@ -27,7 +43,16 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
-# What Are "Learning Economies"?
+# What Are "Learning Economies"? {layout="Title and Content"}
+
+- LLM has a bias based on training
+- Design curricula and edu support to work with the bias
+    - example: ontology hydrations for cyber assets vs. flow
+    - think of a coin sorting machine that has no slot for dimes.
+
+Speed to learning can be very fast - not classical, not assumptions in PMO lore, not LLM projection.
+
+---
 
 **A Framework for Understanding Learning Speed and Quality**
 
@@ -42,6 +67,10 @@ _Five Fundamental Modes of Human Capital Creation_
 - What modifications to instructional or pedagogical models occur when we accelerate these 'learning economies'?
 - What knowledge architectures best support Agentic AI to support learners + educators?
 - How do we reconsider mastery models and learning progressions in an AI-accelerated world?
+
+---
+
+# The 'Learning Economies'
 
 ---
 
@@ -82,6 +111,14 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
+::: {.optional}
+# Outcome Targets
+
+- the tool based on LEs
+- the ontology support for edu - e.g. NIST 800-181
+- the personalized learning plan + measurement guide based on 181
+:::
+
 # The Depth Economy
 
 **Acceleration to Mastery**
@@ -97,11 +134,12 @@ _Five Fundamental Modes of Human Capital Creation_
 - AI scaffolding removes time bottlenecks
 - Think: Single-threaded processor optimized for maximum speed
 
-**Metrics:**
+- targeting model based existing phd paper
 
 - Shortest time to PhD-level mastery
-- Hours of deliberate practice to independent problem-solving
-- Time to 90th percentile performance
+
+**Metrics:**
+
 
 ---
 
@@ -245,6 +283,10 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
+# Futurism
+
+---
+
 # Economic Implications
 
 **When learning velocity increases 10-100x**
@@ -280,6 +322,10 @@ _Five Fundamental Modes of Human Capital Creation_
 - Develop expertise in meta-learning across all five economies
 
 **Survival Strategy:** Become **Learning Economy Orchestrators** rather than knowledge repositories.
+
+---
+
+# Guides
 
 ---
 
@@ -338,6 +384,10 @@ _Five Fundamental Modes of Human Capital Creation_
 
 ---
 
+# Implementing and Testing
+
+---
+
 # The Learning Economy Production Function
 
 **A Unified Theory of Learning Value**
@@ -358,6 +408,11 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 # Testable Hypotheses Framework
 
+## notes
+
+open source hypothesis testing
+admin / liaison toolkit: how-to support educators, and how-to kit for educators
+
 **From Theory to Practice**
 
 **NIST 800-181 Aligned Implementation:**
@@ -372,6 +427,11 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 ---
 
 # Implementation Roadmap
+
+## notes
+
+add toolkit info / step
+grants / training for more self-sufficiency
 
 **Getting Started with Learning Economies**
 
@@ -413,6 +473,10 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Cross-economy program completion
 - Resonance pattern recognition development
 - Meta-competency acquisition rates
+
+---
+
+# Going Forward
 
 ---
 
@@ -477,7 +541,13 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Service architecture for Learning Economies platform
 - Research notes and ongoing development
 
-**Contact:** [Your contact information]
+**Contact:**
+- Zachary Jones - zachary@keystoneflow.com
+- John Franolich - john.franolich@sru.edu
+
+---
+
+# Q&A
 
 ---
 
@@ -497,6 +567,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
+::: {.appendix}
 # Additional Context and Examples
 
 **Historical Subset Transitions:**
@@ -507,9 +578,9 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Windmills: Agriculture → Renewable energy
 
 **These examples show how knowledge assets migrate to new domains where they create value—demonstrating Resonance in action.**
+:::
 
----
-
+::: {.appendix}
 # Detailed Metrics for Each Economy
 
 **Breadth Metrics:**
@@ -541,9 +612,9 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Scale traversals navigated
 - Knowledge topology compression
 - Emergent property discovery rate
+:::
 
----
-
+::: {.optional}
 # GenAI + Immersive Content for Adaptive Learning
 
 **Emerging Technologies for Educators**
@@ -572,3 +643,4 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Augmented reality integration for adaptive learning styles
 - Immersive training scenarios for challenging cybersecurity situations
 - Agentic AI systems that generate and adapt immersive content based on learning economy metrics
+:::
