@@ -560,10 +560,99 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
+# Emerging Technologies for Educators**
+
+- **High-Stakes Training:** Ransomware negotiation training via VR scenarios
+- **Safe Practice Environments:** Immersive training for situations difficult to replicate in real life
+- **Visual Learning:** Dynamic infographics adapting to learner comprehension
+- **Multimedia Magazines:** Dynamic layouts with AI-curated content paths
+- **GenAI Podcasts:** Auto-generated reviews and discussions of learning materials
+- **Interactive Publications:** "Talk-to-a-doc" conversational interfaces for papers/textbooks
+- **Adaptive Learning Styles:** Systems that support diverse learning preferences across modalities
+
+---
+
+# GenAI + Immersive Content for Adaptive Learning
+
+- Multi-modal learning experiences supported by agentic AI systems
+- XR training experiences tailored to context
+- Dynamic content generation based on learning economy alignment
+- Personalized scenarios that adapt to student performance in real-time
+
+---
+
 # Going Forward
 
 ---
 
+# Call to Action
+
+**For Educators:**
+
+- Begin mapping your curriculum to the four Learning Economies
+- Experiment with AI tools for acceleration
+
+**For Administrators:**
+
+- Reassess institutional metrics
+- Design pilot programs around moonshot hypotheses
+- Pilot educator-as-orchestrator programs
+
+**For Policymakers:**
+
+- Focus economic development on learning velocity
+- Build Learning Economy Infrastructure
+- Create policies that foster all four economies
+
+---
+
+# Resources & Next Steps
+
+**Immediate Actions:**
+
+- Review the full theoretical framework in the repository
+- Examine the 14 testable hypotheses for implementation
+- Identify pilot opportunities in your context
+
+**Future Resources:**
+
+- Complete theoretical framework document
+- NIST-aligned implementation templates
+- Service architecture for Learning Economies platform
+- New tooling, ongoing development
+
+---
+
+# Thank you
+
+- Zachary Jones - zachary@keystoneflow.com
+- John Franolich - john.franolich@sru.edu
+
+---
+
+# Q&A
+
+---
+
+::: {.appendix}
+# Questions & Discussion
+
+**Let's Explore Together**
+
+**Key Questions for Discussion:**
+
+1. Which Learning Economy does your institution currently emphasize?
+2. How might you begin implementing Resonance-based learning?
+3. What barriers do you see to Learning Economy adoption?
+4. How can we collaborate to accelerate this transformation?
+5. **Feedback Request:** What are your thoughts on the "Learning Economies" framework name, given the scope of what we've presented?
+
+**Thank you for your attention and engagement!**
+:::
+
+---
+
+::: {.appendix}
 # The Future of Human Capital
 
 **Meta-Competencies in the AI Era**
@@ -581,73 +670,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Positioning learning velocity as primary determinant of success
 
 **Key Insight:** Success depends on becoming Learning Economy Orchestrators who can adapt to any context.
-
----
-
-# Call to Action
-
-**What You Can Do Today**
-
-**For Educators:**
-
-- Begin mapping your curriculum to the four Learning Economies
-- Identify Resonance opportunities in your teaching
-- Experiment with AI tools for acceleration
-
-**For Administrators:**
-
-- Assess your institution's Learning Economy infrastructure
-- Design pilot programs around testable hypotheses
-- Develop Learning Economy Orchestrator training
-
-**For Policymakers:**
-
-- Focus economic development on learning velocity
-- Build Learning Economy Infrastructure
-- Create policies that foster all four economies
-
----
-
-# Resources & Next Steps
-
-**Getting Started**
-
-**Immediate Actions:**
-
-- Review the full theoretical framework in the repository
-- Examine the 14 testable hypotheses for implementation
-- Identify pilot opportunities in your context
-
-**Available Resources:**
-
-- Complete theoretical framework document
-- NIST-aligned implementation templates
-- Service architecture for Learning Economies platform
-- Research notes and ongoing development
-
-**Contact:**
-- Zachary Jones - zachary@keystoneflow.com
-- John Franolich - john.franolich@sru.edu
-
----
-
-# Q&A
-
----
-
-# Questions & Discussion
-
-**Let's Explore Together**
-
-**Key Questions for Discussion:**
-
-1. Which Learning Economy does your institution currently emphasize?
-2. How might you begin implementing Resonance-based learning?
-3. What barriers do you see to Learning Economy adoption?
-4. How can we collaborate to accelerate this transformation?
-5. **Feedback Request:** What are your thoughts on the "Learning Economies" framework name, given the scope of what we've presented?
-
-**Thank you for your attention and engagement!**
+:::
 
 ---
 
@@ -693,39 +716,4 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Emergent properties
 :::
 
-::: {.optional}
-# GenAI + Immersive Content for Adaptive Learning
-
-**Emerging Technologies for Educators**
-
-**Immersive Scenario Design:**
-
-- Using GenAI to create VR/AR training experiences tailored to individual learners
-- Dynamic content generation based on learning economy alignment
-- Personalized scenarios that adapt to student performance in real-time
-
-**Adaptive Content Delivery:**
-
-- Matching learning styles with appropriate modalities (text, voice, visual, immersive)
-- Multi-modal learning experiences orchestrated by agentic AI systems
-- Real-time scenario generation for challenging situations
-
-**Practical Applications:**
-
-- **High-Stakes Training:** Ransomware negotiation training via VR scenarios
-- **Safe Practice Environments:** Immersive training for situations difficult to replicate in real life
-- **Visual Learning:** Dynamic infographics adapting to learner comprehension
-- **Multimedia Magazines:** Dynamic layouts with AI-curated content paths
-- **GenAI Podcasts:** Auto-generated reviews and discussions of learning materials
-- **Interactive Publications:** "Talk-to-a-doc" conversational interfaces for papers/textbooks
-- **Adaptive Learning Styles:** Systems that support diverse learning preferences across modalities
-- **Agentic AI Integration:** Orchestrating GenAI content generation with immersive delivery platforms
-
-**Future Work:**
-
-- Augmented reality integration for adaptive learning styles
-- Immersive training scenarios for challenging cybersecurity situations
-- Agentic AI systems that generate and adapt immersive content based on learning economy metrics
-- Real-time dynamic infographic generation responding to learner queries
-- AI-mediated dialogue with historical/contemporary thought leaders
-:::
+---
