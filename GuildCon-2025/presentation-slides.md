@@ -10,15 +10,15 @@
 
 ## New Shapes of Education in the AI Era
 
-_Five modes, measures, and a roadmap for leveraging AI in the classroom._
-
 John Franolich
+
 Zachary Jones
-Conference: GuildCon 2025
+
+**GuildCon 2025**
 
 ---
 
-## Main Concepts {layout="Title and Content"}
+# Main Concepts {layout="Title and Content"}
 
 - Basis of 'Learning Economies'
 - The 'Learning Economies'
@@ -34,19 +34,21 @@ Conference: GuildCon 2025
 
 ---
 
-# AI is fundamentally changing how humans learn and create value {layout="Title and Content"}
+::: {.optional}
+# AI Transforms Learning and Value Creation {layout="Title and Content"}
 
-- Traditional education models assume **linear progression** through single domains
-- AI accelerates learning by **10-100x** across all knowledge areas
-- Current credentialing systems become **obsolete** as learning velocity increases
-- **Question:** How do we prepare learners for an economy where learning speed determines competitive advantage?
+- **Linear progression** through single domains - problem in traditional models
+- **Multidisciplinarity** challenges yet strengthens learning approaches
+- **10-100x acceleration** across knowledge areas
+- **Credentialing systems** become obsolete as velocity increases
+:::
 
 ---
 
 # What Are "Learning Economies"? {layout="Title and Content"}
 
 - LLM has a bias based on training
-- Design curricula and edu support to work with the bias
+- Design curricula and Edu support to work with the bias
     - example: ontology hydrations for cyber assets vs. flow
     - think of a coin sorting machine that has no slot for dimes.
 
@@ -54,19 +56,29 @@ Speed to learning can be very fast.
 
 ---
 
-**A Framework for Understanding Learning Speed and Quality**
+# LLM Architecture {layout="Title and Content"}
 
-**Definition:** "Learning Economies" can be thought of as:
-- **Learning efficiencies** - How effectively knowledge is acquired
-- **Learning dynamics** - The patterns and flows of knowledge creation
-- **Competency frameworks** - Structures for measuring and developing capabilities
+Go with the grain: LLM architecture -> learning
 
-**Core Focus:** The adaptation and systemics of learning speed and quality
+- **Addressing** → Multidisciplinarity.
+- **Compression** → Conceptual leaps, connections.
+- **Routing** → Concept linkage and context.
+- **Temperature** → Inspiration and creativity.
+- **Stabilization** → Loop between Educator and Learner.
+- **Transformers** → Non-linearity and new structures.
 
-**Key Questions This Framework Addresses:**
-- What modifications to instructional or pedagogical models occur when we accelerate these 'learning economies'?
-- What knowledge architectures best support Agentic AI to support learners + educators?
-- How do we reconsider mastery models and learning progressions in an AI-accelerated world?
+---
+
+# "Learning Economies" targets {layout="Title and Content"}
+
+**Framework for Learning Speed and Quality**
+
+- **Core competency frameworks**
+- **Learning efficiencies**
+- **Learning dynamics**
+- **Key questions** about instructional models
+- **Knowledge architectures** for cognition and tooling
+- **Mastery models** in AI-accelerated world
 
 ---
 
@@ -74,40 +86,47 @@ Speed to learning can be very fast.
 
 ---
 
-# The Five Learning Economies Framework
+# The Four Learning Economies Framework
 
-**A new taxonomy for understanding human capital creation**
+**New taxonomy for learning**
 
 1. **Breadth** - Multi-subject mastery and parallel domain competency
 2. **Depth** - Time-to-competence optimization and acceleration
 3. **Subset** - Career mobility through rapid retraining
-4. **Superset** - Field reinvention and creative destruction
-5. **Network-form** - Multi-scale knowledge routing and synthesis
-
-**Key Insight:** These aren't competing alternatives—they form an integrated system where **Resonance** enables flow between economies.
+4. **Superset** - Field reinvention and creative restructuring
 
 ---
 
-# The Breadth Economy
+# The Breadth Economy: Multi-Subject / Multi-Degree Mastery
 
-**Multi-Subject / Multi-Degree Mastery**
-
+::::: columns
+::: column
 **Current State:**
 
-- High school requires broad exposure (GPA measures breadth navigation)
-- Undergraduate programs emphasize single-field depth
+- Broad exposure required (high school)
+- Single-field depth emphasis (undergrad)
+- GPA measures breadth navigation
 
+
+:::
+::: column
 **AI-Accelerated Future:**
 
-- Students acquire multiple undergraduate/graduate degrees simultaneously
-- Portfolio breadth becomes the new metric
-- Think: Multi-core processor vs single-thread performance
+- **Double/triple majors** → **4-5 simultaneous**
+- Multiple degrees acquired simultaneously
+- Portfolio breadth as primary metric
+- **LLM routing** between knowledge domains
+- **Temperature** creates crossover between segments
+:::
+:::::
 
+::: notes
 **Metrics:**
 
-- Number of parallel intellectual pipelines sustained
+- Parallel intellectual pipelines sustained
 - Diversity index of fields mastered
-- Time to proficiency across unrelated subjects
+- Time to proficiency across subjects
+:::
 
 ---
 
@@ -119,129 +138,145 @@ Speed to learning can be very fast.
 - the personalized learning plan + measurement guide based on 181
 :::
 
-# The Depth Economy
+# The Depth Economy: Acceleration to Mastery
 
-**Acceleration to Mastery**
-
+::::: columns
+::: column
 **Current State:**
 
-- Some students "blast through" high school → undergrad → PhD rapidly
-- Traditional bottlenecks: lectures, lab failures, bureaucratic prerequisites
+- Some students "blast through" to PhD rapidly
+- Traditional bottlenecks: lectures, lab failures, prerequisites
 
+
+:::
+::: column
 **AI-Accelerated Future:**
 
-- Personalized acceleration normalizes PhD-level mastery in late teens
+- **More students** at mastery levels
+- AI/LLM enable acceleration for broader population
+- PhD-level mastery normalized in late teens
 - AI scaffolding removes time bottlenecks
-- Think: Single-threaded processor optimized for maximum speed
+- Personalized acceleration pathways
+:::
+:::::
 
-- targeting model based existing phd paper
+::: notes
+**Metrics:**
 
 - Shortest time to PhD-level mastery
-
-**Metrics:**
+- Hours to independent problem-solving
+:::
 
 
 ---
 
-# The Subset Economy
+# The Subset Economy: Vocational / Career Re-Training
 
-**Vocational / Career Re-Training**
-
+::::: columns
+::: column
 **Current State:**
 
-- Professionals switch careers 2-3 times in life
-- Retraining takes years (coding bootcamps, nursing certifications)
+- Career switches 2-3 times in life
+- Retraining takes years
+- Coding bootcamps, certifications
 
+
+:::
+::: column
 **AI-Accelerated Future:**
 
-- Real-time vocational retraining
-- Career pivots compressed to months or weeks
-- Think: Multi-adapter socket—how many fields can you plug into?
+- Vocational retraining compressed to months/weeks
+- **Work in multiple trades** simultaneously
+- **Adjacent trades** easier to acquire
+- One trade provides **cognitive scaffolding** for next
+- Skills transfer between vocational domains
+:::
+:::::
 
-**Key Enabler:** **Resonance** - granular skills and cognitive patterns that transfer between domains
-
+::: notes
 **Metrics:**
 
-- Number of distinct professional fields mastered
-- Average retraining time to employability
-- Frequency and speed of successful career pivots
-
----
-
-# Real-World Example - ASU Microcredentials
-
-**The Subset Economy in Practice**
-
-**Arizona State University's Model:**
-
-- **Modular micro-badges:** 10-15 hour focused skill courses
-- **Stackable design:** Multiple badges = full microcredential
-- **Leveled progression:** Levels 1-4 from introduction to advanced application
-- **Industry-aligned:** Direct connection to workforce needs
-- **Pathways to degrees:** Credentials can stack toward graduate programs
-
-**Why It Works:**
-
-- Low barrier to entry for career transitions
-- Rapid skill acquisition (weeks, not years)
-- Digital badges for portable credentials
-- Flexible, affordable, accessible
-- Agility to respond to market changes
-
-**Result:** Thousands of credentials issued, supporting rapid career pivots and lifelong learning
+- Distinct professional fields mastered
+- Retraining time to employability
+- Career pivot frequency and speed
+:::
 
 ---
 
 # The Superset Economy
+::::: columns
+::: column
+**Field Reinvention:**
 
-**Field Reinvention / Obviation**
+- Re-addressing what knowledge means
+- Fields obsoleted by re-framing fundamentals
+- Examples:
+  - loom → carbon fiber
+  - calculator → CPU/GPU
+  - celestial nav → GPS
 
-**The Most Transformative Economy**
+Leapfrogging. Fast reinvention.
+:::
+::: column
+**Cross-Scale Navigation (Transformation):**
 
-**Historical Examples:**
+- micro/macro, constellation
+- analogous insights across fields
+- ‘Savant-level’ as Accessibility
+- 4+ order-of-magnitude GPT:
+  - molecular biology → ecosystems
+  - physics principles → economics
 
-- Jacquard loom eliminated artisanal weaving
-- Digital calculator obsoleted logarithmic tables
-- GPS obviated celestial navigation
-- Digital photography eliminated darkroom chemistry
+:::
+:::::
 
-**AI-Accelerated Future:**
-
-- AI-generated code may obviate day-to-day programming
-- AI medical diagnostics could transform radiology
-- Field-level disruption compressed from decades to years
+::: notes
+**Combined Insight:** Superset merges field obsolescence (Addressing) with cross-scale synthesis (Transformation). AI enables both simultaneously—redefining fields while creating connections across scales.
 
 **Metrics:**
-
-- Number of fields successfully obsoleted
-- Time from field exposure to creating its replacement
-- Economic impact multiplier of field reinvention
+- Fields successfully re-addressed
+- Cross-scale synthesis discoveries
+- Time from insight to field transformation
+:::
 
 ---
 
-# The Network-form Economy
+::: {.optional}
+# The Network-form Economy: Multi-Scale Knowledge Routing
 
-**Multi-Scale Knowledge Routing**
-
+::::: columns
+::: column
 **Current State:**
 
-- Emerging in hyperlinked knowledge systems (Wikipedia, GitHub, academic citations)
-- Knowledge graphs mapping granular findings to field-wide models
+- Hyperlinked knowledge systems
+- Wikipedia, GitHub, citations
+- Knowledge graphs: granular → field-wide
 
+:::
+::: column
 **AI-Accelerated Future:**
 
-- AI optimizes connections between knowledge scales
-- Multi-scale navigation becomes core competency
-- Think: GPS that works conceptually—finding optimal paths between different scales of understanding
+- c.f. AI scientific discovery
+- Insights from one area → analogous fields
+- Cross-scale connections; focus
+- 'Scaling savants thinking'
 
+_needs better nomenclature_
+:::
+:::::
+:::
+
+::: notes
 **Metrics:**
 
-- Number of distinct scale traversals navigated
-- Compression ratio achieved through knowledge topology
-- Discovery rate of emergent properties through cross-scale navigation
+- Scale traversals navigated
+- Knowledge topology compression ratio
+- Emergent property discovery rate
+:::
 
 ---
 
+::: {.optional}
 # Resonance - The Universal Transfer Mechanism
 
 **How knowledge flows between economies**
@@ -259,27 +294,57 @@ Speed to learning can be very fast.
 - Enabling synthesis across domains and scales
 
 **Key Insight:** Resonance isn't just "skill transfer"—it's recognition of deep structural similarities that allow knowledge to flow and recombine.
+:::
+
+---
+
+# Real-World Example: ASU Microcredentials
+
+::::: columns
+::: column
+**Real-world micro-credentialing at scale**
+
+- **Modular micro-badges:** 10-15 hour courses
+- **Stackable design**
+- **Leveled progression**
+- **Industry-aligned:** market transformation
+- **Pathways to degrees:** stack toward programs
+:::
+::: column
+**Why It Works:**
+
+- Low barrier transitions
+- Rapid skill acquisition (weeks)
+- Portable badges
+- Flexible, affordable, accessible
+- Market-responsive agility
+
+:::
+:::::
 
 ---
 
 # AI as Learning Economy Accelerator
 
-**Beyond "Symbiosis" Models**
+::::: columns
+::: column
+**Go With the Grain:**
 
-**What AI Actually Does:**
+- Accelerate native to the tooling.
+- Find human things that don't align.
+- Humanize the compression (language).
+- Seek new Technical structure for LLMs.
+:::
+::: column
+**What AI Doesn't / Shouldn't Do:**
 
-- **Accelerates existing principles** rather than creating new economies
-- **Differential capabilities:** Speed, scale, pattern recognition
-- **Multi-scale granule routing** optimization
-- **Dynamic pathway generation** between knowledge domains
-
-**What AI Doesn't Do:**
-
-- Create fundamentally new learning economies
+- Create fundamentally new cognitive economics
 - Replace human cross-domain pattern recognition
-- Eliminate the need for meta-competencies
+- Eliminate need for meta-competencies
+- Replace gut-reactions
 
-**Result:** AI amplifies all five economies simultaneously, making learning velocity the primary competitive advantage.
+:::
+:::::
 
 ---
 
@@ -289,98 +354,120 @@ Speed to learning can be very fast.
 
 # Economic Implications
 
-**When learning velocity increases 10-100x**
-
+::::: columns
+::: column
 **Labor Market Transformations:**
 
-- **End of Career Specialization:** Workers become Learning Economy Portfolio Managers
-- **Superset-Driven Creative Destruction:** Industry disruption compressed from decades to years
-- **Network-form Premium:** Multi-scale navigators command salary premiums
+- Jobs as Learning Economic Portfolios
+- Superset-Driven Restructuring
+- Industry disruption compressed from decades to years
+- Multi-scale navigators command salary premiums
+:::
 
+::: column
 **New Forms of Knowledge Capital:**
 
-- **Dynamic Competency Assets:** Human capital becomes liquid and real-time adjustable
-- **Resonance Multipliers:** Pattern-recognition specialists command premium compensation
-- **Learning Velocity as Currency:** Organizations invest in individuals' learning potential
+- Hyper-Dynamic Competency
+- Human capital more liquid and realtime
+- Pattern-recognition specialists
+- Learning Velocity as Currency
+- Learning potential KPIs
+:::
+:::::
 
 ---
 
 # Institutional Challenges
 
+::::: columns
+::: column
 **The Credential Lag Problem**
 
-**Current Issues:**
+- Admin Benchmarks
+- Degree programs not adapted
+- Common departmental silos
+- Certification as Calibration
+:::
 
-- Traditional institutions validate competencies after AI has accelerated past those benchmarks
-- Single-threaded degree programs become inadequate
-- Departmental silos prevent cross-economy learning
-
+::: column
 **Progressive Responses:**
 
-- Partner directly with AI systems for continuous assessment
-- Create "learning velocity leagues" competing on acceleration metrics
-- Develop expertise in meta-learning across all five economies
-
-**Survival Strategy:** Become **Learning Economy Orchestrators** rather than knowledge repositories.
-
----
-
-# Guides
+- Follow multidisciplinary programs like Cybersecurity
+- New NIST frameworks
+- Novel metrics from LLMs
+- Become Learning Economy Orchestrators
+:::
+:::::
 
 ---
 
-# Practical Applications for Educators
+# Policy Guides
 
-**From Knowledge Transmission to Learning Economy Architecture**
+---
 
-**Design Experiences That:**
+# Practical Applications for Educators: From Teaching, to Learning Economy Orchestration
 
-- Develop competency across all five economies
+::::: columns
+::: column
+
+- Develop competency across all four economies
 - Strengthen Resonance capabilities in students
 - Enable fluid navigation between learning modes
+:::
 
-**New Teaching Roles:**
+::: column
 
-- **Breadth Orchestration:** Managing parallel domain mastery
-- **Depth Acceleration:** Optimizing time-to-competence
-- **Network-form Routing:** Teaching multi-scale navigation
-- **Resonance Coaching:** Identifying cross-domain transfer patterns
+- Breadth: Managing parallel domain mastery
+- Depth: Optimizing time-to-discovery
+- Subset: Modular field practice
+- Superset: Teaching focus + multi-scale
+- Resonance: Identifying valuable cross-domain transfer patterns
+:::
+:::::
 
 ---
 
 # Practical Applications for Administrators
 
-**Building Learning Economy Infrastructure**
-
+::::: columns
+::: column
 **Institutional Restructuring:**
 
-- **Resonance Clusters:** Interdisciplinary groups focused on cross-domain transfer
-- **Scale Navigation Labs:** Spaces for micro-to-macro knowledge routing
-- **Disruption Incubators:** Environments for Superset innovation
+- Resonance Clusters: Interdisciplinary groups focused on cross-domain transfer
+- Scale Navigation Labs: Spaces for micro-to-macro knowledge routing
+- Disruption Incubators: Environments for Superset innovation
+:::
 
+::: column
 **Assessment Evolution:**
 
-- **Portfolio-Based Assessment:** Dynamic portfolios measuring all five economies
-- **Real-Time Competency Tracking:** AI-powered continuous evaluation
-- **Fluid Credentials:** Reflecting current capabilities, not historical achievements
+- Portfolio-Based Assessment: Dynamic portfolios measuring all four economies
+- Real-Time Competency Tracking: AI-powered continuous evaluation
+- Fluid Credentials: Reflecting evolving capabilities, not historical achievements
+:::
+:::::
 
 ---
 
 # Practical Applications for Policymakers
 
-**Learning Economy Infrastructure Development**
-
+::::: columns
+::: column
 **Economic Development Strategy:**
 
-- Focus on building institutional foundations for rapid learning acceleration
+- Building institutional foundations for rapid learning acceleration
 - Create competitive advantage through learning velocity
-- Foster all five Learning Economies simultaneously for resilience
+- Foster all four Learning Economies simultaneously for resilience
+:::
 
+::: column
 **Policy Priorities:**
 
-- **Learning Economy Infrastructure:** Institutional, technological, cultural foundations
-- **Resonance Amplification:** Systems that strengthen cross-domain pattern recognition
-- **Meta-Competency Development:** Teaching how to learn within each economy
+- Learning Economy Infrastructure: Institutional, technological, cultural foundations
+- Resonance Amplification: Systems that strengthen cross-domain pattern recognition
+- Meta-Competency Development: Teaching how to learn within each economy
+:::
+:::::
 
 ---
 
@@ -388,6 +475,7 @@ Speed to learning can be very fast.
 
 ---
 
+::: {.optional}
 # The Learning Economy Production Function
 
 **A Unified Theory of Learning Value**
@@ -400,58 +488,109 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 **Optimal Learning Strategies Require:**
 
-1. **Portfolio Balancing:** Investing across all five economies
+1. **Portfolio Balancing:** Investing across all four economies
 2. **Resonance Amplification:** Developing pattern-recognition capabilities
 3. **AI Integration:** Leveraging AI tools while maintaining human advantages
+:::
 
 ---
 
 # Testable Hypotheses Framework
 
-## notes
+**NIST 800-181 Alignment**
 
-open source hypothesis testing
-admin / liaison toolkit: how-to support educators, and how-to kit for educators
+- 14 Testable Hypotheses per Learning Economy
+- Concrete, measurable interventions
+- Pilot study designs
+- Quantitative measures: metrics, observability, success criteria
+- RCT designs, statistical methods, ethics
+- Open source hypothesis testing
+- Admin/liaison toolkit for educators
 
-**From Theory to Practice**
+# KSA Framework: Knowledge, Skills, Abilities
+::::: columns
+::: column
+**KSA Drives Objectives:**
 
-**NIST 800-181 Aligned Implementation:**
+- **Knowledge:** Domain foundations
+- **Skills:** Practice and application
+- **Abilities:** Integration and adaptation
 
-- **14 Testable Hypotheses** for each Learning Economy and meta-factor
-- **Concrete, Measurable Interventions** suitable for pilot studies
-- **Quantitative Measures:** Specific metrics, data sources, success criteria
-- **Evaluation Protocols:** RCT designs, statistical methods, ethical considerations
+**Maps to:**
+- Objectives, rubrics
+- Assessments
+- Measurements
+:::
+::: column
+**Learning Economy Alignment:**
 
-**Example:** "AI scaffolding increases parallel-domain competency throughput without proficiency loss"
+- **Depth:** K→S→A velocity
+- **Breadth:** Parallel KSA pipelines
+- **Subset:** KSA transfer and liquidity
+- **Superset:** Cross-domain synthesis
+
+:::
+:::::
+
+::: notes
+KSAs provide foundation for testable hypotheses. Each economy emphasizes different KSA patterns.
+:::
+
+# Training Kit for Educators
+
+- Student profile / basis
+- Agentic attunement to goals (student, institution, class)
+- Webapp service, AI App integrations
+- Guide for other tools, notebooks, data integration
+- Building accomplishment targets (NIST 800-181)
+- Progress, outcomes, and measurement
+
+---
+
+::: {.appendix}
+# facilitating the educator
+
+- objectives
+- proof that students were taught, tested, and learned
+
+- scales across all students
+- overall numbers/scoring for objectives, aggregate of all modules
+- audits of the learning model
+Multi-class comparison, iteration, learner variance
+
+check for FERPA / PII compliance
+
+:::
 
 ---
 
 # Implementation Roadmap
 
-## notes
-
-add toolkit info / step
-grants / training for more self-sufficiency
-
-**Getting Started with Learning Economies**
-
+::::: columns
+::: column
 **Phase 1: Assessment & Mapping**
 
-- Identify current Learning Economy strengths in your institution
-- Map existing programs to the five economies
-- Assess Resonance capabilities across domains
+- Find existing Learning Economies
+- Map existing programs; moonshots.
+- Assess domain resonance
 
 **Phase 2: Pilot Programs**
 
-- Select 2-3 testable hypotheses for pilot implementation
-- Design measurement frameworks
-- Begin AI integration for acceleration
+- Select 2-3 testable hypotheses
+- Publish new measurements
+- Toolkit info and implementation steps
 
+:::
+
+::: column
 **Phase 3: Scale & Integration**
 
-- Expand successful pilots across institution
-- Develop Learning Economy Orchestrator training
-- Create cross-economy learning pathways
+- Expand successful pilots
+- Orchestrator training
+- Library of Cross-economy pathways
+- Grants and training for self-sufficiency
+:::
+:::::
 
 ---
 
@@ -461,11 +600,11 @@ grants / training for more self-sufficiency
 
 **Individual Level:**
 
-- Breadth coefficients (parallel domains maintained)
+- Breadth coefficients (parametric ratios)
 - Depth velocity (time-to-mastery rates)
 - Subset fluency (domain transfer success)
-- Superset capacity (field-level innovations)
-- Network-form efficiency (cross-scale navigation)
+- Superset capacity (cross-scale navigation)
+- Network-form efficiency
 
 **Institutional Level:**
 
@@ -476,57 +615,68 @@ grants / training for more self-sufficiency
 
 ---
 
-# Going Forward
+# Emerging Technologies for Educators
+
+- **High-Stakes Training:** Ransomware negotiation training via VR scenarios
+- **Safe Practice Environments:** Immersive training for situations difficult to replicate in real life
+- **Visual Learning:** Dynamic infographics adapting to learner comprehension
+- **Multimedia Magazines:** Dynamic layouts with AI-curated content paths
+- **GenAI Podcasts:** Auto-generated reviews and discussions of learning materials
+- **Interactive Publications:** "Talk-to-a-doc" conversational interfaces for papers/textbooks
+- **Adaptive Learning Styles:** Systems that support diverse learning preferences across modalities
 
 ---
 
-# The Future of Human Capital
+::: {.appendix}
+# Emerging Technologies for Educators Table
 
-**Meta-Competencies in the AI Era**
+| Technology | Usage |
+| --- | --- |
+| **High-Stakes Training:** | Ransomware negotiation training via VR scenarios |
+| **Safe Practice Environments:** | Immersive training for situations difficult to replicate in real life |
+| **Visual Learning:** | Dynamic infographics adapting to learner comprehension |
+| **Multimedia Magazines:** | Dynamic layouts with AI-curated content paths |
+| **GenAI Podcasts:** | Auto-generated reviews and discussions of learning materials |
+| **Interactive Publications:** | "Talk-to-a-doc" conversational interfaces for papers/textbooks |
+| **Adaptive Learning Styles:** | Systems that support diverse learning preferences across modalities |
 
-**Human Value Concentrates In:**
+---
 
-- **Economy Navigation:** Fluid movement between learning modes
-- **Resonance Amplification:** Exceptional pattern-recognition
-- **System Integration:** Synthesizing insights across all five economies
+# GenAI + Immersive Content for Adaptive Learning
 
-**The Competitive Advantage:**
+- Multi-modal learning experiences supported by agentic AI systems
+- XR training experiences tailored to context
+- Dynamic content generation based on learning economy alignment
+- Personalized scenarios that adapt to student performance in real-time
 
-- Not optimizing within any single economy
-- Mastering fluid navigation across the entire system
-- Positioning learning velocity as primary determinant of success
+---
 
-**Key Insight:** Success depends on becoming Learning Economy Orchestrators who can adapt to any context.
+# Going Forward
 
 ---
 
 # Call to Action
 
-**What You Can Do Today**
-
 **For Educators:**
 
-- Begin mapping your curriculum to the five Learning Economies
-- Identify Resonance opportunities in your teaching
+- Begin mapping your curriculum to the four Learning Economies
 - Experiment with AI tools for acceleration
 
 **For Administrators:**
 
-- Assess your institution's Learning Economy infrastructure
-- Design pilot programs around testable hypotheses
-- Develop Learning Economy Orchestrator training
+- Reassess institutional metrics
+- Design pilot programs around moonshot hypotheses
+- Pilot educator-as-orchestrator programs
 
 **For Policymakers:**
 
 - Focus economic development on learning velocity
 - Build Learning Economy Infrastructure
-- Create policies that foster all five economies
+- Create policies that foster all four economies
 
 ---
 
 # Resources & Next Steps
-
-**Getting Started**
 
 **Immediate Actions:**
 
@@ -534,16 +684,22 @@ grants / training for more self-sufficiency
 - Examine the 14 testable hypotheses for implementation
 - Identify pilot opportunities in your context
 
-**Available Resources:**
+**Future Resources:**
 
 - Complete theoretical framework document
 - NIST-aligned implementation templates
 - Service architecture for Learning Economies platform
-- Research notes and ongoing development
+- New tooling, ongoing development
 
-**Contact:**
-- Zachary Jones - zachary@keystoneflow.com
-- John Franolich - john.franolich@sru.edu
+---
+
+# Thank you
+
+Zachary Jones
+zachary@keystoneflow.com
+
+John Franolich
+john.franolich@sru.edu
 
 ---
 
@@ -551,6 +707,7 @@ grants / training for more self-sufficiency
 
 ---
 
+::: {.appendix}
 # Questions & Discussion
 
 **Let's Explore Together**
@@ -564,6 +721,29 @@ grants / training for more self-sufficiency
 5. **Feedback Request:** What are your thoughts on the "Learning Economies" framework name, given the scope of what we've presented?
 
 **Thank you for your attention and engagement!**
+:::
+
+---
+
+::: {.appendix}
+# The Future of Human Capital
+
+**Meta-Competencies in the AI Era**
+
+**Human Value Concentrates In:**
+
+- **Economy Navigation:** Fluid movement between learning modes
+- **Resonance Amplification:** Exceptional pattern-recognition
+- **System Integration:** Synthesizing insights across all four economies
+
+**The Competitive Advantage:**
+
+- Not optimizing within any single economy
+- Mastering fluid navigation across the entire system
+- Positioning learning velocity as primary determinant of success
+
+**Key Insight:** Success depends on becoming Learning Economy Orchestrators who can adapt to any context.
+:::
 
 ---
 
@@ -603,44 +783,10 @@ grants / training for more self-sufficiency
 
 **Superset Metrics:**
 
-- Fields successfully obsoleted
 - Time to field replacement
-- Economic impact multiplier
-
-**Network-form Metrics:**
-
-- Scale traversals navigated
-- Knowledge topology compression
-- Emergent property discovery rate
+- Traversal scales
+- Knowledge topology / compression
+- Emergent properties
 :::
 
-::: {.optional}
-# GenAI + Immersive Content for Adaptive Learning
-
-**Emerging Technologies for Educators**
-
-**Immersive Scenario Design:**
-
-- Using GenAI to create VR/AR training experiences tailored to individual learners
-- Dynamic content generation based on learning economy alignment
-- Personalized scenarios that adapt to student performance in real-time
-
-**Adaptive Content Delivery:**
-
-- Matching learning styles with appropriate modalities (text, voice, visual, immersive)
-- Multi-modal learning experiences orchestrated by agentic AI systems
-- Real-time scenario generation for challenging situations
-
-**Practical Applications:**
-
-- **High-Stakes Training:** Ransomware negotiation training via VR scenarios
-- **Safe Practice Environments:** Immersive training for situations difficult to replicate in real life
-- **Adaptive Learning Styles:** Systems that support diverse learning preferences across modalities
-- **Agentic AI Integration:** Orchestrating GenAI content generation with immersive delivery platforms
-
-**Future Work:**
-
-- Augmented reality integration for adaptive learning styles
-- Immersive training scenarios for challenging cybersecurity situations
-- Agentic AI systems that generate and adapt immersive content based on learning economy metrics
-:::
+---

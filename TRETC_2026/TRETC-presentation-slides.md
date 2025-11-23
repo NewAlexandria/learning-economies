@@ -507,6 +507,61 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - Open source hypothesis testing
 - Admin/liaison toolkit for educators
 
+# KSA Framework: Knowledge, Skills, Abilities
+::::: columns
+::: column
+**KSA Drives Objectives:**
+
+- **Knowledge:** Domain foundations
+- **Skills:** Practice and application
+- **Abilities:** Integration and adaptation
+
+**Maps to:**
+- Objectives, rubrics
+- Assessments
+- Measurements
+:::
+::: column
+**Learning Economy Alignment:**
+
+- **Depth:** K→S→A velocity
+- **Breadth:** Parallel KSA pipelines
+- **Subset:** KSA transfer and liquidity
+- **Superset:** Cross-domain synthesis
+
+:::
+:::::
+
+::: notes
+KSAs provide foundation for testable hypotheses. Each economy emphasizes different KSA patterns.
+:::
+
+# Training Kit for Educators
+
+- Student profile / basis
+- Agentic attunement to goals (student, institution, class)
+- Webapp service, AI App integrations
+- Guide for other tools, notebooks, data integration
+- Building accomplishment targets (NIST 800-181)
+- Progress, outcomes, and measurement
+
+---
+
+::: {.appendix}
+# facilitating the educator
+
+- objectives
+- proof that students were taught, tested, and learned
+
+- scales across all students
+- overall numbers/scoring for objectives, aggregate of all modules
+- audits of the learning model
+Multi-class comparison, iteration, learner variance
+
+check for FERPA / PII compliance
+
+:::
+
 ---
 
 # Implementation Roadmap
@@ -560,7 +615,7 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 ---
 
-# Emerging Technologies for Educators**
+# Emerging Technologies for Educators
 
 - **High-Stakes Training:** Ransomware negotiation training via VR scenarios
 - **Safe Practice Environments:** Immersive training for situations difficult to replicate in real life
@@ -569,6 +624,21 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 - **GenAI Podcasts:** Auto-generated reviews and discussions of learning materials
 - **Interactive Publications:** "Talk-to-a-doc" conversational interfaces for papers/textbooks
 - **Adaptive Learning Styles:** Systems that support diverse learning preferences across modalities
+
+---
+
+::: {.appendix}
+# Emerging Technologies for Educators Table
+
+| Technology | Usage |
+| --- | --- |
+| **High-Stakes Training:** | Ransomware negotiation training via VR scenarios |
+| **Safe Practice Environments:** | Immersive training for situations difficult to replicate in real life |
+| **Visual Learning:** | Dynamic infographics adapting to learner comprehension |
+| **Multimedia Magazines:** | Dynamic layouts with AI-curated content paths |
+| **GenAI Podcasts:** | Auto-generated reviews and discussions of learning materials |
+| **Interactive Publications:** | "Talk-to-a-doc" conversational interfaces for papers/textbooks |
+| **Adaptive Learning Styles:** | Systems that support diverse learning preferences across modalities |
 
 ---
 
@@ -625,8 +695,11 @@ Learning Value = f(Breadth × Depth × Subset_mobility × Superset_capacity × N
 
 # Thank you
 
-- Zachary Jones - zachary@keystoneflow.com
-- John Franolich - john.franolich@sru.edu
+Zachary Jones
+zachary@keystoneflow.com
+
+John Franolich
+john.franolich@sru.edu
 
 ---
 
