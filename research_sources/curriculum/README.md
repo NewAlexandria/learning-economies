@@ -44,6 +44,8 @@ This directory contains curriculum information for various cybersecurity and Ope
 
 - **curriculum-summary-table.md**: Summary table comparing all programs
 - **additional-programs-to-research.md**: List of additional programs that may be worth researching
+- **SCRAPING-GUIDE.md**: Comprehensive guide for gathering program information (detailed instructions)
+- **AGENT-PROMPT-TEMPLATE.md**: Concise prompt template for AI agents to gather program information
 
 ## Notes
 
