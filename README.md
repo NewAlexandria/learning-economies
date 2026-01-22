@@ -14,6 +14,10 @@ The core contribution is a taxonomy of **five fundamental Learning Economies** t
 
 Central to this framework is **Resonance** - the universal transfer mechanism enabling cross-domain knowledge flow and synthesis across all five economies.
 
+## 🎬 YouTube
+
+[See our presentation on this at GuildCon 2025](https://www.youtube.com/watch?app=desktop&v=kIBo1JevzuE), at Hackers Guild PGH.
+
 ## Repository Contents
 
 ### Core Research Documents
@@ -181,10 +185,12 @@ This repository represents ongoing research into the transformation of education
 This appears to be a personal research repository. For questions or collaboration opportunities, please refer to the individual document authors.
 
 ---
+
 ## Exsiting Research
-https://scholar.google.com/scholar?hl=en&as_sdt=0%2C39&q=Ai+in+education&btnG=
+
+<https://scholar.google.com/scholar?hl=en&as_sdt=0%2C39&q=Ai+in+education&btnG=>
 
 Systematic Review of Artificial Intelligence in Education: Trends, Benefits, and Challenges
-https://www.mdpi.com/2414-4088/9/8/84
+<https://www.mdpi.com/2414-4088/9/8/84>
 
 _Last updated: Based on repository contents as of current state_
