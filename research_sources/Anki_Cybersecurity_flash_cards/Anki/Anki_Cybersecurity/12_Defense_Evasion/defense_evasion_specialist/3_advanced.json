@@ -1,0 +1,218 @@
+[
+  {
+    "question_text": "To evade user-mode EDR hooks by dynamically resolving syscall numbers, what is a critical step in creating the function name and syscall number dictionary?",
+    "correct_answer": "Sorting the dictionary of exported functions by their relative virtual addresses (RVAs)",
+    "distractors": [
+      {
+        "question_text": "Hardcoding syscall numbers for common Windows builds",
+        "misconception": "Targets misunderstanding of dynamic resolution: Student confuses the problem this technique solves (avoiding hardcoding) with a step in the solution itself."
+      },
+      {
+        "question_text": "Identifying all functions prefixed with &#39;Ldr&#39; in ntdll.dll",
+        "misconception": "Targets incorrect function prefix: Student confuses &#39;Ldr&#39; functions (related to module loading) with &#39;Zw&#39; or &#39;Nt&#39; functions (system calls)."
+      },
+      {
+        "question_text": "Obtaining a handle to the kernel32.dll module",
+        "misconception": "Targets incorrect DLL: Student confuses the primary DLL for system calls (ntdll.dll) with a common user-mode API DLL (kernel32.dll)."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Dynamically resolving syscall numbers at runtime is a technique to bypass user-mode EDR hooks by directly invoking system calls, avoiding the hooked user-mode API functions. A key step involves enumerating exported functions from ntdll.dll (specifically those prefixed with &#39;Zw&#39; or &#39;Nt&#39;), storing their names and relative virtual addresses (RVAs), and then sorting this dictionary by RVA. The syscall number is then derived from the function&#39;s index in this sorted list. This allows an attacker to obtain the correct syscall number for the current Windows build without hardcoding, making the payload more resilient across different OS versions. Defense: EDRs can monitor for direct syscalls by analyzing stack traces for calls originating outside of expected user-mode API wrappers, or by detecting unusual memory access patterns to ntdll.dll.",
+      "distractor_analysis": "Hardcoding syscall numbers is what this technique aims to avoid. &#39;Ldr&#39; functions are not the target for direct syscalls; &#39;Zw&#39; or &#39;Nt&#39; prefixes are used. The technique specifically targets ntdll.dll, not kernel32.dll, for syscall resolution.",
+      "analogy": "Imagine you have a phone book where everyone&#39;s number changes daily. Instead of memorizing numbers, you find a way to automatically re-index the book each day based on a consistent ordering (like alphabetical by street address), so you can always find the &#39;third person on Main Street&#39; even if their name changes."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "typedef struct _SYSCALL_ENTRY {\n    DWORD RVA;\n    WORD SyscallNumber;\n    char* FunctionName;\n} SYSCALL_ENTRY, *PSYSCALL_ENTRY;\n\n// ... code to populate and sort an array of SYSCALL_ENTRY by RVA ...\n// After sorting, SyscallNumber can be assigned based on array index.",
+        "context": "Conceptual structure for dynamic syscall resolution"
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "WINDOWS_INTERNALS",
+      "EDR_FUNDAMENTALS",
+      "FUNCTION_HOOKING",
+      "MEMORY_MANIPULATION"
+    ]
+  },
+  {
+    "question_text": "To evade detection by an EDR that monitors for common process injection techniques, which method would be MOST effective in injecting a DLL into a remote process without using `CreateRemoteThread` or `WriteProcessMemory` directly?",
+    "correct_answer": "Reflective DLL injection, where the DLL is loaded directly from memory by the target process",
+    "distractors": [
+      {
+        "question_text": "Using `SetWindowsHookEx` to inject a DLL into GUI applications",
+        "misconception": "Targets technique scope: Student confuses a specific GUI injection method with a general, stealthy process injection technique, not realizing `SetWindowsHookEx` is often monitored."
+      },
+      {
+        "question_text": "Modifying the target process&#39;s Import Address Table (IAT) to load the malicious DLL",
+        "misconception": "Targets complexity/detection: Student overestimates the stealth of IAT modification for injection, which is complex and leaves significant forensic artifacts, often triggering EDR hooks."
+      },
+      {
+        "question_text": "Leveraging `AppInit_DLLs` registry key for system-wide DLL injection",
+        "misconception": "Targets persistence vs. stealth: Student confuses a persistence mechanism with a stealthy, on-demand injection technique, not understanding that `AppInit_DLLs` is a well-known and heavily monitored registry key."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The provided scenario describes a classic DLL injection using `VirtualAllocEx`, `WriteProcessMemory`, and `CreateRemoteThread` to load `LoadLibraryA` in a remote process. EDRs commonly detect this sequence. Reflective DLL injection, pioneered by Stephen Fewer, involves writing the DLL into the target process&#39;s memory and then executing a small stub that manually maps the DLL&#39;s sections, resolves its imports, and calls its entry point, all within the target process&#39;s address space. This avoids direct calls to `LoadLibraryA` in the remote process and can bypass hooks on `CreateRemoteThread` if the initial execution is achieved via other means (e.g., APC queue injection, thread hijacking). Defense: EDRs can detect reflective injection by monitoring memory regions for executable code that doesn&#39;t correspond to known loaded modules, analyzing memory protection changes, and detecting manual import resolution or unusual thread starts.",
+      "distractor_analysis": "`SetWindowsHookEx` is a valid injection method but is specific to GUI applications and often monitored. Modifying the IAT is complex and leaves clear traces, making it easily detectable. `AppInit_DLLs` is a persistence mechanism, not a stealthy, on-demand injection, and is heavily monitored by security products.",
+      "analogy": "If traditional DLL injection is like asking a guard to open a specific door for you, reflective DLL injection is like sneaking in a small tool, building a new door from scratch inside, and then walking through it without the guard ever knowing a new door was made."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "// Simplified conceptual reflective loader stub\nvoid ReflectiveLoader(LPVOID lpParameter)\n{\n    // 1. Parse PE headers of the in-memory DLL\n    // 2. Map sections into target process memory\n    // 3. Resolve imports (LoadLibraryA, GetProcAddress)\n    // 4. Relocate base address if necessary\n    // 5. Call DllMain with DLL_PROCESS_ATTACH\n    // ...\n}",
+        "context": "Conceptual C code for a reflective DLL loader stub, executed within the target process."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "WINDOWS_INTERNALS",
+      "PROCESS_INJECTION",
+      "EDR_FUNDAMENTALS",
+      "PE_FILE_FORMAT"
+    ]
+  },
+  {
+    "question_text": "Which technique is MOST effective for a red team operator to dump LSASS memory on a Windows system while attempting to evade common EDR detections?",
+    "correct_answer": "Dumping LSASS.exe memory using direct system calls and API unhooking",
+    "distractors": [
+      {
+        "question_text": "Using procdump.exe to create a minidump of LSASS.exe",
+        "misconception": "Targets tool-based detection: Student overlooks that common tools like procdump are heavily signatured and monitored by EDRs."
+      },
+      {
+        "question_text": "Executing PowerShell Mimikatz from a standard PowerShell console",
+        "misconception": "Targets script-based detection: Student underestimates EDR&#39;s ability to detect known malicious PowerShell scripts and in-memory execution patterns."
+      },
+      {
+        "question_text": "Leveraging Windows Task Manager to create a dump of LSASS.exe",
+        "misconception": "Targets legitimate tool abuse detection: Student assumes using a legitimate OS tool guarantees evasion, ignoring behavioral monitoring for suspicious actions."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Direct system calls and API unhooking allow an attacker to interact with the kernel directly or restore original API functions, bypassing user-mode hooks placed by EDRs. This makes it significantly harder for EDRs to detect the memory dumping activity as it avoids their monitoring mechanisms. Defense: Implement kernel-level monitoring (e.g., Hypervisor-protected Code Integrity), regularly update EDR signatures and behavioral analytics, and monitor for unexpected process memory access patterns at a deeper level than user-mode API hooks.",
+      "distractor_analysis": "Procdump.exe is a well-known tool for memory dumping and is often flagged by EDRs due to its legitimate but often abused nature. PowerShell Mimikatz is highly signatured and its execution patterns are widely detected. While Task Manager is a legitimate tool, its use to dump LSASS memory is a highly suspicious activity that EDRs are configured to detect through behavioral analysis.",
+      "analogy": "This is like a thief picking a lock directly (system calls/unhooking) rather than trying to use a master key (procdump) or a crowbar (Mimikatz) that security cameras are specifically watching for."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "WINDOWS_INTERNALS",
+      "EDR_FUNDAMENTALS",
+      "API_HOOKING",
+      "SYSTEM_CALLS"
+    ]
+  },
+  {
+    "question_text": "When performing memory forensics with Volatility, what is the MOST effective method for an adversary to evade detection by making the memory dump appear to come from a different operating system or service pack?",
+    "correct_answer": "Modifying the KDBG signature or other non-essential kernel data structures in memory",
+    "distractors": [
+      {
+        "question_text": "Encrypting the entire memory dump file before analysis",
+        "misconception": "Targets timing/scope confusion: Student confuses pre-acquisition encryption with in-memory modification, not understanding that encryption after acquisition doesn&#39;t alter the original in-memory state for analysis."
+      },
+      {
+        "question_text": "Using a custom Volatility profile not recognized by standard tools",
+        "misconception": "Targets tool-centric thinking: Student believes a custom profile on the analysis side affects the integrity of the memory dump itself, rather than just how it&#39;s interpreted."
+      },
+      {
+        "question_text": "Deleting the KDBG structure from memory before the dump is acquired",
+        "misconception": "Targets feasibility/impact confusion: Student overestimates the ease of deleting critical kernel structures without crashing the system, or misunderstands that even if deleted, other artifacts would still reveal the OS."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Adversaries can employ anti-forensic techniques by modifying non-essential kernel data structures, such as the KDBG signature or the compile date/time in the NT kernel module&#39;s PE header. These modifications are not critical for the operating system&#39;s function but are relied upon by memory forensic tools like Volatility for automated OS detection. By altering these values, an attacker can cause tools to misidentify the operating system profile, potentially leading to incorrect analysis or a complete failure to process the memory dump effectively. Defense: Forensic analysts should be aware of these anti-forensic techniques and manually verify profile suggestions using plugins like `kdbgscan` to look for inconsistencies, or by cross-referencing with other system information if available. Volatility&#39;s `--kdbg` option allows manual specification of the correct KDBG address, bypassing automated detection issues.",
+      "distractor_analysis": "Encrypting the memory dump file after acquisition does not change the data within the dump itself; it only protects the file. A custom Volatility profile is used by the analyst to interpret the dump, not to alter the dump&#39;s contents. Deleting the KDBG structure from memory would likely crash the system, making a clean memory acquisition impossible, and even if partially successful, other kernel artifacts would still betray the OS.",
+      "analogy": "It&#39;s like changing the label on a jar of poison to &#39;sugar&#39; – the contents are still poison, but an automated system might misidentify it based on the label."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "MEMORY_FORENSICS_BASICS",
+      "WINDOWS_KERNEL_INTERNALS",
+      "VOLATILITY_FRAMEWORK",
+      "ANTI_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "To bypass the `/dev/mem` restriction on a Linux system, a kernel module might overwrite the `devmem_is_allowed` function. What is the primary anti-forensics technique used to prevent detection of this module in memory?",
+    "correct_answer": "The module&#39;s init function returns a negative value, causing the kernel to unload it immediately after execution.",
+    "distractors": [
+      {
+        "question_text": "The module uses `rmmod` to remove itself from the kernel module list.",
+        "misconception": "Targets explicit removal confusion: Student assumes an explicit `rmmod` command is necessary, not understanding that an `init` function&#39;s return value can trigger automatic unloading."
+      },
+      {
+        "question_text": "The module encrypts its own code in memory after execution, making it unreadable.",
+        "misconception": "Targets advanced obfuscation: Student overestimates the complexity of the anti-forensics, confusing it with more elaborate memory-resident malware techniques."
+      },
+      {
+        "question_text": "The module modifies the `sysfs` entries to hide its presence from user-space tools.",
+        "misconception": "Targets user-space visibility: Student focuses on user-space visibility mechanisms, not understanding the kernel&#39;s internal module management and unloading process."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `module_init` function (or equivalent) in a Linux kernel module is expected to return 0 on success. If it returns a negative value, the kernel interprets this as a failure to initialize and automatically unloads all components of the module and frees its memory. This allows the module to execute its payload (like patching `devmem_is_allowed`) and then disappear from the kernel&#39;s loaded module list, making it difficult for forensic tools like `lsmod` or memory analysis plugins to find it. Defense: Monitor for unusual kernel module load/unload patterns, analyze kernel memory for unexpected code patches (e.g., to `devmem_is_allowed`), and use kernel integrity monitoring tools.",
+      "distractor_analysis": "Using `rmmod` would leave a clear trace in logs and require the module to remain loaded long enough to execute the command. Encrypting its own code is a more complex technique not described here and wouldn&#39;t prevent the module from appearing in the loaded modules list. Modifying `sysfs` entries would be a post-loading action, but the primary technique here prevents the module from ever being officially &#39;loaded&#39; in a detectable state.",
+      "analogy": "It&#39;s like a secret agent who enters a building, completes their mission, and then triggers a self-destruct sequence on their entry badge, making it seem like they were never officially admitted."
+    },
+    "code_snippets": [
+      {
+        "language": "assembly",
+        "code": "mov eax, 0xFFFFFFFF ; Places -1 into EAX\nleave\nret",
+        "context": "Assembly code snippet showing the return of a negative value from the module&#39;s init function."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "LINUX_KERNEL_MODULES",
+      "MEMORY_FORENSICS",
+      "ANTI_FORENSICS",
+      "KERNEL_INTERNALS"
+    ]
+  },
+  {
+    "question_text": "To detect a hidden kernel extension (kext) on a macOS system that has manipulated its linked module list and zeroed out its Mach-O header, which memory forensics technique is MOST effective?",
+    "correct_answer": "Enumerating kernel extensions by traversing the `g_kext_map` global variable",
+    "distractors": [
+      {
+        "question_text": "Using the `kextstat` command on the live system",
+        "misconception": "Targets live system vs. memory forensics: Student confuses live system commands with memory dump analysis, and `kextstat` is easily bypassed by rootkits."
+      },
+      {
+        "question_text": "Carving for Mach-O headers within the kernel address space",
+        "misconception": "Targets anti-forensics vulnerability: Student overlooks the anti-forensics technique where rootkits zero out Mach-O headers to defeat carving."
+      },
+      {
+        "question_text": "Analyzing the output of the `mac_lsmod` plugin",
+        "misconception": "Targets linked list manipulation: Student assumes `mac_lsmod` is robust against linked list manipulation, not realizing it relies on the same structures rootkits hide from."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Hidden kernel extensions often manipulate kernel data structures like linked module lists and can even zero out their Mach-O headers to evade detection. The `g_kext_map` global variable, a `_vm_map` structure, tracks all loaded kernel modules. By traversing this map, forensic analysts can identify kernel extensions based on their memory mappings, even if other traditional indicators are compromised. This method provides a robust way to locate kexts by their mapped addresses and then resolve their `kmod_info` structures using Volatility&#39;s Mach-O parsing API. Defense: Implement kernel integrity monitoring that periodically compares the `g_kext_map` entries with expected system kexts and flags discrepancies. Monitor for unauthorized modifications to kernel memory regions associated with kext loading.",
+      "distractor_analysis": "The `kextstat` command relies on kernel data structures that rootkits can manipulate. Carving for Mach-O headers is defeated if the rootkit overwrites its header. The `mac_lsmod` plugin, while useful, also relies on the linked module list, which can be altered by sophisticated rootkits.",
+      "analogy": "Imagine a hidden room in a building. Traditional methods check the building directory (linked list) or look for specific architectural styles (Mach-O header). The `g_kext_map` is like having a master blueprint that shows all allocated spaces, regardless of whether they&#39;re listed in the directory or have their original facade."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "kextstat | grep -v com.apple",
+        "context": "Example of using kextstat to list non-Apple kernel extensions, which a rootkit would attempt to hide from."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "MACOS_KERNEL_INTERNALS",
+      "MEMORY_FORENSICS",
+      "ROOTKIT_DETECTION",
+      "VOLATILITY_FRAMEWORK"
+    ]
+  }
+]

@@ -1,0 +1,1132 @@
+[
+  {
+    "question_text": "During the Android application installation process, what is the primary security implication of APK files being world-readable by default?",
+    "correct_answer": "It allows any other application to access and potentially extract the APK file, which can be problematic for paid applications.",
+    "distractors": [
+      {
+        "question_text": "It prevents the application from being properly sandboxed, leading to privilege escalation.",
+        "misconception": "Targets misunderstanding of sandboxing scope: Students might confuse file permissions with application sandboxing mechanisms, assuming world-readability directly breaks sandboxing, which is not the primary implication here."
+      },
+      {
+        "question_text": "It enables third-party launchers to modify the application&#39;s core code.",
+        "misconception": "Targets overestimation of permissions: Students might assume &#39;world-readable&#39; implies &#39;world-writable&#39; or &#39;world-executable&#39;, leading to the belief that core code can be modified, which is incorrect for read-only access."
+      },
+      {
+        "question_text": "It makes the application vulnerable to denial-of-service attacks by preventing its launch.",
+        "misconception": "Targets misattribution of attack vectors: Students might associate any security issue with common attack types like DoS, even if the specific permission doesn&#39;t directly lead to that vulnerability."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "By default, Android APK files are set to world-readable (permissions 0644). While this facilitates legitimate functions like sharing public app resources and allowing launchers to list installed apps, it also means any other application on the device can access and copy the APK. For paid applications, this makes it easier for unauthorized users to extract and redistribute the app, bypassing payment mechanisms.",
+      "distractor_analysis": "World-readability of the APK file itself does not directly break application sandboxing; sandboxing is enforced by separate mechanisms like UID separation and SELinux. It also does not allow modification of the application&#39;s core code, only reading it. While security vulnerabilities can lead to DoS, the world-readable permission itself doesn&#39;t directly prevent an app from launching; rather, it exposes the app&#39;s binary for extraction.",
+      "analogy": "Imagine a book in a public library. Anyone can read it (world-readable), and even make a copy of it. This is fine for free books, but if it&#39;s a book you paid for, someone making a free copy means you lose revenue. The library doesn&#39;t let them rewrite the book (modify code) or stop others from reading it (DoS), just copy it."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "analysis",
+    "prerequisites": [
+      "ANDROID_SECURITY_BASICS",
+      "FILE_PERMISSIONS"
+    ]
+  },
+  {
+    "question_text": "Which Kubernetes security context setting directly prevents a container from running as the root user (UID 0) inside the container?",
+    "correct_answer": "runAsNonRoot: true",
+    "distractors": [
+      {
+        "question_text": "allowPrivilegeEscalation: false",
+        "misconception": "Targets setting confusion: Students confuse preventing privilege escalation with preventing initial root execution. allowPrivilegeEscalation prevents a process from gaining more privileges than its parent, but doesn&#39;t stop it from starting as root if its parent was root."
+      },
+      {
+        "question_text": "privileged: false",
+        "misconception": "Targets scope misunderstanding: Students might believe that disabling &#39;privileged&#39; mode automatically prevents root execution, but a non-privileged container can still run as root (UID 0) internally."
+      },
+      {
+        "question_text": "readOnlyRootFilesystem: true",
+        "misconception": "Targets terminology overlap: The term &#39;root&#39; in readOnlyRootFilesystem refers to the container&#39;s filesystem being read-only, not the user ID. This prevents writes to the root filesystem but doesn&#39;t change the user the process runs as."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `runAsNonRoot: true` setting in a Kubernetes `securityContext` explicitly instructs the kubelet to ensure that the container&#39;s entrypoint process does not run with UID 0 (the root user). If the container image or command attempts to run as root, the pod will fail to start, enforcing the principle of least privilege by preventing superuser access within the container.",
+      "distractor_analysis": "`allowPrivilegeEscalation: false` prevents a process from gaining more privileges than its parent, but it doesn&#39;t prevent a container from starting as root. `privileged: false` removes access to host devices and capabilities but still allows the container to run as root internally. `readOnlyRootFilesystem: true` makes the container&#39;s root filesystem immutable, which is a good security practice, but it does not dictate the user ID that processes run as.",
+      "analogy": "Think of `runAsNonRoot: true` as a bouncer at a club checking IDs to ensure no one under 21 (root user) enters. `allowPrivilegeEscalation: false` is like preventing someone already inside from getting a VIP pass. `privileged: false` is like taking away their access to the back rooms, but they can still be in the main area. `readOnlyRootFilesystem: true` is like making sure no one can graffiti the walls, but it doesn&#39;t control who is allowed inside."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: non-root-pod\nspec:\n  containers:\n  - name: my-container\n    image: my-image\n    securityContext:\n      runAsNonRoot: true\n      runAsUser: 1000 # Optional: explicitly set a non-root user ID\n      # Other security settings can be added here\n",
+        "context": "Kubernetes Pod manifest demonstrating `runAsNonRoot: true` to prevent root execution."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "LINUX_USER_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "Which remote access protocol is explicitly identified as highly vulnerable to sniffing and hijacking attacks due to unencrypted transmission, making it dangerous for use across the Internet?",
+    "correct_answer": "Telnet",
+    "distractors": [
+      {
+        "question_text": "SSH",
+        "misconception": "Targets confusion with secure alternatives: Students might confuse Telnet with SSH, which is its secure, encrypted replacement, thus incorrectly identifying SSH as vulnerable."
+      },
+      {
+        "question_text": "RDP (Remote Desktop Protocol)",
+        "misconception": "Targets protocol family confusion: Students might incorrectly associate RDP, a graphical remote access protocol, with the vulnerabilities of text-based Telnet, despite RDP having different security characteristics."
+      },
+      {
+        "question_text": "rsh",
+        "misconception": "Targets misunderstanding of &#39;trusted environment&#39; limitations: While rsh is insecure across the Internet, its primary vulnerability described is reliance on trusted hosts, not explicitly unencrypted transmission like Telnet."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Telnet is specifically called out as sending all information unencrypted, making it extremely vulnerable to sniffing and hijacking. This inherent lack of encryption is why it&#39;s considered one of the most dangerous services for remote access over untrusted networks like the Internet.",
+      "distractor_analysis": "SSH (Secure Shell) is the secure, encrypted alternative to Telnet. RDP (Remote Desktop Protocol) is a graphical remote access protocol for Windows, and while it has its own security considerations, its primary vulnerability isn&#39;t unencrypted transmission in the same way as Telnet. rsh (remote shell) is insecure across the Internet primarily due to its reliance on trusted hosts and lack of strong authentication, though it also transmits data unencrypted, the text emphasizes Telnet&#39;s unencrypted nature as its core flaw.",
+      "analogy": "Using Telnet over the Internet is like shouting your password and conversations across a crowded public square; anyone can easily listen in. SSH, on the other hand, is like having a private, encrypted phone call."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "NETWORK_SECURITY_FUNDAMENTALS",
+      "REMOTE_ACCESS_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which X11 server vulnerability allows an attacker to capture sensitive information, including user passwords, by recording user input?",
+    "correct_answer": "Read keystrokes",
+    "distractors": [
+      {
+        "question_text": "Get screen dumps",
+        "misconception": "Targets similar but distinct attack vectors: Students might confuse capturing visual screen content with capturing typed input, both are X11 vulnerabilities but distinct."
+      },
+      {
+        "question_text": "Inject keystrokes",
+        "misconception": "Targets active vs. passive attack confusion: Students might confuse the passive act of reading keystrokes with the active act of injecting them, which has different implications."
+      },
+      {
+        "question_text": "Denial of Service (DoS)",
+        "misconception": "Targets general security threat confusion: Students might incorrectly attribute a general network attack (DoS) to a specific X11 vulnerability, even though X11 servers could be DoS targets, it&#39;s not listed as a specific X11 attack type here."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The document explicitly lists &#39;Read keystrokes&#39; as a type of damage an intruder with access to an X11 server may be able to do, specifically noting that &#39;These may include users&#39; passwords.&#39; This directly addresses the capture of sensitive input.",
+      "distractor_analysis": "Getting screen dumps allows an attacker to see what&#39;s on the screen, but not necessarily the typed input. Injecting keystrokes allows an attacker to execute commands as the user, which is a different, more active attack than simply reading. Denial of Service is a general attack type and not listed as a specific X11 vulnerability in this context.",
+      "analogy": "This vulnerability is like someone looking over your shoulder as you type your password, but instead of just seeing it, they have a perfect recording of every key you press."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "NETWORK_SECURITY_FUNDAMENTALS",
+      "X11_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which AWS service acts as a central security posture management service, aggregating security findings from various AWS security services and third-party tools?",
+    "correct_answer": "AWS Security Hub",
+    "distractors": [
+      {
+        "question_text": "Amazon GuardDuty",
+        "misconception": "Targets scope confusion: Students might confuse GuardDuty&#39;s threat detection capabilities with Security Hub&#39;s aggregation role. GuardDuty is a source of findings, not an aggregator."
+      },
+      {
+        "question_text": "AWS Config",
+        "misconception": "Targets functional overlap: Students may see AWS Config as a central service due to its role in resource inventory and compliance, but it focuses on configuration management, not security finding aggregation."
+      },
+      {
+        "question_text": "Amazon Inspector",
+        "misconception": "Targets specific tool vs. aggregator: Students might identify Inspector as a key security tool and mistakenly believe it aggregates findings, when it&#39;s primarily a vulnerability management service for EC2 instances and container images."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "AWS Security Hub is designed to provide a comprehensive view of an organization&#39;s security posture across AWS accounts. It aggregates, organizes, and prioritizes security alerts and findings from various AWS services (like GuardDuty, Inspector, Macie) and integrated third-party security products. This centralization allows for easier monitoring, analysis, and remediation of security issues.",
+      "distractor_analysis": "Amazon GuardDuty is a threat detection service that monitors for malicious activity and unauthorized behavior. AWS Config assesses, audits, and evaluates the configurations of your AWS resources. Amazon Inspector is an automated security assessment service that helps improve the security and compliance of applications deployed on AWS. While these services generate security findings, they do not aggregate findings from other services; that is Security Hub&#39;s primary function.",
+      "analogy": "Think of AWS Security Hub as a security operations center (SOC) dashboard that collects all the alerts and reports from different security cameras (GuardDuty), alarm systems (Inspector), and access logs (Config) across your entire property (AWS environment), presenting them in one unified view for quick action."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "AWS_SECURITY_SERVICES_OVERVIEW"
+    ]
+  },
+  {
+    "question_text": "Which image scanning technique is Amazon Inspector primarily designed to perform for container images stored in Amazon ECR?",
+    "correct_answer": "Vulnerability scanning based on known CVEs and security best practices",
+    "distractors": [
+      {
+        "question_text": "Static Application Security Testing (SAST) for custom code vulnerabilities",
+        "misconception": "Targets scope misunderstanding: Students might confuse general application security testing with vulnerability scanning of container images. SAST focuses on source code, which Inspector does not directly analyze for ECR images."
+      },
+      {
+        "question_text": "Dynamic Application Security Testing (DAST) for runtime vulnerabilities",
+        "misconception": "Targets method confusion: DAST involves running the application to find vulnerabilities, which is distinct from Inspector&#39;s static analysis of container images for known vulnerabilities."
+      },
+      {
+        "question_text": "Software Bill of Materials (SBOM) generation and dependency graph analysis",
+        "misconception": "Targets feature conflation: While SBOMs are related to vulnerability management, Inspector&#39;s primary function is to scan for known vulnerabilities, not to generate a comprehensive SBOM, although it uses similar underlying data."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Amazon Inspector is AWS&#39;s built-in vulnerability scanner. For container images in Amazon ECR, it scans for known vulnerabilities (CVEs) in the operating system packages and application dependencies within the image. It also checks for adherence to security best practices, providing a CVSS severity rating for findings.",
+      "distractor_analysis": "SAST is for analyzing source code, which is not Inspector&#39;s primary function for ECR images. DAST involves running the application, which is outside the scope of image scanning. While Inspector identifies components with vulnerabilities, its core function isn&#39;t SBOM generation, but rather the scanning for and reporting of known vulnerabilities based on existing databases.",
+      "analogy": "Think of Amazon Inspector as a librarian who checks every new book (container image) against a catalog of known dangerous substances (CVEs) and bad practices (security best practices) to ensure it&#39;s safe before it goes on the shelf."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "AWS_SECURITY_SERVICES",
+      "CONTAINER_IMAGE_SECURITY",
+      "VULNERABILITY_SCANNING_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which Azure-specific tool is primarily designed to verify Multi-Factor Authentication (MFA) enforcement across all accounts with access to an Azure instance?",
+    "correct_answer": "MFASweep",
+    "distractors": [
+      {
+        "question_text": "Microsoft Defender for Cloud",
+        "misconception": "Targets scope confusion: Students might think a broad security posture management tool like Defender for Cloud would handle specific MFA enforcement checks, but its primary role is broader security recommendations and alerts."
+      },
+      {
+        "question_text": "Prowler",
+        "misconception": "Targets platform confusion: Students might recall Prowler&#39;s utility in AWS and assume it has the same specific MFA enforcement capabilities for Azure, overlooking that it&#39;s a general cloud security auditing tool."
+      },
+      {
+        "question_text": "ScoutSuite",
+        "misconception": "Targets feature overlap: Students might associate ScoutSuite with general security checks and vulnerability scans, incorrectly assuming it has a dedicated, primary function for MFA enforcement like MFASweep."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "MFASweep is explicitly mentioned as an Azure-specific tool designed for the most effective way to ensure MFA is configured for all accounts accessing an Azure instance. Its primary focus is on MFA enforcement verification.",
+      "distractor_analysis": "Microsoft Defender for Cloud is a comprehensive security posture management tool, but its focus is broader than just MFA enforcement. Prowler is a general cloud security auditing tool, useful for both AWS and Azure, but not specifically highlighted for its MFA enforcement capabilities in Azure. ScoutSuite provides various security checks and scans for Azure but is not singled out as the primary tool for MFA enforcement verification.",
+      "analogy": "If your goal is to check if every door has a specific type of lock, MFASweep is like a specialized locksmith&#39;s tool for that exact lock. Microsoft Defender for Cloud is like a general building inspector, Prowler is a security consultant for multiple buildings, and ScoutSuite is another general inspector with different checklists."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "AZURE_SECURITY_BASICS",
+      "CLOUD_SECURITY_TOOLS"
+    ]
+  },
+  {
+    "question_text": "Which image scanning technique is most effective at identifying known vulnerabilities (CVEs) in the operating system packages and libraries within a container image?",
+    "correct_answer": "Static analysis of image layers and package manifests (e.g., `dpkg`, `rpm`, `apk`)",
+    "distractors": [
+      {
+        "question_text": "Dynamic analysis during container runtime execution.",
+        "misconception": "Targets confusion between static and dynamic analysis: Students might think dynamic analysis is always superior, but for identifying *known* vulnerabilities in *installed packages*, static analysis of the image content is more efficient and comprehensive than observing runtime behavior."
+      },
+      {
+        "question_text": "Behavioral analysis of container syscalls.",
+        "misconception": "Targets control type confusion: Students might conflate runtime security (syscall monitoring) with vulnerability scanning. Behavioral analysis detects anomalous *actions*, not *pre-existing vulnerabilities* in software components."
+      },
+      {
+        "question_text": "Scanning the Dockerfile for insecure build instructions.",
+        "misconception": "Targets incomplete solution: While scanning the Dockerfile for insecure practices (e.g., `ADD`ing sensitive files) is important, it doesn&#39;t directly identify CVEs in the *installed software* within the image layers, which is the primary goal of vulnerability scanning."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To identify known vulnerabilities (CVEs) in OS packages and libraries, static analysis of the container image is the most effective technique. This involves inspecting each layer of the image, identifying the installed packages (e.g., using package managers like `dpkg` for Debian, `rpm` for Red Hat, `apk` for Alpine), and then comparing these identified packages and their versions against vulnerability databases (e.g., NVD, vendor advisories). Tools like Trivy, Clair, and Anchore perform this type of analysis.",
+      "distractor_analysis": "Dynamic analysis and behavioral analysis are runtime security techniques that monitor a running container for suspicious activity, but they don&#39;t directly identify pre-existing CVEs in the image&#39;s software components. Scanning the Dockerfile helps identify insecure build practices but doesn&#39;t detect vulnerabilities in the actual binaries and libraries installed by package managers.",
+      "analogy": "This is like checking the ingredient list and expiration dates on a food package (static analysis of image layers) versus tasting the food to see if it&#39;s spoiled (dynamic analysis). For known issues, checking the label is faster and more reliable."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "docker pull alpine:latest\ntrivy image alpine:latest",
+        "context": "Example of using Trivy, a popular image scanner, to perform static analysis on a Docker image to find vulnerabilities."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "CONTAINER_IMAGE_SECURITY",
+      "VULNERABILITY_SCANNING",
+      "SOFTWARE_SUPPLY_CHAIN_SECURITY"
+    ]
+  },
+  {
+    "question_text": "A container image is built in GCP using Cloud Build and intended for deployment on Cloud Run. Which type of vulnerability scanning is most appropriate to perform with Trivy before deployment?",
+    "correct_answer": "Image vulnerability scanning for known CVEs and misconfigurations",
+    "distractors": [
+      {
+        "question_text": "Runtime security monitoring for container escapes",
+        "misconception": "Targets phase confusion: Students might confuse pre-deployment scanning with post-deployment runtime monitoring. Trivy primarily focuses on static analysis of images, not dynamic runtime behavior."
+      },
+      {
+        "question_text": "Network policy validation for inter-container communication",
+        "misconception": "Targets tool scope misunderstanding: Trivy is an image scanner; it does not directly validate Kubernetes NetworkPolicies, which govern runtime network traffic."
+      },
+      {
+        "question_text": "Kubernetes manifest linting for best practices",
+        "misconception": "Targets specific scanning type: While Trivy can scan IaC, its primary and most common use for images is vulnerability and misconfiguration scanning within the image layers themselves, not just the deployment manifest."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Trivy is a third-party pentesting application specifically highlighted for its capabilities in vulnerability scanning of Docker and Kubernetes deployments. When dealing with a container image built by Cloud Build for Cloud Run, the most critical pre-deployment security check is to scan the image itself for known Common Vulnerabilities and Exposures (CVEs) in its operating system packages and application dependencies, as well as common misconfigurations that could lead to security flaws.",
+      "distractor_analysis": "Runtime security monitoring is performed after deployment, not before, and typically involves tools like Falco or eBPF. Network policy validation is about Kubernetes network rules, not image content. While Trivy can do some Infrastructure as Code (IaC) scanning, its core strength for images is identifying vulnerabilities and misconfigurations within the image layers.",
+      "analogy": "Scanning a container image with Trivy before deployment is like performing a thorough inspection of a car&#39;s parts and assembly before it leaves the factory floor. You&#39;re checking for known defects and ensuring it meets safety standards before it&#39;s put on the road."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "trivy image --severity HIGH --format json your-gcr.io/project/image:tag",
+        "context": "Example Trivy command for scanning a container image for high-severity vulnerabilities."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "CONTAINER_SECURITY_FUNDAMENTALS",
+      "GCP_CONTAINER_SERVICES",
+      "VULNERABILITY_SCANNING"
+    ]
+  },
+  {
+    "question_text": "Which GCP service is the simplest way to deploy and manage Kubernetes clusters?",
+    "correct_answer": "Google Kubernetes Engine (GKE)",
+    "distractors": [
+      {
+        "question_text": "Cloud Run",
+        "misconception": "Targets service confusion: Students might confuse Cloud Run (serverless container platform) with GKE (managed Kubernetes), as both run containers but serve different purposes and management models."
+      },
+      {
+        "question_text": "Cloud Build",
+        "misconception": "Targets build vs. deploy confusion: Students might confuse Cloud Build (CI/CD for building images) with GKE (deployment and orchestration), as both are part of the container lifecycle."
+      },
+      {
+        "question_text": "Compute Engine (GCE)",
+        "misconception": "Targets underlying infrastructure confusion: Students might know GCE hosts VMs, but not realize GKE abstracts away direct GCE management for Kubernetes, making it &#39;simpler&#39; for Kubernetes deployment."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Google Kubernetes Engine (GKE) is Google Cloud&#39;s managed service for deploying, managing, and scaling containerized applications using Kubernetes. It automates many of the operational tasks associated with running Kubernetes, such as master upgrades, node provisioning, and scaling, making it the simplest and most recommended way to deploy Kubernetes in GCP.",
+      "distractor_analysis": "Cloud Run is a serverless platform for running stateless containers, not a managed Kubernetes service. Cloud Build is a CI/CD service used for building artifacts, including container images, but not for deploying or managing Kubernetes clusters. Compute Engine (GCE) provides the underlying virtual machines, but GKE provides the managed Kubernetes layer on top of GCE, simplifying its deployment and operation significantly.",
+      "analogy": "Using GKE for Kubernetes is like buying a pre-assembled, fully functional computer (Kubernetes cluster) rather than buying individual components (VMs on GCE) and building it yourself. It&#39;s simpler because the complex assembly and maintenance are handled for you."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "gcloud container clusters create my-gke-cluster --zone us-central1-c",
+        "context": "Basic gcloud command to create a GKE cluster."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "GCP_CONTAINER_SERVICES",
+      "KUBERNETES_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which Kubernetes security context setting directly prevents a container from gaining additional privileges beyond those it initially started with, specifically addressing privilege escalation attempts?",
+    "correct_answer": "allowPrivilegeEscalation: false",
+    "distractors": [
+      {
+        "question_text": "runAsNonRoot: true",
+        "misconception": "Targets scope confusion: Students confuse preventing a container from running as root with preventing it from escalating privileges; runAsNonRoot only ensures the initial user is non-root, it doesn&#39;t stop privilege escalation if capabilities are present."
+      },
+      {
+        "question_text": "privileged: false",
+        "misconception": "Targets incomplete understanding: While &#39;privileged: true&#39; grants all capabilities and allows host access, &#39;privileged: false&#39; is the default and still allows containers to retain default capabilities that could be used for escalation if &#39;allowPrivilegeEscalation&#39; is not explicitly set to false."
+      },
+      {
+        "question_text": "readOnlyRootFilesystem: true",
+        "misconception": "Targets irrelevant control: Students might associate &#39;root&#39; in the setting name with root user privileges; however, this setting only makes the container&#39;s root filesystem immutable, which is a different security concern than privilege escalation."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `allowPrivilegeEscalation: false` setting in a Kubernetes security context directly controls whether a process can gain more privileges than its parent process. Specifically, it prevents a process from setting the `no_new_privs` flag, which is crucial for stopping privilege escalation attempts, such as those involving `setuid` binaries or capabilities. This is a key control in preventing container escapes by limiting an attacker&#39;s ability to elevate their permissions within the container.",
+      "distractor_analysis": "`runAsNonRoot: true` ensures the container starts as a non-root user but doesn&#39;t prevent privilege escalation if the non-root user has certain capabilities or can exploit vulnerabilities. `privileged: false` is the default and removes broad host access, but containers still retain default capabilities that could be exploited for escalation if `allowPrivilegeEscalation` is not set. `readOnlyRootFilesystem: true` makes the container&#39;s root filesystem immutable, which helps prevent tampering but does not directly address privilege escalation through process capabilities or `setuid` binaries.",
+      "analogy": "Think of `allowPrivilegeEscalation: false` as a rule that says, &#39;Once you&#39;re inside this room, you cannot unlock any additional doors or gain higher access levels, regardless of what tools you might find.&#39; It&#39;s about preventing an increase in access from your current state."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: secure-pod\nspec:\n  containers:\n  - name: my-container\n    image: my-image:latest\n    securityContext:\n      allowPrivilegeEscalation: false\n      runAsNonRoot: true\n      capabilities:\n        drop: [&quot;ALL&quot;]\n",
+        "context": "Kubernetes Pod manifest demonstrating `allowPrivilegeEscalation: false` within a security context to prevent privilege escalation."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "LINUX_PRIVILEGE_ESCALATION",
+      "CONTAINER_SECURITY_FUNDAMENTALS"
+    ]
+  },
+  {
+    "question_text": "Which image scanning technique is most effective at detecting vulnerabilities introduced by third-party libraries in a Python application&#39;s container image?",
+    "correct_answer": "Dependency scanning (Software Composition Analysis - SCA)",
+    "distractors": [
+      {
+        "question_text": "Static Application Security Testing (SAST)",
+        "misconception": "Targets scope confusion: SAST analyzes proprietary code for vulnerabilities, but not typically pre-compiled or pre-packaged third-party libraries, which are the focus here."
+      },
+      {
+        "question_text": "Dynamic Application Security Testing (DAST)",
+        "misconception": "Targets method confusion: DAST analyzes applications in a running state for vulnerabilities, which is different from scanning the image&#39;s components for known library vulnerabilities."
+      },
+      {
+        "question_text": "Container runtime security monitoring",
+        "misconception": "Targets phase confusion: Runtime monitoring detects malicious behavior during execution, but does not identify vulnerabilities in the image&#39;s dependencies before deployment."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Third-party libraries, installed via package managers like pip for Python, are a common source of vulnerabilities. Dependency scanning, also known as Software Composition Analysis (SCA), specifically identifies these components within an image and checks them against databases of known vulnerabilities (CVEs). This is crucial for detecting issues in code that wasn&#39;t written in-house.",
+      "distractor_analysis": "SAST focuses on analyzing the application&#39;s source code for coding flaws, not pre-built library vulnerabilities. DAST tests the running application for vulnerabilities, which is a different stage and method. Container runtime security monitoring observes behavior during execution, which is reactive rather than proactive detection of known library vulnerabilities in the image.",
+      "analogy": "Think of dependency scanning like checking the ingredients list on a packaged food item for known allergens. SAST is like a chef inspecting their own recipe for mistakes. DAST is like a food critic tasting the final dish for problems. Runtime monitoring is like a health inspector checking the restaurant during service."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "CONTAINER_IMAGE_SECURITY",
+      "VULNERABILITY_SCANNING_TYPES"
+    ]
+  },
+  {
+    "question_text": "Which container security practice offers the most significant immediate return on investment for preventing common attacks, according to security best practices?",
+    "correct_answer": "Scanning container images for known vulnerabilities in third-party dependencies",
+    "distractors": [
+      {
+        "question_text": "Implementing strict network policies to isolate containers",
+        "misconception": "Targets scope confusion: While crucial for blast radius reduction, network policies primarily limit lateral movement post-compromise, not the initial compromise via known vulnerabilities."
+      },
+      {
+        "question_text": "Applying Pod Security Standards (PSS) to enforce runtime security",
+        "misconception": "Targets control plane vs. build-time confusion: PSS enforces runtime security configurations (like `runAsNonRoot`), but doesn&#39;t directly address vulnerabilities introduced during the image build process from third-party libraries."
+      },
+      {
+        "question_text": "Using a Web Application Firewall (WAF) to protect internet-facing applications",
+        "misconception": "Targets domain mismatch: WAFs protect the application layer from common web attacks (like those in OWASP Top 10), but don&#39;t directly address vulnerabilities within the container image&#39;s underlying dependencies."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Scanning container images for known vulnerabilities in third-party dependencies is highlighted as providing the &#39;biggest bang per buck&#39; because a vast majority of modern applications rely heavily on open-source libraries. These libraries often contain publicly disclosed vulnerabilities (CVEs) that attackers can easily exploit. Detecting and remediating these early in the CI/CD pipeline prevents vulnerable images from ever reaching production, significantly reducing the attack surface for common, well-understood attack vectors.",
+      "distractor_analysis": "Implementing strict network policies is vital for limiting the blast radius if a container is compromised, but it doesn&#39;t prevent the initial compromise due to a known vulnerability in the image itself. Applying Pod Security Standards enforces secure runtime configurations, but it&#39;s a different layer of defense than identifying vulnerable components within the image. Using a WAF protects the application from web-specific attacks but doesn&#39;t address vulnerabilities in the underlying container image&#39;s dependencies.",
+      "analogy": "Think of it like inspecting the ingredients (third-party dependencies) before baking a cake (container image). Finding rotten ingredients (vulnerabilities) before you start baking is much more effective and cost-efficient than trying to fix a bad cake after it&#39;s already made and served."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "docker scan my-app:latest\ntrivy image my-app:latest\nsnyk container test my-app:latest",
+        "context": "Common commands for scanning container images for vulnerabilities using various tools."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CONTAINER_SECURITY_FUNDAMENTALS",
+      "VULNERABILITY_MANAGEMENT",
+      "CI_CD_SECURITY"
+    ]
+  },
+  {
+    "question_text": "Which Kubernetes security context setting is most effective at preventing a container from gaining elevated privileges by disabling the ability to acquire new privileges?",
+    "correct_answer": "allowPrivilegeEscalation: false",
+    "distractors": [
+      {
+        "question_text": "runAsNonRoot: true",
+        "misconception": "Targets scope confusion: Students confuse preventing privilege escalation with preventing running as root. runAsNonRoot prevents the container from starting as UID 0, but doesn&#39;t directly prevent privilege escalation if it starts as a non-root user with certain capabilities."
+      },
+      {
+        "question_text": "readOnlyRootFilesystem: true",
+        "misconception": "Targets control type misunderstanding: Students might think making the filesystem read-only prevents all privilege escalation, but it primarily prevents writing to the root filesystem, not necessarily gaining new privileges through other means (e.g., exploiting a kernel vulnerability or misconfigured capabilities)."
+      },
+      {
+        "question_text": "capabilities.drop: [&quot;ALL&quot;]",
+        "misconception": "Targets incomplete understanding of interaction: While dropping all capabilities is a strong defense against privilege escalation, allowPrivilegeEscalation: false specifically prevents a process from gaining *new* privileges, even if some capabilities were initially granted. Dropping all capabilities is a proactive measure, but allowPrivilegeEscalation: false is a reactive one against attempts to escalate."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `allowPrivilegeEscalation: false` setting in a container&#39;s security context prevents a process from gaining more privileges than its parent process. Specifically, it prevents the `setuid` and `setgid` bits from being honored, and it prevents a process from executing a binary with elevated capabilities if it doesn&#39;t already have them. This is a crucial control against privilege escalation attacks within a container.",
+      "distractor_analysis": "`runAsNonRoot: true` ensures the container does not run as UID 0, but a non-root user can still attempt privilege escalation if allowed. `readOnlyRootFilesystem: true` prevents modifications to the root filesystem but does not inherently stop a process from gaining new privileges. `capabilities.drop: [&quot;ALL&quot;]` is an excellent security measure that removes all Linux capabilities, significantly reducing the attack surface. However, `allowPrivilegeEscalation: false` specifically targets the mechanism of *gaining* new privileges, even if some capabilities were initially present or if a vulnerability allowed for such an attempt. It&#39;s a direct control against the escalation mechanism itself.",
+      "analogy": "Think of `allowPrivilegeEscalation: false` as a &#39;no promotion&#39; policy. Even if an employee (process) has some initial responsibilities (privileges), they cannot gain new, higher-level responsibilities without explicit approval. `runAsNonRoot` is like ensuring no one starts as the CEO, and `readOnlyRootFilesystem` is like locking the company&#39;s main document archive."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: no-priv-escalation-pod\nspec:\n  containers:\n  - name: my-container\n    image: my-image:latest\n    securityContext:\n      allowPrivilegeEscalation: false",
+        "context": "Kubernetes Pod manifest demonstrating `allowPrivilegeEscalation: false`"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "LINUX_PRIVILEGES"
+    ]
+  },
+  {
+    "question_text": "Which statement accurately describes the primary function and integration points of the Antimalware Scan Interface (AMSI) in Windows environments?",
+    "correct_answer": "AMSI scans target content using registered antimalware providers, including Microsoft Defender and third-party EDRs, and is integrated into scripting engines like PowerShell and Office VBA macros.",
+    "distractors": [
+      {
+        "question_text": "AMSI is a standalone antivirus solution that replaces Microsoft Defender for real-time file system scanning.",
+        "misconception": "Targets misunderstanding of AMSI&#39;s role: Students might confuse AMSI as a complete antivirus solution rather than an interface for existing providers, and its scope is not limited to file system scanning."
+      },
+      {
+        "question_text": "AMSI primarily monitors network traffic for malicious payloads and is integrated into Windows Firewall.",
+        "misconception": "Targets incorrect scope and integration: Students might incorrectly associate AMSI with network security components like Windows Firewall, rather than its actual integration with scripting engines and memory buffers."
+      },
+      {
+        "question_text": "AMSI is exclusively used by Microsoft Defender to scan executable files (.exe) before they are launched.",
+        "misconception": "Targets limited understanding of providers and file types: Students might think AMSI is only for Microsoft Defender or only for traditional executables, missing its extensibility to third-party providers and its focus on non-PE code and scripting."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "AMSI acts as an interface that allows applications and services to submit content (like scripts, memory buffers, or non-PE executable code) to registered antimalware providers for scanning. It leverages existing providers, such as Microsoft Defender or third-party EDRs, to determine if the content is malicious. Its integration points are primarily in environments where arbitrary scripts are executed or untrusted data is processed, including PowerShell, .NET, JavaScript, VBScript, Office VBA macros, and User Account Control.",
+      "distractor_analysis": "The first distractor incorrectly positions AMSI as a standalone antivirus, when it&#39;s an interface. It also misrepresents its scope as replacing Microsoft Defender. The second distractor misidentifies AMSI&#39;s primary function as network traffic monitoring and its integration with Windows Firewall, which is incorrect. The third distractor incorrectly limits AMSI&#39;s use to only Microsoft Defender and only executable files, ignoring its support for third-party providers and its specific focus on scripting engines and non-PE code.",
+      "analogy": "Think of AMSI as a security checkpoint at an event. Instead of having its own security guards, it uses the event&#39;s existing security personnel (antimalware providers) to check attendees (scripts, buffers) for prohibited items (malicious content). It&#39;s strategically placed at entry points where risks are higher, like where people might bring in outside items (scripting engines)."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "WINDOWS_SECURITY_BASICS",
+      "ANTIVIRUS_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which security concept is central to Software-Defined Security (SDSec) and allows it to overcome the limitations of traditional security mechanisms in virtualized environments?",
+    "correct_answer": "Separation of the security forwarding/processing plane from the security control plane.",
+    "distractors": [
+      {
+        "question_text": "Reliance on physical network devices for security enforcement.",
+        "misconception": "Targets misunderstanding of SDSec&#39;s core innovation: Students might incorrectly associate SDSec with traditional hardware-centric security, missing its software-defined nature."
+      },
+      {
+        "question_text": "Centralization of all security functions into a single, monolithic hardware appliance.",
+        "misconception": "Targets confusion with traditional security appliance models: Students might think &#39;centralized control&#39; means a single hardware point, rather than a logical control plane managing distributed virtual functions."
+      },
+      {
+        "question_text": "Exclusive use of proprietary security protocols for inter-component communication.",
+        "misconception": "Targets misdirection on implementation details: While protocols are involved, the core concept of SDSec isn&#39;t about proprietary protocols but about architectural separation and virtualization."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "SDSec&#39;s core concept, similar to SDN, is the separation of the security forwarding/processing plane (where virtual security functions like firewalls and IDS operate) from the security control plane (the SDSec controller). This separation allows for centralized, programmatic control over distributed, virtualized security functions, enabling dynamic adaptation and scalability in virtualized environments where traditional physical devices struggle to gain visibility.",
+      "distractor_analysis": "Traditional security mechanisms rely on physical devices, which SDSec aims to overcome. SDSec virtualizes security functions and distributes them, managed by a logically centralized controller, not a monolithic hardware appliance. While communication protocols are necessary, the fundamental concept is the architectural separation, not the specific protocol type.",
+      "analogy": "Think of traditional security as having a separate security guard for each door (physical device). SDSec is like having a central security command center (control plane) that can instantly deploy and manage virtual security drones (virtual security functions) to any location in the building as needed, without needing a physical guard at every single point."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "SDN_NFV_BASICS",
+      "VIRTUALIZATION_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which Pod Security Standard (PSS) profile would explicitly prevent a container from running with `hostPath` volume mounts, which could lead to host filesystem access and potential container escape?",
+    "correct_answer": "Restricted",
+    "distractors": [
+      {
+        "question_text": "Privileged",
+        "misconception": "Targets inverse understanding: Students might confuse &#39;Privileged&#39; as the most secure because it sounds strong, but it&#39;s the least restrictive PSS profile, allowing all capabilities and host access."
+      },
+      {
+        "question_text": "Baseline",
+        "misconception": "Targets partial understanding: Students might think &#39;Baseline&#39; is sufficient for most security, but it allows `hostPath` volumes, albeit with some restrictions, and doesn&#39;t explicitly block them like &#39;Restricted&#39; does."
+      },
+      {
+        "question_text": "Standard",
+        "misconception": "Targets non-existent profile: Students might invent a &#39;Standard&#39; profile, indicating a lack of familiarity with the official PSS profiles (Privileged, Baseline, Restricted)."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `Restricted` Pod Security Standard profile is designed to enforce hardened security best practices. It explicitly disallows features that could enable privilege escalation or host escape, including `hostPath` volume mounts. `hostPath` volumes allow a container to access paths on the host node&#39;s filesystem, which is a significant security risk if the container is compromised.",
+      "distractor_analysis": "The `Privileged` profile imposes no restrictions and allows `hostPath` volumes. The `Baseline` profile allows `hostPath` volumes, but only if they are read-only or target specific safe paths, which is not a complete prevention. &#39;Standard&#39; is not an official Pod Security Standard profile.",
+      "analogy": "If &#39;Privileged&#39; is an open-door policy, &#39;Baseline&#39; is a locked door with a few specific keys allowed, and &#39;Restricted&#39; is a vault door that explicitly forbids bringing in any tools that could compromise the vault&#39;s structure (like `hostPath` mounts)."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: hostpath-pod\nspec:\n  containers:\n  - name: my-container\n    image: my-image:latest\n    volumeMounts:\n    - name: host-path-volume\n      mountPath: /host/path\n  volumes:\n  - name: host-path-volume\n    hostPath:\n      path: /var/log\n      type: Directory\n",
+        "context": "Example Pod manifest using a `hostPath` volume, which would be blocked by the Restricted PSS profile."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "POD_SECURITY_STANDARDS",
+      "KUBERNETES_VOLUMES",
+      "CONTAINER_ESCAPE_TECHNIQUES"
+    ]
+  },
+  {
+    "question_text": "Which Kubernetes security context setting prevents a container from gaining additional privileges after it starts?",
+    "correct_answer": "allowPrivilegeEscalation: false",
+    "distractors": [
+      {
+        "question_text": "runAsNonRoot: true",
+        "misconception": "Targets scope confusion: Students confuse preventing initial root execution with preventing privilege escalation; runAsNonRoot prevents starting as root, but allowPrivilegeEscalation prevents gaining more privileges later."
+      },
+      {
+        "question_text": "privileged: false",
+        "misconception": "Targets incomplete understanding: While &#39;privileged: false&#39; is good practice, it doesn&#39;t explicitly prevent privilege escalation if the container still has some capabilities; allowPrivilegeEscalation is more specific."
+      },
+      {
+        "question_text": "readOnlyRootFilesystem: true",
+        "misconception": "Targets irrelevant control: Students might associate &#39;privilege&#39; with file system modification, but readOnlyRootFilesystem only prevents writing to the root filesystem, not privilege escalation via other means."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `allowPrivilegeEscalation: false` setting in a container&#39;s security context prevents a process from gaining more privileges than its parent process. Specifically, it prevents the `no_new_privs` flag from being set, which is crucial for preventing container escapes where an attacker might try to use `setuid` or `setgid` binaries to elevate privileges.",
+      "distractor_analysis": "`runAsNonRoot: true` ensures the container does not run as UID 0 initially, but doesn&#39;t prevent escalation from a non-root user. `privileged: false` removes broad access to host devices but doesn&#39;t specifically target privilege escalation mechanisms. `readOnlyRootFilesystem: true` prevents changes to the container&#39;s root filesystem but doesn&#39;t directly stop privilege escalation attempts within the container&#39;s process context.",
+      "analogy": "Think of `allowPrivilegeEscalation: false` as a rule that says &#39;once you&#39;re inside, you can&#39;t get a bigger key.&#39; `runAsNonRoot: true` is like saying &#39;you can&#39;t enter with the master key to begin with.&#39;"
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: no-escalation-pod\nspec:\n  containers:\n  - name: my-container\n    image: busybox\n    command: [&quot;sh&quot;, &quot;-c&quot;, &quot;sleep 3600&quot;]\n    securityContext:\n      allowPrivilegeEscalation: false",
+        "context": "Pod manifest demonstrating `allowPrivilegeEscalation: false`"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "CONTAINER_PRIVILEGE_ESCALATION"
+    ]
+  },
+  {
+    "question_text": "What image scanning technique detects outdated base images with known CVEs (Common Vulnerabilities and Exposures)?",
+    "correct_answer": "Vulnerability scanning using a CVE database",
+    "distractors": [
+      {
+        "question_text": "Static Application Security Testing (SAST)",
+        "misconception": "Targets scope confusion: SAST analyzes application source code for vulnerabilities, not the underlying operating system packages or base image components."
+      },
+      {
+        "question_text": "Dynamic Application Security Testing (DAST)",
+        "misconception": "Targets scope confusion: DAST analyzes running applications for vulnerabilities, typically web applications, and does not scan the static image layers for OS-level CVEs."
+      },
+      {
+        "question_text": "Software Bill of Materials (SBOM) generation",
+        "misconception": "Targets process vs. detection: SBOM generation lists components but doesn&#39;t inherently detect vulnerabilities; it&#39;s an input to vulnerability scanning, not the scanning technique itself."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Vulnerability scanning tools for container images work by analyzing the image layers, identifying the installed packages and their versions, and then comparing this inventory against a continuously updated database of known CVEs. This process effectively highlights outdated base images or packages with published security flaws.",
+      "distractor_analysis": "SAST focuses on application source code. DAST analyzes running applications. SBOM generation creates a list of components, which is then used by vulnerability scanners, but it&#39;s not the detection technique itself.",
+      "analogy": "Imagine you have a recipe book (container image). SBOM is like listing all the ingredients. Vulnerability scanning is like checking that list against a database of &#39;bad ingredients&#39; (CVEs) to see if any are expired or contaminated."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "CONTAINER_IMAGE_SECURITY",
+      "VULNERABILITY_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "Which Kubernetes security context setting prevents a container from running as the root user?",
+    "correct_answer": "runAsNonRoot: true",
+    "distractors": [
+      {
+        "question_text": "allowPrivilegeEscalation: false",
+        "misconception": "Targets setting confusion: Students confuse privilege escalation prevention with root user prevention; allowPrivilegeEscalation only prevents gaining additional privileges, not running as root"
+      },
+      {
+        "question_text": "readOnlyRootFilesystem: true",
+        "misconception": "Targets terminology overlap: The word &#39;root&#39; in readOnlyRootFilesystem refers to the filesystem, not the root user, causing confusion"
+      },
+      {
+        "question_text": "privileged: false",
+        "misconception": "Targets scope misunderstanding: Students think disabling privileged mode prevents root access, but containers can still run as root without privileged mode"
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `runAsNonRoot: true` security context setting instructs the kubelet to validate that the container is not running as UID 0 (root). If the container attempts to run as root, the pod will fail to start. This is a preventive control that enforces the principle of least privilege at the container level.",
+      "distractor_analysis": "`allowPrivilegeEscalation` prevents gaining NEW privileges but does not prevent starting as root. `readOnlyRootFilesystem` makes the root filesystem immutable but has nothing to do with user identity. `privileged: false` removes access to host resources but still allows root user inside the container.",
+      "analogy": "Think of `runAsNonRoot` like a building security policy that prevents anyone with an &#39;admin&#39; badge from entering certain floors, while `allowPrivilegeEscalation` is like preventing employees from obtaining additional access cards after entry."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "securityContext:\n  runAsNonRoot: true\n  runAsUser: 1000",
+        "context": "Pod security context preventing root user execution"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "KUBERNETES_BASICS",
+      "CONTAINER_SECURITY_FUNDAMENTALS"
+    ]
+  },
+  {
+    "question_text": "A container image contains a known vulnerability in a specific version of a bundled library. Which image scanning technique is primarily responsible for detecting this type of vulnerability?",
+    "correct_answer": "Software Bill of Materials (SBOM) analysis and vulnerability database lookup",
+    "distractors": [
+      {
+        "question_text": "Static Application Security Testing (SAST)",
+        "misconception": "Targets scope confusion: SAST analyzes custom code for vulnerabilities, not typically pre-compiled third-party libraries within an image. Students might confuse code analysis with dependency analysis."
+      },
+      {
+        "question_text": "Dynamic Application Security Testing (DAST)",
+        "misconception": "Targets testing phase confusion: DAST analyzes running applications for vulnerabilities, not the static contents of an image. Students might confuse runtime testing with build-time scanning."
+      },
+      {
+        "question_text": "Behavioral anomaly detection",
+        "misconception": "Targets runtime vs. static analysis: Behavioral anomaly detection is a runtime security control that identifies unusual activity, not a static image scanning technique for known library vulnerabilities. Students might confuse detection methods."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Detecting known vulnerabilities in bundled libraries within a container image relies on generating a Software Bill of Materials (SBOM) for the image. The SBOM lists all components, including libraries and their versions. This SBOM is then cross-referenced against vulnerability databases (like CVEs) to identify known security flaws associated with those specific library versions.",
+      "distractor_analysis": "SAST focuses on analyzing source code for vulnerabilities, typically custom application code, not pre-compiled third-party libraries. DAST analyzes running applications for vulnerabilities, which is a runtime activity, not an image scanning technique. Behavioral anomaly detection is a runtime security measure that identifies unusual process or network activity, not a method for statically identifying known vulnerabilities in image components.",
+      "analogy": "Imagine an SBOM as an ingredient list for a packaged meal. If you know a specific ingredient (library version) has a recall (known vulnerability), you check the ingredient list (SBOM) to see if your meal contains it. SAST is like checking the recipe for errors, DAST is like taste-testing the cooked meal, and behavioral anomaly detection is like noticing someone eating the meal is getting sick."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "CONTAINER_IMAGE_SECURITY",
+      "VULNERABILITY_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "Which image scanning technique is best suited for detecting known vulnerabilities in third-party libraries and operating system packages within a container image?",
+    "correct_answer": "Vulnerability scanning using a CVE database",
+    "distractors": [
+      {
+        "question_text": "Static Application Security Testing (SAST)",
+        "misconception": "Targets SAST vs. SCA confusion: Students might confuse SAST, which analyzes custom code for vulnerabilities, with Software Composition Analysis (SCA) or vulnerability scanning, which focuses on dependencies."
+      },
+      {
+        "question_text": "Dynamic Application Security Testing (DAST)",
+        "misconception": "Targets DAST vs. SCA confusion: Students might confuse DAST, which analyzes running applications for vulnerabilities, with image scanning, which is performed on the static image."
+      },
+      {
+        "question_text": "Runtime behavioral analysis",
+        "misconception": "Targets runtime vs. static analysis: Students might confuse image scanning (static analysis) with runtime security tools that monitor container behavior during execution. Runtime analysis detects anomalies, not known vulnerabilities in static components."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Vulnerability scanning, often referred to as Software Composition Analysis (SCA) in the context of dependencies, is the primary technique for detecting known vulnerabilities in third-party libraries and operating system packages. These scanners analyze the image layers, identify installed packages and their versions, and then cross-reference this information against comprehensive Common Vulnerabilities and Exposures (CVE) databases to report known security flaws.",
+      "distractor_analysis": "SAST (Static Application Security Testing) focuses on analyzing an application&#39;s *source code* for vulnerabilities, not its dependencies. DAST (Dynamic Application Security Testing) analyzes a *running* application for vulnerabilities, which is different from scanning a static container image. Runtime behavioral analysis monitors the *execution* of a container for suspicious activities, but it doesn&#39;t identify known vulnerabilities in the static components of the image itself.",
+      "analogy": "Imagine you&#39;re building a house (container image) with pre-made parts (libraries/packages). Vulnerability scanning is like checking a catalog of known faulty parts (CVE database) against the parts you&#39;ve used. SAST is like checking the blueprints you drew yourself for errors. DAST is like testing the house after it&#39;s built to see if it leaks. Runtime analysis is like having a security guard watch for suspicious activity *after* people move in."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "CONTAINER_IMAGE_SECURITY",
+      "VULNERABILITY_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "Which `securityContext` setting prevents a container from writing to its root filesystem, thereby limiting the impact of a potential compromise and preventing the installation of malicious binaries?",
+    "correct_answer": "readOnlyRootFilesystem: true",
+    "distractors": [
+      {
+        "question_text": "runAsNonRoot: true",
+        "misconception": "Targets user vs. filesystem confusion: Students might confuse preventing root *user* access with preventing *filesystem* write access. A non-root user can still write to writable parts of the filesystem."
+      },
+      {
+        "question_text": "allowPrivilegeEscalation: false",
+        "misconception": "Targets privilege escalation vs. filesystem write: Students might confuse preventing privilege escalation with preventing filesystem modifications. These are distinct security controls."
+      },
+      {
+        "question_text": "capabilities.drop: [&quot;ALL&quot;]",
+        "misconception": "Targets capability vs. filesystem write: While dropping capabilities is crucial for overall security, it doesn&#39;t directly make the root filesystem read-only. A container with no capabilities could still write to a writable root filesystem."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `readOnlyRootFilesystem: true` setting within a container&#39;s `securityContext` makes the container&#39;s root filesystem immutable. This is a critical security control because it prevents an attacker, even if they gain control of the container, from writing new files, modifying existing binaries, or installing malware on the container&#39;s primary filesystem. Any data that needs to be persistent or written to must be done via mounted volumes.",
+      "distractor_analysis": "`runAsNonRoot: true` prevents the container from running as the root user, but doesn&#39;t make the filesystem read-only. A non-root user can still write to any writable directory. `allowPrivilegeEscalation: false` prevents a process from gaining more privileges than its parent, which is distinct from filesystem write permissions. `capabilities.drop: [&quot;ALL&quot;]` removes Linux capabilities, but doesn&#39;t inherently make the root filesystem read-only; a container with no capabilities could still write to a writable filesystem.",
+      "analogy": "Think of `readOnlyRootFilesystem: true` as putting a glass case over the operating system files in a museum exhibit. You can see them and use them, but you can&#39;t touch or change them. `runAsNonRoot: true` is like saying only junior staff can access the exhibit, but they could still write on a whiteboard if it were provided."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: immutable-app\nspec:\n  containers:\n  - name: my-container\n    image: my-image\n    securityContext:\n      readOnlyRootFilesystem: true",
+        "context": "Pod manifest with a read-only root filesystem."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "CONTAINER_IMMUTABILITY"
+    ]
+  },
+  {
+    "question_text": "A cybersecurity professional needs to identify known software vulnerabilities within a container image before deployment. Which image scanning technique is primarily used for this purpose?",
+    "correct_answer": "Package-based vulnerability scanning against CVE databases",
+    "distractors": [
+      {
+        "question_text": "Static Application Security Testing (SAST) of application source code",
+        "misconception": "Targets scope confusion: SAST analyzes application source code, not the compiled binaries and packages within a container image, and is typically performed earlier in the SDLC."
+      },
+      {
+        "question_text": "Dynamic Application Security Testing (DAST) of the running container",
+        "misconception": "Targets timing and method confusion: DAST analyzes a running application for vulnerabilities, which is too late for pre-deployment image scanning and focuses on runtime behavior, not package vulnerabilities."
+      },
+      {
+        "question_text": "Behavioral analysis of container runtime activity",
+        "misconception": "Targets control plane confusion: Behavioral analysis monitors a container&#39;s actions during runtime for anomalies, which is a runtime security control, not a pre-deployment image scanning technique for known vulnerabilities."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Container image scanners primarily function by inspecting the packages installed within an image (e.g., via `yum` or `apt`). They then compare these package versions against databases of known vulnerabilities, such as Common Vulnerabilities and Exposures (CVEs), to report on any identified security flaws. This process is crucial for identifying and mitigating risks before deployment.",
+      "distractor_analysis": "SAST analyzes application source code, which is distinct from scanning the compiled packages in a container image. DAST involves testing a running application, which occurs after deployment and focuses on runtime vulnerabilities, not static package vulnerabilities. Behavioral analysis is a runtime security measure that monitors container activity for suspicious patterns, not a pre-deployment scan for known package vulnerabilities.",
+      "analogy": "Think of package-based vulnerability scanning like checking the expiration dates and recall notices for all the ingredients in a pre-packaged meal before you buy it. SAST is like reviewing the recipe itself, and DAST is like taste-testing the cooked meal for problems."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "CONTAINER_SECURITY_FUNDAMENTALS",
+      "VULNERABILITY_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "A container image contains several outdated libraries with known CVEs. Which image scanning technique is primarily responsible for detecting these vulnerabilities?",
+    "correct_answer": "Software Bill of Materials (SBOM) analysis combined with vulnerability databases",
+    "distractors": [
+      {
+        "question_text": "Static Application Security Testing (SAST)",
+        "misconception": "Targets scope confusion: Students might confuse SAST, which analyzes custom code for flaws, with dependency scanning. SAST doesn&#39;t typically analyze third-party library versions for known CVEs."
+      },
+      {
+        "question_text": "Dynamic Application Security Testing (DAST)",
+        "misconception": "Targets methodology confusion: Students might confuse DAST, which tests running applications for vulnerabilities, with static image analysis. DAST doesn&#39;t analyze the image&#39;s components before runtime."
+      },
+      {
+        "question_text": "Runtime behavioral analysis",
+        "misconception": "Targets detection phase confusion: Students might confuse runtime monitoring with pre-deployment scanning. Runtime analysis detects anomalous behavior, not pre-existing vulnerabilities in static components."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Detecting outdated libraries with known CVEs in a container image relies on generating a Software Bill of Materials (SBOM) for the image. An SBOM lists all components, dependencies, and their versions within the image. This SBOM is then cross-referenced against continuously updated vulnerability databases (like NVD, OSV, etc.) to identify known CVEs associated with those specific library versions. This process is a core function of most container image scanners.",
+      "distractor_analysis": "Static Application Security Testing (SAST) analyzes the application&#39;s source code for coding errors and security flaws, not typically for known vulnerabilities in third-party dependencies. Dynamic Application Security Testing (DAST) tests a running application for vulnerabilities by interacting with it, which is different from scanning a static image. Runtime behavioral analysis monitors the container&#39;s actions during execution for suspicious activity, but it doesn&#39;t identify pre-existing vulnerabilities in the image&#39;s components.",
+      "analogy": "Imagine you&#39;re building a house (container image). SBOM analysis is like checking the manufacturing date and safety recalls for every single brick, window, and pipe (libraries) you&#39;re using before you even start building. SAST is like checking the architect&#39;s blueprints for design flaws. DAST is like testing the finished house for structural weaknesses by shaking it. Runtime analysis is like having a security guard watch for suspicious activity after people move in."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CONTAINER_IMAGE_SCANNING",
+      "SOFTWARE_SUPPLY_CHAIN_SECURITY",
+      "CVE_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which metric is used to quantify the imperceptibility of a digital watermark in an image, where a higher value indicates less distortion?",
+    "correct_answer": "Peak Signal-to-Noise Ratio (PSNR)",
+    "distractors": [
+      {
+        "question_text": "Mean Square Error (MSE)",
+        "misconception": "Targets inverse relationship confusion: Students might confuse MSE with PSNR, but MSE directly measures error, so a lower MSE indicates less distortion, not a higher value."
+      },
+      {
+        "question_text": "False Acceptance Rate (FAR)",
+        "misconception": "Targets metric domain confusion: Students might confuse watermarking quality metrics with authentication performance metrics. FAR measures authentication system performance, not visual quality."
+      },
+      {
+        "question_text": "Structural Similarity Index (SSIM)",
+        "misconception": "Targets similar concept but not explicitly mentioned: While SSIM is a valid image quality metric, it was not the one defined or used in the provided context for watermarking imperceptibility."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Peak Signal-to-Noise Ratio (PSNR) is explicitly defined as the metric used to measure the quality of the watermarked image, with the note that &#39;the higher the PSNR is, the less distortion there is to the host image and the retrieved one.&#39; This directly quantifies how imperceptible the watermark is by comparing the original and watermarked images.",
+      "distractor_analysis": "MSE (Mean Square Error) is a component of PSNR, but a lower MSE indicates less distortion, which is the inverse of the PSNR&#39;s interpretation. FAR (False Acceptance Rate) is a metric for the performance of the authentication system, measuring undetected attacks, not the visual quality of the watermarked image. SSIM is a common image quality metric but was not the one presented or defined in the provided text for this specific purpose.",
+      "analogy": "Think of PSNR like a &#39;clarity score&#39; for an image after a change. A higher score means the image is still very clear and close to the original, indicating the change (watermark) was barely noticeable. MSE would be like the &#39;blurriness score&#39; – a lower blurriness score means a clearer image."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "PSNR = 20 log_{10} ( 255 / sqrt(MSE) )",
+        "context": "Formula for calculating PSNR"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "DIGITAL_WATERMARKING_BASICS",
+      "IMAGE_PROCESSING_METRICS"
+    ]
+  },
+  {
+    "question_text": "An OSINT investigator is using SpiderFoot within a Buscador Linux VM to gather intelligence on a target domain. They want to collect as much information as possible without directly interacting with the target&#39;s servers to avoid detection. Which SpiderFoot scan option should they choose?",
+    "correct_answer": "Passive",
+    "distractors": [
+      {
+        "question_text": "All",
+        "misconception": "Targets misunderstanding of scan depth and operational security: Students might think &#39;All&#39; is the most comprehensive and therefore best, overlooking the explicit warning about its length and potential for direct interaction."
+      },
+      {
+        "question_text": "Footprint",
+        "misconception": "Targets confusion between comprehensive and stealthy: Students might associate &#39;Footprint&#39; with thoroughness for standard OSINT, not realizing it involves web crawling and search engine use that could leave traces."
+      },
+      {
+        "question_text": "Investigate",
+        "misconception": "Targets misapplication of specialized scan types: Students might incorrectly choose &#39;Investigate&#39; thinking it&#39;s a general-purpose option, not understanding its specific use case for identifying maliciousness and potential for direct interaction."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The &#39;Passive&#39; scan option in SpiderFoot is specifically designed to collect information without &#39;touching the actual target site.&#39; This prevents the target from knowing they are being investigated, which is crucial for an OSINT investigator aiming to avoid detection. It gathers data from public sources that have already indexed or stored information about the target.",
+      "distractor_analysis": "&#39;All&#39; runs every module and can be very lengthy, potentially involving direct interaction. &#39;Footprint&#39; identifies the target&#39;s network perimeter and associated identities through web crawling and search engine use, which can leave traces. &#39;Investigate&#39; is for identifying maliciousness and may involve more active scanning methods, making it unsuitable for stealth.",
+      "analogy": "Choosing &#39;Passive&#39; is like gathering intelligence by reading public news articles and social media posts about a person, rather than directly knocking on their door or checking their mail (which would be more like &#39;All&#39; or &#39;Footprint&#39;)."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "OSINT_FUNDAMENTALS",
+      "SPIDERFOOT_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which image scanning technique is specifically designed to identify vulnerabilities within container images before deployment?",
+    "correct_answer": "IBM Vulnerability Advisor scans container images and running instances.",
+    "distractors": [
+      {
+        "question_text": "Amazon Inspector is an agent-based scanner that can scan for missing patches and poor configurations on Linux and Windows systems.",
+        "misconception": "Targets scope confusion: Students might confuse host-based scanning (Amazon Inspector) with container image scanning, overlooking the specific target of the scan."
+      },
+      {
+        "question_text": "Google Cloud Security Scanner is a DAST tool for applications hosted on Google App Engine.",
+        "misconception": "Targets technique confusion: Students may confuse Dynamic Application Security Testing (DAST), which scans running applications, with static container image scanning."
+      },
+      {
+        "question_text": "Tenable has a range of products including the Nessus network scanner, agent-based and agentless Nessus patch and configuration management scanners, and a container scanner.",
+        "misconception": "Targets partial information: While Tenable *does* have a container scanner, the description provided is broad and doesn&#39;t specifically highlight its *image* scanning capability as clearly as the correct answer, leading to ambiguity."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "IBM Vulnerability Advisor is explicitly mentioned as scanning &#39;container images,&#39; directly addressing the question of identifying vulnerabilities within container images before they are deployed. This is a critical step in a secure DevSecOps pipeline.",
+      "distractor_analysis": "Amazon Inspector focuses on host-based scanning for OS-level vulnerabilities and misconfigurations, not specifically container images. Google Cloud Security Scanner is a DAST tool, meaning it scans running applications, not static container images. While Tenable does offer a container scanner, the provided description is less precise about its image scanning capability compared to the direct statement about IBM Vulnerability Advisor.",
+      "analogy": "Think of scanning a container image like inspecting a blueprint for a house before construction begins. You&#39;re looking for flaws in the design (vulnerabilities) before the house (container) is built and occupied."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "CONTAINER_SECURITY_FUNDAMENTALS",
+      "VULNERABILITY_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "Which packer is specifically designed for performance and ease of use, making it generally straightforward to unpack, even with its own command-line utility?",
+    "correct_answer": "UPX",
+    "distractors": [
+      {
+        "question_text": "ASPack",
+        "misconception": "Targets feature confusion: Students might confuse ASPack&#39;s popularity with ease of unpacking, but ASPack is known for anti-debugging and self-modifying code, making it harder to unpack manually."
+      },
+      {
+        "question_text": "PECompact",
+        "misconception": "Targets performance vs. security: While PECompact is designed for speed, it also includes anti-debugging and obfuscation, making it difficult to unpack, unlike UPX which prioritizes performance over security."
+      },
+      {
+        "question_text": "Petite",
+        "misconception": "Targets anti-debugging mechanisms: Students might associate &#39;easy to spot OEP&#39; with overall ease, but Petite uses anti-debugging and single-step exceptions, requiring specific debugger configurations for manual unpacking."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "UPX (Ultimate Packer for eXecutables) is explicitly described as open source, free, easy to use, and designed for performance rather than security. Its high decompression speed and low memory requirements make it popular, but it&#39;s not intended to be difficult to reverse-engineer. Most UPX-packed executables can be unpacked using the UPX utility itself with the `-d` option, making it a good starting point for manual unpacking.",
+      "distractor_analysis": "ASPack is focused on security and uses self-modifying code and anti-debugging techniques, making it difficult to unpack. PECompact is commercial and includes anti-debugging exceptions and obfuscated code. Petite also uses anti-debugging mechanisms and single-step exceptions, requiring specific handling in a debugger. None of these are as straightforward to unpack as UPX.",
+      "analogy": "Think of UPX as a transparent plastic wrap around a gift – easy to remove and see what&#39;s inside. Other packers are more like complex, tamper-evident packaging with hidden latches and alarms."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "upx -d packed_executable.exe",
+        "context": "Command-line utility to decompress a UPX-packed executable."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "MALWARE_ANALYSIS_BASICS",
+      "PACKERS_AND_UNPACKING"
+    ]
+  },
+  {
+    "question_text": "A Kubernetes cluster administrator is concerned about potential container escapes where an attacker might gain root privileges on the host. Which securityContext setting directly prevents a container from running with root user ID (UID 0) inside the container?",
+    "correct_answer": "runAsNonRoot: true",
+    "distractors": [
+      {
+        "question_text": "allowPrivilegeEscalation: false",
+        "misconception": "Targets setting confusion: Students confuse preventing privilege escalation (gaining *more* privileges) with preventing initial root execution. allowPrivilegeEscalation prevents a non-root process from gaining root privileges, but doesn&#39;t stop a container from *starting* as root."
+      },
+      {
+        "question_text": "readOnlyRootFilesystem: true",
+        "misconception": "Targets terminology overlap: The term &#39;root&#39; in readOnlyRootFilesystem refers to the container&#39;s filesystem being immutable, not the user ID. This prevents writing to the root filesystem but doesn&#39;t restrict the user running the processes."
+      },
+      {
+        "question_text": "privileged: false",
+        "misconception": "Targets scope misunderstanding: Students might believe that disabling &#39;privileged&#39; mode automatically prevents root execution. While &#39;privileged&#39; mode grants extensive host access, a non-privileged container can still run as root (UID 0) by default."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `runAsNonRoot: true` setting within a container&#39;s `securityContext` explicitly instructs Kubernetes to ensure that the container&#39;s entrypoint process does not run with UID 0 (root). If the container image or command attempts to run as root, the pod will fail to start, enforcing a critical aspect of the principle of least privilege.",
+      "distractor_analysis": "`allowPrivilegeEscalation: false` prevents a process from gaining more privileges than its parent, but it doesn&#39;t prevent a container from starting as root. `readOnlyRootFilesystem: true` makes the container&#39;s root filesystem immutable, which is a good security practice but doesn&#39;t control the user ID. `privileged: false` (which is the default) prevents the container from having full access to the host, but a non-privileged container can still run as the root user.",
+      "analogy": "Think of `runAsNonRoot: true` as a bouncer at a club checking IDs to ensure no one under 21 (root user) gets in. `allowPrivilegeEscalation: false` is like the bouncer preventing someone who got in with a fake ID from then trying to get a VIP pass. `readOnlyRootFilesystem: true` is like making sure the club&#39;s furniture can&#39;t be rearranged, and `privileged: false` is like ensuring the club-goer doesn&#39;t have a master key to the entire building."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: my-nonroot-pod\nspec:\n  containers:\n  - name: mycontainer\n    image: myimage:latest\n    securityContext:\n      runAsNonRoot: true\n      runAsUser: 1000 # Optional: specify a non-root user ID\n      # Other security settings can go here\n",
+        "context": "Kubernetes Pod manifest demonstrating `runAsNonRoot: true`"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "KUBERNETES_BASICS",
+      "CONTAINER_SECURITY_FUNDAMENTALS",
+      "POD_SECURITY_CONTEXTS"
+    ]
+  },
+  {
+    "question_text": "A Kubernetes cluster administrator wants to prevent any container from gaining new privileges after startup. Which securityContext setting directly enforces this requirement?",
+    "correct_answer": "allowPrivilegeEscalation: false",
+    "distractors": [
+      {
+        "question_text": "privileged: false",
+        "misconception": "Targets scope misunderstanding: Students confuse &#39;privileged&#39; mode (which grants all capabilities and host access) with &#39;privilege escalation&#39; (gaining new capabilities). Setting privileged: false prevents the former but doesn&#39;t explicitly prevent the latter if default capabilities are present."
+      },
+      {
+        "question_text": "runAsNonRoot: true",
+        "misconception": "Targets function confusion: Students confuse preventing root execution with preventing privilege escalation. runAsNonRoot ensures the container doesn&#39;t start as root, but doesn&#39;t stop a non-root user from escalating privileges if allowed by capabilities."
+      },
+      {
+        "question_text": "capabilities.drop: [&quot;ALL&quot;]",
+        "misconception": "Targets partial solution: While dropping all capabilities is a strong defense against privilege escalation, allowPrivilegeEscalation: false specifically prevents the mechanism by which a process could gain more privileges than its parent, even if some capabilities are initially granted."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `allowPrivilegeEscalation: false` setting in a container&#39;s security context directly prevents a process from gaining more privileges than its parent process. Specifically, it prevents the `setuid` and `setgid` bits from being honored if the executable is owned by a different user, and it prevents a process from gaining capabilities beyond those it already has. This is a crucial control for preventing privilege escalation attacks within a container.",
+      "distractor_analysis": "`privileged: false` prevents the container from running in privileged mode, which grants all capabilities and direct host access, but it doesn&#39;t explicitly prevent privilege escalation if the container starts with some capabilities. `runAsNonRoot: true` ensures the container runs as a non-root user, which is good practice, but a non-root user could still escalate privileges if allowed by other security context settings. `capabilities.drop: [&quot;ALL&quot;]` is an excellent security measure that removes all Linux capabilities, making privilege escalation much harder, but `allowPrivilegeEscalation: false` specifically targets the mechanism of gaining *new* privileges, complementing capability dropping.",
+      "analogy": "Think of `allowPrivilegeEscalation: false` as a rule that says &#39;you can&#39;t get a promotion without explicit approval.&#39; Even if you have some responsibilities (capabilities), you can&#39;t just take on more. `privileged: false` is like saying &#39;you can&#39;t be the CEO,&#39; while `runAsNonRoot: true` is &#39;you can&#39;t be the founder.&#39; Dropping capabilities is like taking away all your tools."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: no-privilege-escalation\nspec:\n  containers:\n  - name: my-container\n    image: my-image\n    securityContext:\n      allowPrivilegeEscalation: false",
+        "context": "Kubernetes Pod manifest demonstrating `allowPrivilegeEscalation: false`"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "LINUX_CAPABILITIES_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which Kubernetes security context setting prevents a container from making changes to its root filesystem?",
+    "correct_answer": "readOnlyRootFilesystem: true",
+    "distractors": [
+      {
+        "question_text": "runAsNonRoot: true",
+        "misconception": "Targets user vs. filesystem confusion: Students confuse preventing root user execution with making the filesystem read-only. `runAsNonRoot` controls the user ID, not filesystem mutability."
+      },
+      {
+        "question_text": "allowPrivilegeEscalation: false",
+        "misconception": "Targets privilege vs. filesystem confusion: Students confuse preventing privilege escalation with filesystem write protection. `allowPrivilegeEscalation` controls capability gains, not filesystem writes."
+      },
+      {
+        "question_text": "capabilities.drop: [&quot;ALL&quot;]",
+        "misconception": "Targets capability vs. filesystem confusion: While dropping capabilities is good for security, it doesn&#39;t directly make the root filesystem read-only. A process with no capabilities could still write to a writable filesystem."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `readOnlyRootFilesystem: true` setting in a container&#39;s security context makes the container&#39;s root filesystem read-only. This is a critical security control as it prevents an attacker from writing malicious files, modifying configuration, or installing new software within the container&#39;s primary filesystem, significantly limiting the impact of a compromise.",
+      "distractor_analysis": "`runAsNonRoot: true` ensures the container runs as a non-root user, which is a good security practice but doesn&#39;t prevent writes to a writable filesystem. `allowPrivilegeEscalation: false` prevents a process from gaining more privileges than its parent, which is unrelated to filesystem mutability. `capabilities.drop: [&quot;ALL&quot;]` removes all Linux capabilities, reducing the attack surface, but a process with no capabilities can still write to a writable filesystem if it has the necessary user permissions.",
+      "analogy": "This is like putting a glass case over a museum exhibit (the container&#39;s root filesystem). You can look at it and use what&#39;s inside, but you can&#39;t change or add anything to it. `runAsNonRoot` is like saying only authorized personnel can enter the room, not necessarily that they can&#39;t touch the exhibit."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: readonly-pod\nspec:\n  containers:\n  - name: my-container\n    image: my-image\n    securityContext:\n      readOnlyRootFilesystem: true",
+        "context": "Kubernetes Pod manifest demonstrating `readOnlyRootFilesystem: true`"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "CONTAINER_FILESYSTEMS"
+    ]
+  },
+  {
+    "question_text": "When evaluating a large application&#39;s dependency chain for known vulnerabilities, which automated technique is most effective for initial detection?",
+    "correct_answer": "Comparing the application&#39;s dependency tree against a well-known CVE database.",
+    "distractors": [
+      {
+        "question_text": "Manually reviewing each dependency&#39;s source code for security flaws.",
+        "misconception": "Targets scalability misunderstanding: Students might think manual review is thorough, but it&#39;s impractical and inefficient for large dependency chains, failing to scale."
+      },
+      {
+        "question_text": "Implementing network policies to restrict outbound connections from dependencies.",
+        "misconception": "Targets control plane confusion: Students confuse vulnerability detection with runtime containment; network policies are for limiting blast radius, not identifying vulnerabilities within code."
+      },
+      {
+        "question_text": "Configuring RBAC roles to limit the permissions of dependency-related services.",
+        "misconception": "Targets security domain conflation: Students confuse image scanning/SCA with runtime access control; RBAC manages permissions, it doesn&#39;t detect vulnerabilities in the software supply chain."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "For large applications with extensive dependency chains, manual evaluation is infeasible. The most effective automated technique for initial vulnerability detection is to compare the application&#39;s dependency tree against a comprehensive CVE (Common Vulnerabilities and Exposures) database. This process, often performed by Software Composition Analysis (SCA) tools, quickly identifies known vulnerabilities in open-source and third-party packages.",
+      "distractor_analysis": "Manually reviewing source code is impractical for large dependency trees. Implementing network policies restricts runtime behavior but does not identify vulnerabilities within the code itself. Configuring RBAC roles limits permissions of services, which is a runtime security control, not a method for detecting known vulnerabilities in dependencies.",
+      "analogy": "Think of it like checking a car&#39;s parts against a recall database. You&#39;re not inspecting every bolt yourself (manual review), nor are you just putting a fence around the car (network policy) or limiting who can drive it (RBAC). You&#39;re specifically checking if any known faulty parts are present."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "npm list --depth=[depth]",
+        "context": "Command to list npm dependencies, often used as a first step for generating a dependency tree for scanning."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "SOFTWARE_COMPOSITION_ANALYSIS",
+      "CVE_DATABASES",
+      "DEPENDENCY_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "A manufacturing plant uses RFID tags for inventory tracking and supply chain management. Which RFID frequency range is most likely being utilized for this application?",
+    "correct_answer": "Ultra-High-Frequency (UHF)",
+    "distractors": [
+      {
+        "question_text": "Low-Frequency (LF)",
+        "misconception": "Targets application scope confusion: Students might associate LF with general access control or tracking, not realizing its limited range and data rate are unsuitable for large-scale inventory management."
+      },
+      {
+        "question_text": "High-Frequency (HF)",
+        "misconception": "Targets application scope confusion: Students might associate HF with contactless payments or transit, which are different use cases than industrial inventory tracking, leading to incorrect generalization."
+      },
+      {
+        "question_text": "Very Low-Frequency (VLF)",
+        "misconception": "Targets terminology confusion: Students might select a plausible-sounding but incorrect frequency range, indicating a lack of precise knowledge about standard RFID classifications."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Ultra-High-Frequency (UHF) RFID systems are specifically designed for applications requiring longer read ranges and faster data transfer rates, making them ideal for large-scale inventory tracking, supply chain management, and logistics in environments like manufacturing plants and warehouses. Their ability to read multiple tags simultaneously over greater distances significantly improves efficiency in these scenarios.",
+      "distractor_analysis": "Low-Frequency (LF) RFID is typically used for shorter-range applications like animal tracking, car key fobs, and access control badges, which are not suitable for large-scale inventory. High-Frequency (HF) RFID is commonly found in contactless payment systems, hotel key cards, and transit cards, also not aligning with the requirements of industrial inventory. Very Low-Frequency (VLF) is not a standard classification for common RFID systems, making it an incorrect choice.",
+      "analogy": "Think of UHF RFID like a wide-angle camera that can quickly scan many items across a large area, while LF and HF are more like a close-up lens for individual, short-range interactions."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "analysis",
+    "prerequisites": [
+      "RFID_BASICS",
+      "WIRELESS_COMMUNICATION_FUNDAMENTALS"
+    ]
+  }
+]

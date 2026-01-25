@@ -1,0 +1,261 @@
+[
+  {
+    "question_text": "To defeat forensic analysis of a BIND DNS server&#39;s version, an attacker would first attempt to:",
+    "correct_answer": "Query the &#39;version.bind&#39; CHAOS TXT record to directly retrieve version information",
+    "distractors": [
+      {
+        "question_text": "Analyze network traffic for specific BIND-related port scans",
+        "misconception": "Targets scope misunderstanding: Student confuses active port scanning for open services with targeted version fingerprinting."
+      },
+      {
+        "question_text": "Examine the server&#39;s file system for named.conf configuration files",
+        "misconception": "Targets access level confusion: Student assumes file system access is available for initial reconnaissance, rather than external query."
+      },
+      {
+        "question_text": "Perform a zone transfer to enumerate all DNS records, including version details",
+        "misconception": "Targets technique confusion: Student conflates zone transfers (for record enumeration) with specific version queries, which are distinct."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Attackers can directly query the &#39;version.bind&#39; CHAOS TXT record on a BIND DNS server. This special record, if not configured to be hidden or altered, will return the exact BIND version and often the underlying operating system, providing critical information for targeting known vulnerabilities.",
+      "distractor_analysis": "Analyzing network traffic for port scans might identify the DNS service, but not the specific version. Examining the file system requires prior access to the server, which is not the initial step for external fingerprinting. Performing a zone transfer enumerates domain records but does not inherently reveal the BIND software version.",
+      "analogy": "Like asking a person directly for their age, rather than trying to guess it from their clothing or general appearance."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "dig @192.168.1.15 version.bind chaos txt",
+        "context": "Command used by an attacker to query the BIND version information."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "DNS_FUNDAMENTALS",
+      "BIND_BASICS",
+      "RECONNAISSANCE_TECHNIQUES"
+    ]
+  },
+  {
+    "question_text": "To defeat forensic analysis of script-based malware execution, an attacker would primarily target which Windows security feature designed to detect fileless threats?",
+    "correct_answer": "Antimalware Scan Interface (AMSI) to prevent detection of malicious script content",
+    "distractors": [
+      {
+        "question_text": "Windows Event Logs to remove records of script execution",
+        "misconception": "Targets scope misunderstanding: While log clearing is an anti-forensics technique, AMSI evasion directly prevents the initial detection of the malicious script content, which is a more fundamental step for fileless malware."
+      },
+      {
+        "question_text": "User Account Control (UAC) to bypass privilege elevation prompts",
+        "misconception": "Targets concept conflation: UAC bypass is about privilege escalation, not about evading detection of malicious script content itself. It&#39;s a different phase of an attack."
+      },
+      {
+        "question_text": "Windows Defender Firewall to block outbound C2 communications",
+        "misconception": "Targets domain confusion: Firewall rules manage network traffic, not the detection of malicious script execution on the endpoint. This is a post-execution activity, not an evasion of initial script analysis."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "AMSI (Antimalware Scan Interface) is a crucial Windows security feature that allows applications and scripting engines (like PowerShell, JScript, VBScript) to submit content to registered antimalware providers for scanning. For fileless, script-based malware, evading AMSI is a primary goal to prevent the initial detection of the malicious script before it can execute or achieve its objectives.",
+      "distractor_analysis": "Clearing Windows Event Logs is a post-execution anti-forensics step, but AMSI evasion prevents the event from being logged as malicious in the first place. UAC bypass is about gaining higher privileges, not about evading script content detection. Windows Defender Firewall controls network connections, which is a different layer of defense and not directly related to the initial detection of malicious script content by AMSI.",
+      "analogy": "Think of AMSI as a security checkpoint for scripts. An attacker wants to bypass this checkpoint so their &#39;contraband&#39; script isn&#39;t flagged before it even enters the system, rather than just trying to erase the security footage later."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "WINDOWS_SECURITY_FEATURES",
+      "FILELESS_MALWARE_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "To bypass Antimalware Scan Interface (AMSI) detection of a malicious PowerShell script, an attacker would:",
+    "correct_answer": "Obfuscate sensitive strings within the script using concatenation or encoding",
+    "distractors": [
+      {
+        "question_text": "Delete the AMSI.dll file from System32",
+        "misconception": "Targets scope misunderstanding: Student believes direct file deletion is a viable and stealthy evasion, ignoring system protection and immediate detection."
+      },
+      {
+        "question_text": "Disable the Windows Defender service via services.msc",
+        "misconception": "Targets tool confusion: Student confuses disabling the AV engine with bypassing AMSI, which is a separate interface that other AVs also use."
+      },
+      {
+        "question_text": "Modify the script&#39;s file extension to .txt to prevent execution",
+        "misconception": "Targets execution confusion: Student confuses preventing execution with evading AMSI scanning during execution, and this would prevent the script from running at all."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "AMSI often flags specific strings or patterns within scripts. By obfuscating these sensitive strings through techniques like concatenation (e.g., &#39;Ams&#39; + &#39;iScan&#39; + &#39;Buffer&#39;) or encoding (e.g., Base64), attackers can prevent AMSI from recognizing the malicious pattern before the script is fully interpreted. Many AMSI providers struggle to emulate complex language features to de-obfuscate these strings.",
+      "distractor_analysis": "Deleting AMSI.dll would likely trigger system alerts or prevent PowerShell from functioning correctly. Disabling Windows Defender might stop its real-time protection, but AMSI is an interface that other antivirus products can also leverage, and disabling Defender doesn&#39;t bypass AMSI itself. Changing the file extension to .txt would prevent the script from being executed as PowerShell, thus not an &#39;evasion&#39; but a prevention of execution.",
+      "analogy": "Like a spy using a coded message where individual words are harmless, but when combined, they reveal the true, malicious intent."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "PS &gt; &quot;Ams&quot; + &quot;iS&quot; + &quot;can&quot; + &quot;Buff&quot; + &quot;er&quot;\nAmsiScanBuffer",
+        "context": "Example of string concatenation to bypass AMSI detection."
+      },
+      {
+        "language": "powershell",
+        "code": "PS &gt; $b = [System.Convert]::FromBase64String(&quot;QW1zaVN&quot;)\nPS &gt; [System.Text.Encoding]::UTF8.GetString($b)\nAmsiScanBuffer",
+        "context": "Example of Base64 decoding to reconstruct a sensitive string, bypassing AMSI."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "POWERSHELL_BASICS",
+      "AMSI_FUNDAMENTALS",
+      "STRING_ENCODING"
+    ]
+  },
+  {
+    "question_text": "To cover tracks after gaining access to a Windows system via Meterpreter, a threat actor would use which command to remove evidence of their activity from the event logs?",
+    "correct_answer": "clearev",
+    "distractors": [
+      {
+        "question_text": "background",
+        "misconception": "Targets terminology confusion: Student confuses putting a shell in the background with clearing forensic artifacts."
+      },
+      {
+        "question_text": "reg delete HKLM\\SYSTEM\\CurrentControlSet\\Services\\EventLog",
+        "misconception": "Targets process order errors: Student believes deleting registry keys for event logs will remove existing entries, rather than just disabling future logging or requiring a reboot."
+      },
+      {
+        "question_text": "timestomp",
+        "misconception": "Targets scope misunderstanding: Student confuses file metadata manipulation with event log deletion."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `clearev` command in Meterpreter is specifically designed to clear the event logs on the compromised target machine. This action removes critical forensic evidence that could indicate unauthorized access or malicious activity, making it harder for defenders to trace the attacker&#39;s steps.",
+      "distractor_analysis": "The `background` command simply sends the current Meterpreter session to the background, allowing the attacker to interact with other sessions or the Metasploit console; it does not remove any evidence. Deleting registry keys related to event logs might disable logging or prevent future logs, but it does not clear existing log entries. `timestomp` is used to modify file timestamps, not to clear event logs.",
+      "analogy": "Think of `clearev` as using a special eraser to completely remove your writing from a whiteboard, leaving no trace. The other options are like putting the pen down or changing the color of the pen, which doesn&#39;t erase what&#39;s already there."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "meterpreter &gt; clearev",
+        "context": "Executing the clearev command within a Meterpreter session."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "METASPLOIT_BASICS",
+      "METERPRETER_COMMANDS",
+      "WINDOWS_EVENT_LOGS"
+    ]
+  },
+  {
+    "question_text": "To cover tracks after an operation, a threat actor might use which anti-forensics technique to remove evidence of their presence on a compromised host?",
+    "correct_answer": "Indicator Removal on Host: File Deletion (T1551.004)",
+    "distractors": [
+      {
+        "question_text": "Process Injection: Dynamic-link Library Injection (T1055.001)",
+        "misconception": "Targets technique confusion: Student confuses a method of execution/privilege escalation with an anti-forensics technique for evidence removal."
+      },
+      {
+        "question_text": "Encrypted Channel (T1573)",
+        "misconception": "Targets purpose confusion: Student confuses C2 communication obfuscation with post-compromise evidence removal."
+      },
+      {
+        "question_text": "Software Packing (T1027.002)",
+        "misconception": "Targets timing/purpose confusion: Student confuses a defense evasion technique used during initial execution with post-operation evidence cleanup."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Indicator Removal on Host, specifically File Deletion (T1551.004), is a direct anti-forensics technique used by threat actors to eliminate files they introduced or modified, thereby removing forensic artifacts that could link them to the compromise. This makes it harder for forensic investigators to reconstruct the attack.",
+      "distractor_analysis": "Process Injection (T1055.001) is a technique for execution and privilege escalation, not for removing evidence. Encrypted Channel (T1573) is used for Command and Control (C2) communication to prevent detection of network traffic, not for cleaning up host-based artifacts. Software Packing (T1027.002) is a defense evasion technique used to obfuscate malicious code, typically at the time of deployment, not for post-operation cleanup.",
+      "analogy": "Like a thief wiping down surfaces and taking their tools with them after a break-in to remove fingerprints and other traces."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "rm -rf /tmp/malicious_tool.sh",
+        "context": "Example of deleting a malicious script on a Linux system."
+      },
+      {
+        "language": "powershell",
+        "code": "Remove-Item C:\\Users\\Public\\malware.exe -Force",
+        "context": "Example of deleting a malicious executable on a Windows system."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_FRAMEWORK",
+      "ANTI_FORENSICS_BASICS"
+    ]
+  },
+  {
+    "question_text": "To defeat network reconnaissance that relies on standard ICMP Echo Requests (ping scans), a threat actor would:",
+    "correct_answer": "Configure the target system to ignore ICMP Echo Requests",
+    "distractors": [
+      {
+        "question_text": "Implement a Null scan (-sN) against the scanning host",
+        "misconception": "Targets tool confusion: Student confuses a scanning technique (Null scan) with a defensive measure. Null scans are for reconnaissance, not defense."
+      },
+      {
+        "question_text": "Use Nmap&#39;s -sP option to send TCP ACK packets instead of ICMP",
+        "misconception": "Targets role confusion: Student confuses an attacker&#39;s scanning method with a defender&#39;s anti-reconnaissance technique. -sP is for the attacker to find hosts, not for the defender to hide them."
+      },
+      {
+        "question_text": "Accelerate log rotation on the target system to overwrite ping records",
+        "misconception": "Targets artifact type confusion: Student confuses network traffic (ICMP) with system logs. Ignoring ICMP prevents the traffic itself, not just its logging."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Threat actors can configure target systems to ignore ICMP Echo Requests. This prevents the system from responding to standard &#39;ping&#39; commands, making it appear offline to basic network reconnaissance tools that rely solely on ICMP for host discovery. This is a common anti-reconnaissance technique.",
+      "distractor_analysis": "Implementing a Null scan is an offensive reconnaissance technique, not a defensive one. Using Nmap&#39;s -sP option is an attacker&#39;s method to discover hosts, not a defender&#39;s way to hide them. Accelerating log rotation might remove evidence of a ping, but it doesn&#39;t prevent the system from responding to the ping in the first place, which is the goal of defeating reconnaissance.",
+      "analogy": "Like a person pretending to be asleep when someone calls their name, rather than just erasing the memory of the call."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "echo 1 &gt; /proc/sys/net/ipv4/icmp_echo_ignore_all",
+        "context": "Linux command to disable ICMP Echo Request responses."
+      },
+      {
+        "language": "powershell",
+        "code": "Set-NetFirewallRule -DisplayName &quot;File and Printer Sharing (Echo Request - ICMPv4-In)&quot; -Enabled False",
+        "context": "PowerShell command to disable the Windows Firewall rule for ICMP Echo Requests."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "ICMP_BASICS",
+      "NETWORK_RECONNAISSANCE",
+      "FIREWALL_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "To cover tracks after exfiltrating sensitive documents found via dumpster diving, a threat actor would prioritize which anti-forensics technique?",
+    "correct_answer": "Incinerating or cross-shredding any physical documents retrieved to prevent reassembly",
+    "distractors": [
+      {
+        "question_text": "Using `shred -u` on the dumpster&#39;s contents to securely delete digital remnants",
+        "misconception": "Targets artifact type confusion: Student confuses physical documents with digital files and applies a digital deletion technique to a physical scenario."
+      },
+      {
+        "question_text": "Timestomping the creation and modification dates of the dumpster itself",
+        "misconception": "Targets scope misunderstanding: Student applies a file system metadata manipulation technique to a physical object, demonstrating a lack of understanding of what can be timestomped."
+      },
+      {
+        "question_text": "Clearing the browser history on the target&#39;s computer used for initial reconnaissance",
+        "misconception": "Targets process order errors: Student focuses on an earlier reconnaissance phase artifact rather than the immediate evidence of the physical exfiltration."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "After retrieving physical documents through dumpster diving, the primary anti-forensics concern is to prevent the reassembly or identification of those documents. Incineration or cross-shredding (shredding in multiple directions into fine particles) are effective methods to destroy physical documents beyond recovery, thus covering the tracks of the exfiltration.",
+      "distractor_analysis": "Using `shred -u` is a Linux command for securely deleting digital files, not physical documents. Timestomping applies to digital file metadata, not physical objects like dumpsters. Clearing browser history is a relevant anti-forensics step for digital reconnaissance but does not address the physical evidence of exfiltrated documents.",
+      "analogy": "Like a spy burning a physical map after memorizing its contents, rather than trying to erase its digital footprint."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "PHYSICAL_SECURITY",
+      "ANTI_FORENSICS_BASICS"
+    ]
+  }
+]

@@ -1,0 +1,437 @@
+[
+  {
+    "question_text": "Which EDR capability is most effective at detecting attempts to patch an access token in kernel memory to escalate privileges?",
+    "correct_answer": "Kernel integrity monitoring and memory scanning for unauthorized modifications",
+    "distractors": [
+      {
+        "question_text": "User-mode API hooking for process creation events",
+        "misconception": "Targets scope misunderstanding: Student confuses user-mode activity with kernel-level memory manipulation."
+      },
+      {
+        "question_text": "Network traffic analysis for C2 beaconing",
+        "misconception": "Targets detection layer confusion: Student focuses on network communication rather than host-based kernel compromise."
+      },
+      {
+        "question_text": "File integrity monitoring of system binaries",
+        "misconception": "Targets file-based detection assumption: Student assumes kernel memory modifications involve changes to files on disk."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Patching an access token involves direct modification of kernel memory structures. EDR solutions with kernel integrity monitoring capabilities can detect unauthorized changes to critical kernel data structures, including access tokens. Memory scanning can identify unexpected values or code injections in kernel space.",
+      "distractor_analysis": "User-mode API hooking operates at the user level and would not detect direct kernel memory modifications. Network traffic analysis focuses on external communication, not internal kernel compromise. File integrity monitoring only detects changes to files on disk, which is not how kernel memory patching occurs.",
+      "analogy": "Detecting kernel memory patching is like having a security system that monitors the internal wiring and components of a safe, rather than just the lock on the door or the external cameras."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KERNEL_EXPLOITATION_CONCEPTS",
+      "WINDOWS_ACCESS_TOKENS",
+      "EDR_KERNEL_MONITORING"
+    ]
+  },
+  {
+    "question_text": "Which endpoint protection feature would be most effective in preventing an attacker from using a legitimate, but vulnerable, application to load a malicious DLL from a user-writable directory?",
+    "correct_answer": "Application control with publisher rules and path restrictions on DLL loading",
+    "distractors": [
+      {
+        "question_text": "Network intrusion detection system (NIDS) monitoring for suspicious network traffic",
+        "misconception": "Targets detection layer confusion: Student confuses host-based execution control with network-based detection."
+      },
+      {
+        "question_text": "Antivirus signature-based scanning of all executable files",
+        "misconception": "Targets static analysis limitation: Student believes signature scanning is sufficient for dynamic, fileless-like attacks or new malware variants."
+      },
+      {
+        "question_text": "Host-based firewall blocking outbound connections from unknown processes",
+        "misconception": "Targets control point confusion: Student focuses on network egress control rather than preventing the initial malicious code execution."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "DLL side-loading exploits the Windows DLL search order, allowing a malicious DLL to be loaded by a legitimate application if placed in a specific directory. Application control, specifically using publisher rules, ensures that only DLLs signed by trusted vendors are allowed to load. Combining this with path restrictions prevents DLLs from loading out of user-writable directories (like Downloads or Temp), where an attacker might drop a malicious DLL.",
+      "distractor_analysis": "A Network Intrusion Detection System (NIDS) operates at the network layer and would not prevent the malicious DLL from being loaded on the host. Antivirus signature-based scanning might detect the malicious DLL if its signature is known, but it&#39;s reactive and can be bypassed by new or polymorphic malware. A host-based firewall primarily controls network connections and would not prevent the initial loading and execution of the malicious DLL by a legitimate process.",
+      "analogy": "This is like having a bouncer (publisher rule) who only lets people with valid IDs into a club, and also restricting entry to only the main entrance (path restriction), preventing someone from sneaking in through a back alley with a fake ID."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "New-CIPolicy -FilePath .\\DLLPolicy.xml -Level Publisher -Fallback Hash -UserPEs -ScanPath &#39;C:\\Windows\\System32&#39; -Audit",
+        "context": "Example PowerShell command to create a Windows Defender Application Control (WDAC) policy that includes publisher rules for executables and DLLs, and can be further refined with path rules."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "APPLICATION_CONTROL_POLICIES",
+      "DLL_LOADING_MECHANICS",
+      "WINDOWS_CODE_INTEGRITY",
+      "THREAT_MODELING_DLL_HIJACKING"
+    ]
+  },
+  {
+    "question_text": "Which EDR capability is most effective at detecting a privilege escalation attempt that leverages `SeLoadDriver` to load an unsigned kernel driver?",
+    "correct_answer": "Kernel-mode code integrity monitoring and driver load telemetry",
+    "distractors": [
+      {
+        "question_text": "Network traffic analysis for C2 beaconing",
+        "misconception": "Targets detection layer confusion: Student focuses on network-level indicators rather than host-level kernel activity."
+      },
+      {
+        "question_text": "File integrity monitoring of user-mode application binaries",
+        "misconception": "Targets scope misunderstanding: Student focuses on user-mode file changes, missing the kernel-mode driver loading."
+      },
+      {
+        "question_text": "Application whitelisting for standard user applications",
+        "misconception": "Targets execution prevention vs. detection: Student confuses preventing user-mode application execution with detecting kernel driver loads."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Leveraging `SeLoadDriver` to load an unsigned kernel driver is a critical privilege escalation technique. EDR solutions detect this by monitoring kernel-mode code integrity (ensuring only signed drivers load) and capturing detailed telemetry for driver load events, including the driver&#39;s signature status and origin. This allows for immediate flagging of unauthorized or malicious driver installations.",
+      "distractor_analysis": "Network traffic analysis focuses on external communication, not internal kernel operations. File integrity monitoring of user-mode binaries won&#39;t detect kernel driver loads. Application whitelisting primarily controls user-mode executable execution and doesn&#39;t directly address kernel driver loading, especially if the loading process itself is legitimate but misused.",
+      "analogy": "Detecting `SeLoadDriver` abuse is like having a security checkpoint that not only verifies the identity of every vehicle entering a high-security area (driver signature) but also logs every entry and exit (driver load telemetry), rather than just checking if the vehicle is communicating with the outside world."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-WinEvent -LogName &#39;Microsoft-Windows-CodeIntegrity/Operational&#39; | Where-Object {$_.Id -eq 3076}",
+        "context": "Querying Windows Code Integrity logs for events related to unsigned driver loading attempts (Event ID 3076 indicates a driver was blocked from loading due to integrity policy)."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "WINDOWS_TOKEN_PRIVILEGES",
+      "KERNEL_MODE_SECURITY",
+      "EDR_CAPABILITIES",
+      "CODE_INTEGRITY_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which EDR detection capability is specifically challenged by process-image modification techniques like hollowing, doppelgänging, and herpaderping?",
+    "correct_answer": "Image-based detection relying solely on the initial `FileObject` in process creation notifications",
+    "distractors": [
+      {
+        "question_text": "Network traffic analysis for C2 beaconing",
+        "misconception": "Targets detection layer confusion: Student conflates host-based process analysis with network-based detection."
+      },
+      {
+        "question_text": "Hash-based application whitelisting of executables",
+        "misconception": "Targets prevention vs. detection confusion: Student confuses a static prevention mechanism with a dynamic runtime detection challenge."
+      },
+      {
+        "question_text": "Memory forensics for injected shellcode",
+        "misconception": "Targets post-execution detection: Student focuses on detecting the payload after modification, not the modification technique itself."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process-image modification techniques exploit a design decision in Windows process creation where the kernel creates a section object from the target image (Step 3) before sending process-creation notifications (Step 7). Attackers modify the process&#39;s attributes after the initial image section is created but before the notification, causing the `FileObject` in the `PS_CREATE_NOTIFY_INFO` structure to point to the original, legitimate image, rather than the malicious one truly being executed. This bypasses EDRs that rely solely on this initial image information for detection.",
+      "distractor_analysis": "Network traffic analysis detects C2, not the process modification technique. Hash-based whitelisting is a prevention mechanism that can be bypassed by these techniques, but it&#39;s not a detection capability challenged by them in the same way. Memory forensics can detect injected shellcode *after* the modification, but the question asks about the capability challenged by the *modification technique itself*, which is the initial image-based detection.",
+      "analogy": "This is like a security guard checking an ID badge at the entrance (the initial `FileObject`), but the person then changes their clothes and identity *after* passing the initial check but *before* entering the main building. The guard&#39;s initial check was fooled, even if later surveillance might catch the changed identity."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "EDR_ARCHITECTURE",
+      "WINDOWS_PROCESS_CREATION",
+      "KERNEL_CALLBACKS",
+      "PROCESS_INJECTION_TECHNIQUES"
+    ]
+  },
+  {
+    "question_text": "Which EDR capability or host-based logging mechanism would be most effective for detecting an attacker attempting to disable or manipulate an existing Event Tracing for Windows (ETW) session used for security monitoring?",
+    "correct_answer": "Monitoring for `sechost!ControlTrace()` API calls targeting security-relevant ETW sessions",
+    "distractors": [
+      {
+        "question_text": "File integrity monitoring on ETW log files",
+        "misconception": "Targets file-based detection assumption: Student assumes ETW manipulation primarily involves direct file modification rather than API calls."
+      },
+      {
+        "question_text": "Network traffic analysis for unusual ETW data exfiltration",
+        "misconception": "Targets detection layer confusion: Student conflates internal host-based ETW manipulation with network-based data exfiltration."
+      },
+      {
+        "question_text": "Application whitelisting of `logman.exe` and `xperf.exe`",
+        "misconception": "Targets scope misunderstanding: Student focuses on preventing legitimate tools rather than detecting malicious API usage by any process."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "ETW controllers manage trace sessions using specific Windows APIs like `sechost!ControlTrace()`. An attacker attempting to disable, modify, or stop a security-relevant ETW session would likely invoke this API. EDRs with kernel-level visibility or user-mode API hooking capabilities can monitor these critical API calls, especially when they target known security-related ETW sessions, to detect tampering.",
+      "distractor_analysis": "File integrity monitoring on ETW log files is ineffective because manipulating an ETW session is an in-memory operation via API calls, not a direct modification of log files. Network traffic analysis focuses on data exfiltration, which is a post-manipulation activity, not the act of disabling the ETW session itself. Application whitelisting of `logman.exe` and `xperf.exe` might prevent legitimate administrators from using these tools, but an attacker could use custom code or other utilities to call the underlying APIs directly, bypassing such whitelisting.",
+      "analogy": "Monitoring `ControlTrace()` is like having a security guard at the control panel of a surveillance system, watching for anyone trying to turn off or reconfigure the cameras, rather than just checking if the recorded footage is missing later."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "logman.exe stop &quot;Diagtrack-Listener&quot; -ets",
+        "context": "Example of using logman.exe to stop an ETW trace session, which internally calls `ControlTrace()`."
+      },
+      {
+        "language": "c",
+        "code": "Status = ControlTrace(SessionHandle, NULL, &amp;Properties);",
+        "context": "C code snippet demonstrating the `ControlTrace` API call used by controllers to manage ETW sessions."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "ETW_BASICS",
+      "WINDOWS_API_MONITORING",
+      "EDR_CAPABILITIES"
+    ]
+  },
+  {
+    "question_text": "To prevent the misuse of Living Off The Land Binaries (LOLBins) like `powershell.exe` or `cmd.exe` for malicious purposes, which application control configuration is most effective?",
+    "correct_answer": "Implement conditional rules based on parent process, command-line arguments, or script content",
+    "distractors": [
+      {
+        "question_text": "Hash-based whitelisting of `powershell.exe` and `cmd.exe`",
+        "misconception": "Targets simple whitelisting: Student believes whitelisting the legitimate binary itself is sufficient, ignoring its potential for misuse."
+      },
+      {
+        "question_text": "Network firewall rules to block outbound connections from LOLBins",
+        "misconception": "Targets network vs. host execution: Student confuses host-based execution control with network access control, which is a different layer of defense."
+      },
+      {
+        "question_text": "Implement signature-based antivirus to detect known LOLBin payloads",
+        "misconception": "Targets signature limitation: Student relies on signatures, which are ineffective against novel or polymorphic misuse of legitimate tools."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "LOLBins are legitimate system tools that attackers can abuse. Simple hash-based whitelisting of these binaries is ineffective because the binaries themselves are legitimate. Effective application control requires conditional rules that analyze the context of execution. This includes checking the parent process (e.g., `powershell.exe` should not be spawned by `winword.exe`), inspecting command-line arguments for suspicious flags or encoded commands, or analyzing the content of scripts being executed (e.g., via AMSI integration for PowerShell).",
+      "distractor_analysis": "Hash-based whitelisting will allow `powershell.exe` to run, which is its intended function, but won&#39;t prevent its malicious use. Network firewall rules control network traffic, not the execution of processes on the host. Signature-based antivirus is reactive and often fails against novel or custom LOLBin abuse, as the &#39;malware&#39; is the legitimate tool itself, used in an illegitimate way.",
+      "analogy": "Controlling LOLBins is like giving a trusted employee a multi-tool. You trust the tool and the employee, but you need rules to ensure they don&#39;t use the screwdriver to pick a lock. You&#39;d monitor *how* they use it, not just that they possess it."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Set-MpPreference -AttackSurfaceReductionRules_Ids D4F940AB-401B-4EFC-AADC-AD5F3C50688A -AttackSurfaceReductionRules_Actions Block",
+        "context": "Example of a Microsoft Defender ASR rule to block PowerShell from executing obfuscated script files, demonstrating conditional control."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "APPLICATION_CONTROL_POLICIES",
+      "LOLBIN_CONCEPTS",
+      "WINDOWS_CODE_INTEGRITY",
+      "ATTACK_SURFACE_REDUCTION"
+    ]
+  },
+  {
+    "question_text": "To prevent an attacker from executing malicious code dropped into a user&#39;s temporary directory (`%TEMP%` or `%APPDATA%`), which application control policy configuration is most effective?",
+    "correct_answer": "Implementing path rules to explicitly deny execution from all user-writable temporary directories",
+    "distractors": [
+      {
+        "question_text": "Creating hash-based rules for every legitimate application",
+        "misconception": "Targets scalability/maintenance issues of hash rules: Student overlooks the impracticality and brittleness of hash rules for dynamic environments and legitimate software updates."
+      },
+      {
+        "question_text": "Enforcing publisher rules to only allow signed applications",
+        "misconception": "Targets the limitation of publisher rules regarding execution location and signed malicious binaries: Student assumes signed applications are always safe, ignoring that legitimate signed tools can be abused or that malicious code can be signed."
+      },
+      {
+        "question_text": "Configuring the antivirus to scan all files in temporary directories",
+        "misconception": "Targets confusion between preventative application control and reactive detection: Student conflates detection (antivirus) with prevention (application control), which aims to block execution outright."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Attackers frequently drop and execute malicious payloads in user-writable temporary directories like `%TEMP%` or `%APPDATA%` because these locations typically have fewer restrictions than system directories. Path rules in application control policies (e.g., Windows Defender Application Control, AppLocker) are highly effective at preventing execution from these specific, high-risk locations, regardless of the file&#39;s hash or signature.",
+      "distractor_analysis": "Hash-based rules are impractical for a dynamic environment; every update to a legitimate application would break the hash rule, requiring constant maintenance. Publisher rules allow any application signed by a trusted publisher to run, but they don&#39;t restrict *where* that application (or a malicious script/binary it might launch) can execute from. An attacker could use a legitimate, signed tool to execute code from a temporary directory. Antivirus scanning is a detection mechanism, not a preventative application control. It aims to identify and quarantine malicious files, but it doesn&#39;t prevent their initial execution attempt if the AV signature is not present or bypassed.",
+      "analogy": "Path rules for temporary directories are like putting up a &#39;No Entry&#39; sign on specific, known dangerous roads, regardless of who is driving the car or what model it is. Hash rules are like only allowing specific car models with specific VINs, which is unmanageable. Publisher rules are like only allowing cars from trusted manufacturers, but they can still drive down the dangerous roads."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "New-AppLockerPolicy -RuleType Path -RuleName &#39;Deny Temp Execution&#39; -User Everyone -Action Deny -Path &#39;%TEMP%\\*&#39; -ErrorAction SilentlyContinue",
+        "context": "Example AppLocker PowerShell command to create a path rule denying execution from the user&#39;s temporary directory."
+      },
+      {
+        "language": "powershell",
+        "code": "New-AppLockerPolicy -RuleType Path -RuleName &#39;Deny AppData Execution&#39; -User Everyone -Action Deny -Path &#39;%APPDATA%\\*\\*.exe&#39; -ErrorAction SilentlyContinue",
+        "context": "Example AppLocker PowerShell command to create a path rule denying execution of executables from the user&#39;s AppData directory."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "APPLICATION_CONTROL_POLICIES",
+      "WINDOWS_DIRECTORY_STRUCTURE",
+      "COMMON_ATTACK_VECTORS"
+    ]
+  },
+  {
+    "question_text": "An attacker gains access to a GCP VM and attempts to exfiltrate data by creating a new firewall rule allowing outbound traffic to an unauthorized IP address. Which EDR capability would be most effective in detecting this activity on the compromised VM?",
+    "correct_answer": "Cloud workload protection platform (CWPP) integration with GCP audit logs for API call monitoring",
+    "distractors": [
+      {
+        "question_text": "Host-based firewall logs on the VM",
+        "misconception": "Targets scope misunderstanding: Student assumes host-based logs capture cloud-level network policy changes."
+      },
+      {
+        "question_text": "Network intrusion detection system (NIDS) monitoring egress traffic",
+        "misconception": "Targets detection layer confusion: Student focuses on network perimeter instead of the API call that modifies cloud infrastructure."
+      },
+      {
+        "question_text": "File integrity monitoring of the VM&#39;s operating system files",
+        "misconception": "Targets irrelevant detection technique: Student conflates network policy changes with file system modifications."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Creating or modifying GCP firewall rules is an API operation performed against the GCP control plane, not directly on the VM&#39;s operating system. A Cloud Workload Protection Platform (CWPP) integrated with GCP&#39;s audit logs (e.g., Cloud Audit Logs) would monitor these API calls for suspicious activity, such as a VM&#39;s service account attempting to create or modify firewall rules, which is a strong indicator of compromise and privilege escalation.",
+      "distractor_analysis": "Host-based firewall logs on the VM would only show traffic allowed or denied by the VM&#39;s local firewall, not changes to the GCP network firewall rules. A NIDS would see the exfiltration traffic if it occurs, but it wouldn&#39;t detect the *creation* of the rule that enabled it. File integrity monitoring is irrelevant as creating a firewall rule does not modify the VM&#39;s operating system files.",
+      "analogy": "Detecting a GCP firewall rule change is like monitoring who has access to the building&#39;s master key system, not just who is walking through the doors. The CWPP watches the master key system (GCP API calls), while host-based logs and NIDS watch the doors (VM traffic)."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "gcloud compute firewall-rules create allow-egress-to-bad-ip --direction=EGRESS --priority=1000 --network=my-vpc --action=ALLOW --destination-ranges=1.2.3.4/32 --rules=tcp:22,tcp:80,tcp:443",
+        "context": "Example gcloud command an attacker might use to create an egress firewall rule from a compromised VM."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "GCP_NETWORKING_FUNDAMENTALS",
+      "CLOUD_SECURITY_CONCEPTS",
+      "EDR_XDR_CAPABILITIES",
+      "API_SECURITY_MONITORING"
+    ]
+  },
+  {
+    "question_text": "Which EDR capability would be most effective at detecting an attacker attempting to bypass application control by injecting malicious code into a legitimate, whitelisted process?",
+    "correct_answer": "Memory integrity monitoring and behavioral analysis for process injection",
+    "distractors": [
+      {
+        "question_text": "File integrity monitoring of system binaries",
+        "misconception": "Targets file-based detection assumption: Student assumes the attack involves modifying files, not memory"
+      },
+      {
+        "question_text": "Network traffic analysis for C2 beaconing",
+        "misconception": "Targets detection layer confusion: Student focuses on network communication rather than host-based execution techniques"
+      },
+      {
+        "question_text": "Hash-based application whitelisting",
+        "misconception": "Targets execution prevention confusion: Student conflates pre-execution prevention with post-execution detection of malicious behavior"
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process injection attacks involve a malicious process writing code into the memory space of a legitimate, often whitelisted, process to execute its payload. Traditional file-based detection or hash-based whitelisting will not detect this. EDR solutions with memory integrity monitoring can detect unauthorized modifications to a process&#39;s memory space, while behavioral analysis can identify anomalous API calls or execution patterns indicative of injection.",
+      "distractor_analysis": "File integrity monitoring only detects changes to files on disk, which is not the primary mechanism of process injection. Network traffic analysis might detect subsequent C2 communication but misses the initial injection event. Hash-based application whitelisting prevents unauthorized executables from launching but does not detect malicious code injected into an already running, whitelisted process.",
+      "analogy": "This is like a security guard checking IDs at the door (whitelisting), but then a criminal sneaks into an authorized person&#39;s uniform and starts causing trouble inside the building. Memory integrity monitoring is like having internal surveillance that detects when someone&#39;s behavior doesn&#39;t match their authorized uniform."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "ENDPOINT_DETECTION_BASICS",
+      "PROCESS_INJECTION_TECHNIQUES",
+      "APPLICATION_CONTROL_LIMITATIONS"
+    ]
+  },
+  {
+    "question_text": "A threat actor attempts to exploit a vulnerability in a DNS server by sending malformed DNS queries from an external network. Which endpoint protection feature on the DNS server itself would be most effective in preventing the successful execution of arbitrary code via such an exploit?",
+    "correct_answer": "Application control enforcing only authorized DNS server processes and libraries",
+    "distractors": [
+      {
+        "question_text": "Network intrusion detection system (NIDS) monitoring DNS traffic",
+        "misconception": "Targets network vs. host-based protection: Student confuses network-level detection with host-level execution prevention."
+      },
+      {
+        "question_text": "Host-based firewall blocking all inbound DNS queries",
+        "misconception": "Targets functionality disruption: Student suggests a measure that would break legitimate DNS service."
+      },
+      {
+        "question_text": "Antivirus scanning of the DNS server&#39;s executable files",
+        "misconception": "Targets static vs. dynamic protection: Student focuses on file-based scanning rather than runtime execution control."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "While network devices like firewalls and NIDS can detect or block some malformed packets, an exploit that successfully bypasses these and targets a vulnerability in the DNS server software itself would lead to arbitrary code execution. Application control, when properly configured, would prevent any unauthorized processes or libraries (like malicious payloads) from executing on the DNS server, even if the initial vulnerability is triggered. It ensures only the legitimate DNS server application and its approved components can run.",
+      "distractor_analysis": "A NIDS might detect the malformed queries but wouldn&#39;t prevent the exploit&#39;s payload from executing on the host if the vulnerability is successfully triggered. A host-based firewall blocking all inbound DNS queries would prevent the server from functioning as a DNS server. Antivirus scanning primarily focuses on known malicious files and signatures; it&#39;s less effective against zero-day exploits or preventing the execution of code injected into a legitimate process.",
+      "analogy": "Application control on a DNS server is like having a bouncer at a club who not only checks IDs (firewall) but also ensures that once inside, guests only perform approved activities and don&#39;t try to set up an unauthorized shop or start a riot, even if they snuck past the ID check."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "APPLICATION_CONTROL_POLICIES",
+      "DNS_VULNERABILITIES",
+      "ENDPOINT_HARDENING"
+    ]
+  },
+  {
+    "question_text": "Which host-based telemetry source is crucial for detecting process injection techniques like `CreateRemoteThread` or `NtCreateThreadEx`?",
+    "correct_answer": "Sysmon Event ID 8 (CreateRemoteThread) and Event ID 10 (ProcessAccess)",
+    "distractors": [
+      {
+        "question_text": "Windows Security Event Log Event ID 4688 (Process Creation)",
+        "misconception": "Targets process creation logs are sufficient: Student believes process creation events cover all relevant process activity, not realizing injection modifies an *existing* process rather than creating a new one."
+      },
+      {
+        "question_text": "Windows Defender Antivirus logs for malware detection",
+        "misconception": "Targets traditional AV catches all advanced threats: Student relies on basic AV logs, which often miss advanced behavioral techniques like process injection unless a specific signature or behavioral rule is triggered post-injection."
+      },
+      {
+        "question_text": "Network connection logs for unusual outbound traffic",
+        "misconception": "Targets network logs are primary for host-level attacks: Student confuses network-level detection (e.g., C2 traffic) with host-level process monitoring, which is needed to detect the injection itself."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process injection involves one process writing code into the memory of another and then forcing the target process to execute that code. Sysmon (System Monitor) is a critical tool for this. Event ID 8 specifically logs `CreateRemoteThread` calls, which are a common method for process injection. Event ID 10 (ProcessAccess) logs when one process opens another with specific access rights, which is a prerequisite for many injection techniques.",
+      "distractor_analysis": "Windows Security Event Log Event ID 4688 captures process *creation*, not modifications to existing processes. Windows Defender Antivirus logs primarily focus on file-based detections or known malicious behaviors, and may not always catch the subtle API calls involved in injection. Network connection logs detect post-exploitation C2 activity, but not the initial process injection on the host.",
+      "analogy": "If a burglar breaks into a house (process injection) and then makes a phone call (C2 traffic), network logs would only see the phone call. Sysmon is like a detailed security camera inside the house that records the burglar picking the lock and entering the room."
+    },
+    "code_snippets": [
+      {
+        "language": "xml",
+        "code": "&lt;EventFiltering&gt;\n  &lt;RuleGroup name=&quot;ProcessInjection&quot; groupRelation=&quot;or&quot;&gt;\n    &lt;CreateRemoteThread onmatch=&quot;include&quot;&gt;\n      &lt;TargetImage condition=&quot;is not&quot;&gt;C:\\Windows\\System32\\lsass.exe&lt;/TargetImage&gt;\n      &lt;TargetImage condition=&quot;is not&quot;&gt;C:\\Windows\\System32\\csrss.exe&lt;/TargetImage&gt;\n      &lt;TargetImage condition=&quot;is not&quot;&gt;C:\\Windows\\System32\\winlogon.exe&lt;/TargetImage&gt;\n    &lt;/CreateRemoteThread&gt;\n    &lt;ProcessAccess onmatch=&quot;include&quot;&gt;\n      &lt;GrantedAccess condition=&quot;contains&quot;&gt;0x1F0FFF&lt;/GrantedAccess&gt;\n      &lt;GrantedAccess condition=&quot;contains&quot;&gt;0x1F1FFF&lt;/GrantedAccess&gt;\n      &lt;GrantedAccess condition=&quot;contains&quot;&gt;0x1F2FFF&lt;/GrantedAccess&gt;\n    &lt;/ProcessAccess&gt;\n  &lt;/RuleGroup&gt;\n&lt;/EventFiltering&gt;",
+        "context": "A simplified Sysmon configuration snippet to log CreateRemoteThread (Event ID 8) and ProcessAccess (Event ID 10) events, with exclusions for common legitimate system processes."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "WINDOWS_EVENT_LOGGING",
+      "SYSMON_CONFIGURATION",
+      "PROCESS_INJECTION_TECHNIQUES"
+    ]
+  },
+  {
+    "question_text": "Which EDR capability, when integrated with memory forensics tools, would be most effective in detecting a kernel-level rootkit like Rubilyn that manipulates network packet processing functions (NKEs) to hide its activity?",
+    "correct_answer": "Kernel-mode memory scanning for unauthorized Network Kernel Extensions (NKEs) and hooked network functions",
+    "distractors": [
+      {
+        "question_text": "User-mode API hooking detection for process injection",
+        "misconception": "Targets layer confusion: Student focuses on user-mode techniques, missing the kernel-level nature of the threat"
+      },
+      {
+        "question_text": "File integrity monitoring of system binaries and libraries",
+        "misconception": "Targets detection scope misunderstanding: Student assumes file-based changes, but rootkits often operate in memory without disk modifications"
+      },
+      {
+        "question_text": "Network flow analysis for anomalous traffic patterns",
+        "misconception": "Targets detection evasion: Student overlooks that the rootkit actively hides its traffic from the network stack, making flow analysis less effective for initial detection"
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Kernel-level rootkits like Rubilyn operate at the lowest levels of the operating system, often by injecting or modifying Network Kernel Extensions (NKEs) or hooking critical kernel functions to manipulate system behavior and hide their presence. EDR solutions with kernel-mode memory scanning capabilities can detect these unauthorized modifications and injected code within the kernel&#39;s memory space, specifically looking for unexpected NKEs or altered function pointers in the network stack.",
+      "distractor_analysis": "User-mode API hooking detection focuses on processes operating in user space and would miss kernel-level manipulations. File integrity monitoring primarily detects changes to files on disk, which a memory-resident rootkit might avoid. While network flow analysis is useful for C2 detection, Rubilyn specifically stops the network stack from processing its &#39;magic packets,&#39; making it difficult to detect via standard network monitoring alone for the initial compromise."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-Process -Name &#39;System&#39; | Select-Object Handles, Threads, WorkingSet",
+        "context": "While not directly detecting NKEs, this command shows how to inspect the &#39;System&#39; process, which runs in kernel mode, as a starting point for deeper kernel analysis with specialized tools."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KERNEL_MODE_OPERATION",
+      "MEMORY_FORENSICS_BASICS",
+      "ROOTKIT_TECHNIQUES",
+      "EDR_CAPABILITIES"
+    ]
+  }
+]

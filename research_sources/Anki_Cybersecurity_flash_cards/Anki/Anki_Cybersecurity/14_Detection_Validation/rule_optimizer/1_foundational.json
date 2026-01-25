@@ -1,0 +1,136 @@
+[
+  {
+    "question_text": "A new detection engineer is tasked with tuning a Sigma rule for suspicious process creation. They propose using a cyber range to test the rule&#39;s effectiveness. What is the primary benefit of using a cyber range for this tuning process?",
+    "correct_answer": "It provides a safe, simulated environment to test the rule against replicated organizational systems and traffic without impacting production.",
+    "distractors": [
+      {
+        "question_text": "Cyber ranges automatically generate optimal Sigma rule syntax based on observed attack patterns.",
+        "misconception": "Targets automation over simulation: Student believes cyber ranges are AI-driven rule generators, rather than simulation environments."
+      },
+      {
+        "question_text": "It allows for direct modification of production SIEM rules and immediate feedback on false positives.",
+        "misconception": "Targets production impact misunderstanding: Student confuses a cyber range with a production environment, ignoring the &#39;safe&#39; and &#39;simulated&#39; aspects."
+      },
+      {
+        "question_text": "Cyber ranges are primarily used for compliance reporting and auditing existing security controls.",
+        "misconception": "Targets purpose confusion: Student misunderstands the core function of a cyber range, conflating it with GRC tools."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Cyber ranges are designed to be a safe, interactive simulation of an organization&#39;s actual systems, networks, and applications. This allows detection engineers to test new or tuned Sigma rules against realistic, simulated traffic and attack scenarios without any risk to the live production environment. It&#39;s an ideal sandbox for &#39;purple teaming&#39; activities where red and blue teams collaborate to refine detections.",
+      "distractor_analysis": "Cyber ranges are simulation tools, not automated rule generators. Testing directly in production is dangerous and defeats the purpose of a range. While security controls are assessed, the primary use is hands-on training and testing, not compliance reporting.",
+      "analogy": "Think of a cyber range as a flight simulator for pilots. You can practice complex maneuvers and test new procedures in a realistic environment without crashing a real plane."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "CYBER_RANGE_CONCEPTS",
+      "DETECTION_ENGINEERING_BASICS"
+    ]
+  },
+  {
+    "question_text": "A security team is struggling with inconsistent definitions and approaches to &#39;Purple Teaming&#39; due to varied vendor interpretations. To establish a clear, result-centric methodology, what is the most effective initial step?",
+    "correct_answer": "Develop an internal, vendor-agnostic purple teaming definition and process model based on community efforts and practical experience.",
+    "distractors": [
+      {
+        "question_text": "Adopt the purple teaming methodology proposed by a leading SIEM vendor to standardize the approach.",
+        "misconception": "Targets vendor lock-in: Student believes vendor-specific solutions are always best, overlooking the need for a neutral, adaptable framework."
+      },
+      {
+        "question_text": "Focus solely on adversary emulation exercises to immediately improve detection capabilities.",
+        "misconception": "Targets process skipping: Student prioritizes immediate action over foundational planning, missing the importance of a defined process before execution."
+      },
+      {
+        "question_text": "Purchase a new security orchestration, automation, and response (SOAR) platform to automate purple teaming activities.",
+        "misconception": "Targets tool over process: Student believes technology alone can solve process definition problems, rather than using tools to support a well-defined process."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Given the lack of official documentation and the influence of vendor-specific interpretations, establishing a clear, internal, vendor-agnostic definition and process model is crucial. This allows the organization to build a consistent, result-centric approach tailored to its specific needs, leveraging broader community efforts rather than being constrained by a single vendor&#39;s vision.",
+      "distractor_analysis": "Adopting a single vendor&#39;s methodology can lead to bias and may not fit all organizational needs. Focusing only on adversary emulation without a defined process can lead to uncoordinated efforts and missed opportunities for improvement. Purchasing a SOAR platform is a tool-centric approach that won&#39;t solve fundamental process definition issues; tools should support an established process, not define it.",
+      "analogy": "Imagine trying to build a house where every contractor uses their own blueprint. To ensure a cohesive structure, you first need to agree on a single, comprehensive blueprint that integrates the best practices from various builders, rather than just picking one contractor&#39;s plan or immediately starting to lay bricks."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "PURPLE_TEAMING_CONCEPTS",
+      "CYBERSECURITY_FRAMEWORKS"
+    ]
+  },
+  {
+    "question_text": "A Logstash filter is configured to drop events where `syslog_priority` is &#39;info&#39;. What is the primary risk of using a `drop{}` filter for noise reduction, especially if misconfigured?",
+    "correct_answer": "Permanently deleting events, leading to a severe lack of information during incident response if valuable logs are inadvertently dropped.",
+    "distractors": [
+      {
+        "question_text": "Increased processing overhead due to the `drop` plugin&#39;s complex Boolean logic evaluation.",
+        "misconception": "Targets performance over security: Student focuses on potential performance impacts rather than the critical data loss implications of dropping events."
+      },
+      {
+        "question_text": "The `drop` plugin only works with specific data sources like Windows Defender, limiting its general applicability.",
+        "misconception": "Targets scope misunderstanding: Student misinterprets the example as a limitation of the plugin itself, rather than a specific application of its logic."
+      },
+      {
+        "question_text": "It prevents subsequent enrichment stages from adding context to the dropped events, even if they are later re-ingested.",
+        "misconception": "Targets process order errors: Student believes dropped events can be &#39;re-ingested&#39; into the same pipeline for enrichment, misunderstanding that dropping is final within that pipeline."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `drop{}` filter in Logstash permanently discards events. If the filtering logic is flawed or misjudges the value of certain logs, critical forensic evidence or context for incident response could be irrevocably lost, creating significant blind spots during an investigation.",
+      "distractor_analysis": "The `drop` plugin is designed to reduce volume, not increase overhead. The `drop` plugin is general-purpose; the example merely shows its application to specific data sources. Dropped events are gone; they cannot be re-enriched within the same pipeline.",
+      "analogy": "Imagine shredding documents to reduce clutter. If you accidentally shred a critical legal document, it&#39;s gone forever, regardless of how much space you saved."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "filter{\n  if [syslog_priority] == &quot;info&quot; {\n    drop{}\n  }\n  if [datasource] == &quot;Windows-Defender&quot; and [Event_Id] in\n  [&quot;800&quot;, &quot;700&quot;] {\n    drop{}\n  }\n}",
+        "context": "Logstash filter configuration using the `drop` plugin"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "defense",
+    "prerequisites": [
+      "LOGSTASH_BASICS",
+      "DATA_FILTERING",
+      "INCIDENT_RESPONSE_FUNDAMENTALS"
+    ]
+  },
+  {
+    "question_text": "A SIEM rule detects &#39;Multiple Failed Logins from a Single Source IP&#39; (Event ID 4625, threshold 10 in 5 minutes). This rule is generating a high volume of false positives due to a misconfigured legacy application repeatedly attempting to authenticate with incorrect credentials. How would you tune this rule to reduce noise without losing detection of actual brute-force attacks?",
+    "correct_answer": "Add an exclusion filter for the specific source IP address of the legacy application, ensuring the rule still applies to all other IPs.",
+    "distractors": [
+      {
+        "question_text": "Increase the threshold to 50 failed logins in 5 minutes for all source IPs.",
+        "misconception": "Targets threshold misapplication: Student believes universally raising the threshold is the primary solution, but this significantly reduces sensitivity for actual attacks from other sources."
+      },
+      {
+        "question_text": "Disable the rule during off-peak hours when the legacy application is most active.",
+        "misconception": "Targets time-based misunderstanding: Student thinks time-based filtering solves the issue, but this creates a blind spot for attacks occurring during those hours."
+      },
+      {
+        "question_text": "Modify the rule to only alert on successful logins after multiple failed attempts.",
+        "misconception": "Targets detection logic inversion: Student confuses reducing false positives with changing the core detection logic, potentially missing the initial brute-force attempts."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The most effective way to address false positives from a known, legitimate source is to specifically exclude that source. By filtering out the legacy application&#39;s IP, the rule&#39;s sensitivity for all other potential attackers remains intact, preventing a reduction in overall security coverage. This is a targeted fix for a targeted problem.",
+      "distractor_analysis": "Increasing the threshold globally would make the rule less effective against actual brute-force attacks from other sources. Disabling the rule during specific hours creates a significant window of vulnerability. Changing to successful logins fundamentally alters the rule&#39;s purpose from detecting brute-force attempts to detecting potential account compromise after a brute-force, which is a different detection objective.",
+      "analogy": "If a fire alarm keeps going off because of a toaster, you fix the toaster or move it, not raise the smoke sensitivity for the entire building."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "detection:\n  selection:\n    EventID: 4625\n    count(EventID): 10\n    timeframe: 5m\n  filter_legacy_app:\n    SourceIp: &#39;192.168.1.100&#39; # IP of the noisy legacy application\n  condition: selection and not filter_legacy_app",
+        "context": "Sigma rule with an IP-based exclusion filter for a noisy legacy application."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "SIEM_BASICS",
+      "WINDOWS_SECURITY_EVENTS",
+      "DETECTION_TUNING"
+    ]
+  }
+]

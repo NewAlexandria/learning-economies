@@ -1,0 +1,38 @@
+[
+  {
+    "question_text": "A key management specialist is designing a system for storing cryptographic keys. Which of the following properties of an HSM (Hardware Security Module) is most crucial for ensuring that private keys cannot be extracted, even by system administrators?",
+    "correct_answer": "Hardware-enforced non-exportability of keys",
+    "distractors": [
+      {
+        "question_text": "FIPS 140-2 Level 3 certification",
+        "misconception": "Targets certification confusion: While FIPS 140-2 Level 3 is important for overall security, it doesn&#39;t specifically guarantee non-exportability as its primary function, but rather tamper resistance and identity-based authentication. Students might conflate general security certification with a specific key property."
+      },
+      {
+        "question_text": "Support for dual-control key ceremonies",
+        "misconception": "Targets procedural vs. technical confusion: Dual-control is a strong administrative control for key operations, but it&#39;s a procedural safeguard, not a technical one that prevents extraction once a key is inside the HSM. Students might confuse strong operational procedures with hardware-level technical enforcement."
+      },
+      {
+        "question_text": "Encrypted backups of private keys to an external storage device",
+        "misconception": "Targets backup misconception: Encrypted backups are a good practice for disaster recovery, but they imply the key material *can* be extracted (albeit in encrypted form) from the HSM. This contradicts the goal of non-exportability, which means the key never leaves the secure boundary. Students might think encryption alone makes extraction safe."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The most crucial property of an HSM for preventing private key extraction is its hardware-enforced non-exportability. This means the key material is generated and stored within the secure boundary of the HSM and is physically and cryptographically prevented from ever leaving it, even for administrators. Operations requiring the private key (like signing or decryption) are performed inside the HSM.",
+      "distractor_analysis": "FIPS 140-2 Level 3 certification ensures tamper resistance and strong authentication, which are vital for an HSM, but the specific mechanism preventing extraction is the non-exportability attribute. Dual-control key ceremonies are administrative controls that require multiple individuals to authorize sensitive operations, but they don&#39;t inherently prevent a key from being extracted if the HSM&#39;s design allows it. Encrypted backups, while useful for recovery, mean the key material has left the HSM&#39;s secure boundary, even if encrypted, which is contrary to the principle of non-exportability.",
+      "analogy": "Think of it like a secure vault where you can put documents in and ask the vault to perform actions on them (like stamping them), but you can never take the original document out once it&#39;s inside. Other security measures (like guards or alarms) are important, but the vault&#39;s design is what prevents the document&#39;s removal."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "# Example of setting CKA_EXTRACTABLE to False in PKCS#11 for key generation\nfrom PyKCS11 import *\n\n# ... (session setup, token login)\n\nprivate_key_template = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_TOKEN, True),        # Stored on token\n    (CKA_PRIVATE, True),      # Private key\n    (CKA_SENSITIVE, True),    # Sensitive data\n    (CKA_EXTRACTABLE, False)  # CRITICAL: Key cannot be extracted\n]\n\n# session.generateKeyPair(CKM_RSA_PKCS_KEY_PAIR_GEN, public_key_template, private_key_template)",
+        "context": "This Python snippet using PyKCS11 demonstrates how the CKA_EXTRACTABLE attribute is set to &#39;False&#39; during private key generation within an HSM, explicitly preventing its export."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  }
+]

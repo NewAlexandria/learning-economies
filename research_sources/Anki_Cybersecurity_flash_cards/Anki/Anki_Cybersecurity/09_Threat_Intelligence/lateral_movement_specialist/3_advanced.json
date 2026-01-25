@@ -1,0 +1,38 @@
+[
+  {
+    "question_text": "After gaining initial access to an internal network, an attacker wants to move laterally to a domain controller to extract credentials. Which of the following techniques is primarily used for credential harvesting from a domain controller?",
+    "correct_answer": "DCSync attack to simulate domain controller replication and retrieve password hashes",
+    "distractors": [
+      {
+        "question_text": "Pass-the-Hash (PtH) using a local administrator hash",
+        "misconception": "Targets scope of PtH: Student confuses PtH for lateral movement between workstations with the specific technique for DC credential extraction."
+      },
+      {
+        "question_text": "Kerberoasting to obtain service account hashes from Active Directory",
+        "misconception": "Targets attack goal: Student confuses extracting service account hashes for cracking with directly extracting all domain credentials from a DC."
+      },
+      {
+        "question_text": "Golden Ticket attack to forge a TGT for any user",
+        "misconception": "Targets attack prerequisite: Student confuses a post-compromise persistence technique (Golden Ticket) with the initial credential harvesting method from a DC."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The DCSync attack leverages the Directory Replication Service (DRS) Remote Protocol (MS-DRSR) to request password hashes and other credential data directly from a domain controller. An attacker with sufficient privileges (e.g., Domain Admin, Enterprise Admin, or specific replication permissions) can impersonate a domain controller and request replication of credential data, including NTLM and Kerberos hashes for all users, from another domain controller. This is a highly effective way to harvest credentials for domain-wide compromise.",
+      "distractor_analysis": "Pass-the-Hash is used for lateral movement between hosts using an existing NTLM hash, not for extracting all credentials from a DC. Kerberoasting targets service principal names (SPNs) to obtain service account hashes, which are then cracked offline, but it&#39;s not a direct method to dump all domain credentials from a DC. A Golden Ticket attack is a persistence mechanism that requires the $krbtgt$ hash (often obtained via DCSync) to forge Kerberos TGTs, allowing an attacker to impersonate any user indefinitely, but it&#39;s not the initial harvesting technique itself.",
+      "analogy": "Imagine you have a key to the master safe (domain controller). DCSync is like using that key to open the safe and take out all the individual keys (user credentials) inside, rather than just using one key to open a single lock (Pass-the-Hash) or trying to guess the combination to a specific lock (Kerberoasting)."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Invoke-Mimikatz -Command &#39;&quot;lsadump::dcsync /domain:corp.local /all /inject&quot;&#39;",
+        "context": "Mimikatz command to perform a DCSync attack and dump all domain credentials."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_LATERAL",
+      "ATTACK_PRIVESC"
+    ]
+  }
+]

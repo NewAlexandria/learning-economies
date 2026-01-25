@@ -1,0 +1,41 @@
+[
+  {
+    "question_text": "To effectively blind an EDR (Endpoint Detection and Response) solution that heavily relies on logging and monitoring for incident detection, which technique would be MOST effective for an attacker to prevent their actions from being recorded?",
+    "correct_answer": "Patching or hooking logging functions (e.g., EventWrite, WriteFile) in memory to prevent event recording",
+    "distractors": [
+      {
+        "question_text": "Disabling the Windows Event Log service on the target system",
+        "misconception": "Targets scope confusion: Student confuses the Windows Event Log service with the broader logging mechanisms (like ETW or application-specific logs) that EDRs monitor, not understanding that EDRs often collect telemetry directly or from other sources."
+      },
+      {
+        "question_text": "Using encrypted communication channels for all malicious traffic",
+        "misconception": "Targets detection layer confusion: Student believes network-level encryption prevents host-based logging, not understanding that EDRs log process activity and system calls regardless of network traffic encryption."
+      },
+      {
+        "question_text": "Clearing all security logs immediately after executing malicious code",
+        "misconception": "Targets timing and persistence: Student misunderstands that real-time EDRs often ingest logs immediately or use agents that cache and forward events, making post-execution clearing ineffective for initial detection."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "EDR solutions rely heavily on collecting and analyzing logs from various sources (system, application, security, network, etc.) to detect malicious activity. An attacker aiming to evade detection would target the logging mechanisms themselves. By patching or hooking functions responsible for writing logs (e.g., `EventWrite` for ETW events, `WriteFile` for file-based logs, or specific API calls used by the EDR agent), an attacker can prevent their actions from ever being recorded or sent to the EDR&#39;s backend. This creates a blind spot for the EDR. Defense: EDRs can implement integrity checks on their own agents and critical system logging functions, use kernel-mode callbacks to log events before user-mode hooks can interfere, or employ out-of-band logging mechanisms.",
+      "distractor_analysis": "Disabling the Windows Event Log service might stop some logs, but EDRs often collect telemetry directly from kernel callbacks, ETW, or their own proprietary agents, which would not be affected. Encrypted communication channels hide network traffic from network-based detection but do not prevent host-based EDR agents from logging process creation, file modifications, or API calls. Clearing logs after execution is a reactive measure; EDRs typically ingest events in real-time, so the initial malicious activity would likely already be recorded and transmitted.",
+      "analogy": "This is like an intruder disabling the security camera&#39;s recording function directly at the camera, rather than just trying to hide from the lens or erasing the tape after the fact."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "LPVOID pFunc = GetProcAddress(GetModuleHandle(&quot;ntdll.dll&quot;), &quot;EtwEventWrite&quot;);\nif (pFunc) {\n    DWORD oldProtect;\n    VirtualProtect(pFunc, 1, PAGE_EXECUTE_READWRITE, &amp;oldProtect);\n    *(BYTE*)pFunc = 0xC3; // &#39;ret&#39; instruction\n    VirtualProtect(pFunc, 1, oldProtect, &amp;oldProtect);\n}",
+        "context": "Example C code snippet to patch EtwEventWrite in ntdll.dll to return immediately, effectively disabling ETW logging for the current process."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "EDR_FUNDAMENTALS",
+      "WINDOWS_INTERNALS",
+      "MEMORY_PATCHING",
+      "API_HOOKING",
+      "LOGGING_MECHANISMS"
+    ]
+  }
+]

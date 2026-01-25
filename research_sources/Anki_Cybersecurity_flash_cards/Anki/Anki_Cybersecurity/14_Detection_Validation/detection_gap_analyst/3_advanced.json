@@ -1,0 +1,126 @@
+[
+  {
+    "question_text": "Which specific configuration gap in Windows Filtering Platform (WFP) rulesets could allow an attacker to evade EDR network inspection, even if the EDR has a filter in place?",
+    "correct_answer": "An explicit allow rule with the `FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT` flag set, allowing traffic to egress regardless of lower-priority block rules.",
+    "distractors": [
+      {
+        "question_text": "A filter with `ActionType : CalloutInspection` that sends traffic to the driver for analysis.",
+        "misconception": "Targets understanding of inspection vs. bypass: Student may confuse inspection mechanisms with evasion opportunities."
+      },
+      {
+        "question_text": "A `Boot Time Filter` that ensures network rules are applied early in the system startup process.",
+        "misconception": "Targets filter timing confusion: Student may think early application prevents all bypasses."
+      },
+      {
+        "question_text": "A filter that only monitors IPv4 traffic, leaving IPv6 traffic uninspected.",
+        "misconception": "Targets specific vs. general bypass: While a valid bypass, it&#39;s a different type of configuration gap than the one described."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "A significant configuration gap arises when a WFP filter explicitly allows traffic and has the `FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT` flag set. This flag prevents lower-priority filters from overriding its decision. Therefore, even if a lower-priority EDR filter attempts to block the traffic, the higher-priority &#39;allow&#39; rule with this flag will ensure the traffic egresses, creating a bypass. This is a specific type of filter conflict that can be exploited.",
+      "distractor_analysis": "A `CalloutInspection` action type indicates that traffic is being sent to the driver for inspection, which is the opposite of an evasion technique. `Boot Time Filters` are designed to enhance security by applying rules early, not to create bypasses. While an IPv4-only filter leaving IPv6 uninspected is a valid detection gap, it&#39;s a different type of configuration oversight than the specific filter flag interaction described in the correct answer.",
+      "analogy": "Imagine a security checkpoint with two guards. One guard has a &#39;VIP Pass&#39; that says &#39;Allow All Traffic&#39; and also has a special badge that says &#39;My decision overrides everyone else&#39;s&#39;. Even if a second guard tries to block a specific person, the VIP Pass holder&#39;s decision stands."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "WFP_ADVANCED_CONCEPTS",
+      "MITRE_ATTACK_NETWORK_EVASION",
+      "EDR_EVASION_TECHNIQUES"
+    ]
+  },
+  {
+    "question_text": "To identify potential network filter evasion opportunities, what is the most critical piece of information to obtain about a WFP callout, beyond its registered layer and description, that typically requires reverse engineering?",
+    "correct_answer": "The exact inspection logic and attributes the driver is looking for within its callout routines.",
+    "distractors": [
+      {
+        "question_text": "The `FilterId` and `CalloutId` to uniquely identify the filter and callout.",
+        "misconception": "Targets identification vs. functionality: Student may confuse unique identifiers with functional details."
+      },
+      {
+        "question_text": "The `SecurityDescriptor` of the callout to audit for misconfigurations granting excessive control.",
+        "misconception": "Targets control vs. inspection logic: Student may focus on administrative control rather than the actual detection mechanism."
+      },
+      {
+        "question_text": "The `ProviderKey` and `ProviderData` to determine the vendor or source of the callout.",
+        "misconception": "Targets attribution vs. behavior: Student may prioritize identifying the source over understanding its operational details."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "While identifying the registered layer, description, and security descriptor of a WFP callout provides valuable context, it does not reveal the precise criteria the driver uses to inspect traffic. To truly understand what a driver is looking for and how to evade it, one must reverse engineer its callout routines to uncover the exact inspection logic and attributes it examines. No two EDR vendors inspect the same attributes in the same way, making this deep dive essential for targeted evasion.",
+      "distractor_analysis": "The `FilterId` and `CalloutId` are identifiers, not functional details. The `SecurityDescriptor` helps in auditing for misconfigurations that might grant control over the callout, but it doesn&#39;t explain what the callout itself is inspecting. `ProviderKey` and `ProviderData` help attribute the callout to a vendor, but again, do not reveal the internal inspection logic.",
+      "analogy": "Knowing a security guard&#39;s name and where they&#39;re stationed doesn&#39;t tell you what they&#39;re looking for in people&#39;s bags; you need to observe their actual inspection process."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "REVERSE_ENGINEERING_BASICS",
+      "WFP_INTERNALS",
+      "EDR_ARCHITECTURE"
+    ]
+  },
+  {
+    "question_text": "What is a key limitation of the Sigma rule detection mechanism for advanced use cases, particularly when dealing with numerical data?",
+    "correct_answer": "Comparing integer or floating values from fields is currently not possible.",
+    "distractors": [
+      {
+        "question_text": "It cannot incorporate logical operators like AND, OR, and NOT in detection conditions.",
+        "misconception": "Targets feature misunderstanding: Student may incorrectly assume a lack of basic logical capabilities."
+      },
+      {
+        "question_text": "It does not support custom event mapping for inconsistent field names.",
+        "misconception": "Targets workaround confusion: Student may overlook the &#39;custom event mapping&#39; workaround mentioned for field inconsistencies."
+      },
+      {
+        "question_text": "It is unable to convert rules to open-source SIEM solutions like Elasticsearch.",
+        "misconception": "Targets compatibility confusion: Student may misunderstand Sigma&#39;s broad compatibility with various SIEM backends, including Elasticsearch."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "A specific limitation highlighted for advanced Sigma use cases is the inability to compare integer or floating values from fields directly within the detection logic. This restricts certain types of numerical analysis that might be required for more sophisticated detections.",
+      "distractor_analysis": "Sigma explicitly supports logical operators (AND, OR, NOT) in its condition field. Custom event mapping is a known workaround for inconsistent field names using the &#39;-c&#39; option in the Sigma converter. Sigma supports conversion to Elasticsearch query strings, DSL, and Watcher.",
+      "analogy": "It&#39;s like having a calculator that can only tell you if two numbers are the same, but not if one is greater than the other."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "SIGMA_RULE_SPECIFICATION",
+      "DETECTION_ENGINEERING_CHALLENGES"
+    ]
+  },
+  {
+    "question_text": "A Red Team wants to automate the deployment and teardown of their offensive infrastructure on multiple cloud providers for scheduled security tests. Which combination of tools, integrated with GitLab for version control and CI/CD, would best achieve this Infrastructure as Code (IaC) objective?",
+    "correct_answer": "Terraform for infrastructure provisioning and Ansible for application configuration",
+    "distractors": [
+      {
+        "question_text": "Gitflow for branching strategy and Vault for secret management",
+        "misconception": "Targets tool function confusion: Student may identify relevant tools but misunderstand their primary role in IaC deployment."
+      },
+      {
+        "question_text": "Sigma rules for detection and GitLab-CI for pipeline automation",
+        "misconception": "Targets domain confusion: Student may confuse defensive tools (Sigma) with offensive infrastructure deployment tools."
+      },
+      {
+        "question_text": "AWS, Azure, and GCP for cloud providers and SSH keys for access",
+        "misconception": "Targets component vs. tool confusion: Student may list components of the solution rather than the primary IaC tools."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "For Infrastructure as Code (IaC) to deploy and delete offensive infrastructure on the fly across multiple cloud providers, Terraform is the ideal tool for defining and provisioning the infrastructure. Ansible then handles the configuration and installation of specific applications (like phishing websites, scanners) on those provisioned servers. GitLab provides the version control for these configuration files and orchestrates the CI/CD pipeline to automate the process.",
+      "distractor_analysis": "Gitflow is a branching strategy, not an IaC tool. Vault manages secrets but doesn&#39;t provision infrastructure or configure applications. Sigma rules are for detection, not infrastructure deployment. GitLab-CI automates the pipeline but needs tools like Terraform and Ansible to perform the actual IaC tasks. AWS, Azure, and GCP are the target environments, not the IaC tools themselves, and SSH keys are for access, not provisioning or configuration.",
+      "analogy": "If building a house, Terraform is like the architect&#39;s blueprint and the construction crew that lays the foundation and erects the frame, while Ansible is like the interior designer and contractors who furnish and equip each room. GitLab is the project manager overseeing the entire process from design changes to final inspection."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "INFRASTRUCTURE_AS_CODE",
+      "CLOUD_COMPUTING_BASICS",
+      "GITLAB_CI_CD",
+      "RED_TEAMING_CONCEPTS"
+    ]
+  }
+]

@@ -1,0 +1,155 @@
+[
+  {
+    "question_text": "Which of the following BEST defines &#39;process-image modification&#39; as an evasion technique?",
+    "correct_answer": "A tactic where an attacker re-maps a host process&#39;s original image with its own to hide malware execution and bypass security controls.",
+    "distractors": [
+      {
+        "question_text": "A method of injecting malicious code into a legitimate process&#39;s memory space without altering its on-disk image.",
+        "misconception": "Targets scope confusion: While related to process manipulation, this definition describes code injection, which is a broader category, not specifically the re-mapping of the entire process image."
+      },
+      {
+        "question_text": "A technique to encrypt or obfuscate the executable file on disk to prevent static analysis by EDR systems.",
+        "misconception": "Targets mechanism confusion: This describes file-based evasion (e.g., packing, crypters), which is distinct from modifying the in-memory process image after creation."
+      },
+      {
+        "question_text": "The act of altering the process&#39;s name or metadata to impersonate a legitimate system process.",
+        "misconception": "Targets superficial similarity: While process-image modification can help evade image-based detection, simply changing a process name is a different, often less sophisticated, technique."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process-image modification is a specific evasion technique that exploits a Windows design decision during process creation. It involves re-mapping the legitimate host process&#39;s original image with a malicious one in memory, after the initial image checks but before execution, thereby hiding the true executable from image-based detections and potentially bypassing application whitelisting or firewall rules.",
+      "distractor_analysis": "Code injection focuses on inserting code into an existing process. Encrypting/obfuscating the executable is a pre-execution technique. Altering a process name is a simpler form of evasion that doesn&#39;t involve the complex re-mapping of the process image itself.",
+      "analogy": "Imagine a security guard checking a package (the original image) at the entrance. Process-image modification is like swapping the contents of the package with something else *after* the initial check but *before* it&#39;s delivered to its final destination."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": [
+      "NET_BASICS",
+      "FRAMEWORK_NIST"
+    ]
+  },
+  {
+    "question_text": "Which of the following BEST describes the primary function of a pre-operation callback in an EDR system?",
+    "correct_answer": "To intercept and potentially modify a handle operation before it is executed by the operating system",
+    "distractors": [
+      {
+        "question_text": "To record the return code and final state of a handle operation after it has completed",
+        "misconception": "Targets process confusion: Students might confuse pre-operation callbacks with post-operation callbacks, which only observe the outcome."
+      },
+      {
+        "question_text": "To identify the type of object being monitored (e.g., process or thread) without altering its behavior",
+        "misconception": "Targets scope misunderstanding: While identification is part of it, the &#39;modification&#39; capability is the key differentiator of pre-operation callbacks."
+      },
+      {
+        "question_text": "To provide a mechanism for user-mode applications to register for kernel-level event notifications",
+        "misconception": "Targets abstraction level confusion: Students might confuse kernel-level callbacks with higher-level API hooks or user-mode notification mechanisms."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Pre-operation callbacks are invoked before a kernel operation (like a handle creation or duplication) is fully processed. This allows the EDR driver to inspect the operation&#39;s parameters and, crucially, modify them (e.g., by changing desired access rights) or even block the operation entirely, providing a powerful interception and control mechanism.",
+      "distractor_analysis": "Recording return codes and final states is the role of post-operation callbacks. Identifying object types is a preliminary step within the callback, not its primary function, and it doesn&#39;t capture the modification capability. User-mode applications don&#39;t directly register kernel callbacks; EDRs operate in kernel mode to achieve this level of interception.",
+      "analogy": "A pre-operation callback is like a security guard who can inspect a package before it enters a building and decide to remove certain items or deny entry altogether. A post-operation callback is like a security camera that only records what happened after the package has already entered."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": [
+      "NET_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which statement accurately describes the primary purpose of IKE x-auth in IPsec VPNs?",
+    "correct_answer": "To provide scalable and flexible authentication and authorization for remote peers, especially when using dynamically addressed clients, by offloading these functions to a central database like TACACS+ or RADIUS.",
+    "distractors": [
+      {
+        "question_text": "To replace the standard IKE Phase 1 negotiation process with a more secure, certificate-based authentication method.",
+        "misconception": "Targets scope misunderstanding: Students might think x-auth replaces IKE Phase 1, but the text explicitly states it occurs *after* IKE SA creation and *in addition* to IKE, often referred to as Phase 1.5."
+      },
+      {
+        "question_text": "To encrypt the IPsec Security Association (SA) negotiation process, ensuring that the keys exchanged during Phase 2 are confidential.",
+        "misconception": "Targets process confusion: Students might confuse the role of x-auth (authentication/authorization) with the core function of IKE (key exchange and SA establishment, which includes encryption of its own messages)."
+      },
+      {
+        "question_text": "To enable the use of a single, common wildcard preshared key across all VPN peers for simplified administration.",
+        "misconception": "Targets purpose reversal: The text clearly states that wildcard preshared keys present security risks and administrative inflexibility, and x-auth is used *instead* to overcome these limitations, not to enable them."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "IKE x-auth (Extended Authentication) enhances IPsec VPN security and scalability by providing an additional layer of authentication and authorization for remote peers. It typically occurs after the initial IKE Phase 1 SA is established but before the IPsec SA is created (often called Phase 1.5). Its main benefit is offloading peer authentication to external AAA servers (like TACACS+ or RADIUS), allowing for unique credentials per peer and easier management, especially for dynamically addressed clients, without compromising the entire group if one peer&#39;s credentials are removed.",
+      "distractor_analysis": "The first distractor is incorrect because x-auth complements, rather than replaces, IKE Phase 1. The second distractor misattributes x-auth&#39;s role to encryption of Phase 2, which is handled by IKE itself. The third distractor proposes the opposite of x-auth&#39;s purpose; x-auth is used to *avoid* the security risks and administrative inflexibility of common wildcard preshared keys.",
+      "analogy": "If IKE Phase 1 is like showing your passport to enter a country, IKE x-auth is like then presenting a specific visa or work permit to a separate immigration officer to determine what you&#39;re allowed to do inside the country."
+    },
+    "code_snippets": [
+      {
+        "language": "cisco_ios",
+        "code": "aaa authentication login vpn-auth local\naaa authorization network vpn-auth local\n!\ncrypto map extranet client authentication list vpn-auth\ncrypto map extranet isakmp authorization list vpn",
+        "context": "These Cisco IOS commands configure AAA for IKE x-auth, referencing a local database for authentication and authorization of VPN clients."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": [
+      "NET_BASICS",
+      "AUTH_BASICS",
+      "CRYPTO_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which of the following BEST defines a Trusted Execution Environment (TEE)?",
+    "correct_answer": "A secure enclave on a CPU that performs secret computations on sensitive data, with hardware guarantees that even the operating system cannot access it.",
+    "distractors": [
+      {
+        "question_text": "A software-defined perimeter that isolates network segments to protect critical assets from unauthorized access.",
+        "misconception": "Targets scope confusion: Students might confuse TEEs (hardware-based CPU enclaves) with network segmentation or software-defined security perimeters."
+      },
+      {
+        "question_text": "A virtualized environment that allows multiple operating systems to run concurrently on a single physical machine, each isolated from the others.",
+        "misconception": "Targets technology confusion: Students might confuse TEEs with hypervisors or virtualization technologies, which provide OS isolation but not against a malicious hypervisor itself."
+      },
+      {
+        "question_text": "A cryptographic module that generates and stores encryption keys, ensuring they are never exposed to the main operating system.",
+        "misconception": "Targets function confusion: While TEEs can protect keys, their primary definition is broader, encompassing secure computation, and students might confuse them with Hardware Security Modules (HSMs) which are more specific to key management."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "A Trusted Execution Environment (TEE) is a hardware-backed secure area within a CPU designed to protect sensitive code and data from the rest of the system, including the operating system and hypervisor. It ensures confidentiality and integrity of operations even if the main OS is compromised.",
+      "distractor_analysis": "The first distractor describes network segmentation, which is a different security concept. The second describes virtualization, which isolates OSes but doesn&#39;t protect against a compromised hypervisor. The third describes a function often performed within a TEE or by an HSM, but not the full definition of a TEE itself.",
+      "analogy": "A TEE is like a bank vault within a house. Even if someone breaks into the house (compromises the OS), the contents of the vault (sensitive data/code) remain protected by its own robust security mechanisms."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": [
+      "SEC_BASICS",
+      "OS_SECURITY"
+    ]
+  },
+  {
+    "question_text": "What distinguishes Identity-Based Access Control (IBAC) from Claims Based Access Control (CBAC) in Windows?",
+    "correct_answer": "IBAC grants access based on a known identity and group membership, while CBAC grants access based on arbitrary attributes assigned to the accessor.",
+    "distractors": [
+      {
+        "question_text": "IBAC uses tokens for client representation, while CBAC uses AUTHZ_CLIENT_CONTEXT.",
+        "misconception": "Targets mechanism confusion: This describes a difference in client context representation within AuthZ API, not the fundamental access control model difference between IBAC and CBAC."
+      },
+      {
+        "question_text": "IBAC is implemented in kernel mode, while CBAC is implemented entirely in user mode.",
+        "misconception": "Targets implementation detail confusion: Both IBAC and CBAC, when used via AuthZ API, operate in user mode for applications. The distinction is in the *basis* of access, not the mode of operation."
+      },
+      {
+        "question_text": "IBAC allows dynamic calculation of user attributes, while CBAC requires all identities to be known when the DACL is created.",
+        "misconception": "Targets reversal error: This statement reverses the core advantages of IBAC and CBAC. CBAC allows dynamic attributes and unknown identities, while IBAC requires known identities."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Identity-Based Access Control (IBAC) relies on the traditional model where access is determined by a user&#39;s Security Identifier (SID) and their group memberships, requiring these to be known when the Discretionary Access Control List (DACL) is defined. Claims Based Access Control (CBAC), conversely, uses arbitrary attributes associated with the accessor (e.g., department, location, device type) which can be dynamically evaluated, allowing for more flexible and context-aware access decisions.",
+      "distractor_analysis": "The first distractor confuses the client context object (tokens vs. AUTHZ_CLIENT_CONTEXT) with the underlying access control model. The second distractor incorrectly attributes kernel/user mode implementation to the access control types; both IBAC and CBAC can be leveraged via user-mode APIs. The third distractor reverses the key characteristics, misattributing dynamic attributes to IBAC and static requirements to CBAC.",
+      "analogy": "IBAC is like a guest list where you check a name and group affiliation. CBAC is like a dynamic entry system that checks if you have a &#39;VIP pass&#39; attribute, a &#39;staff&#39; attribute, or a &#39;delivery driver&#39; attribute, regardless of your specific name."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": []
+  }
+]

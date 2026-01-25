@@ -1,0 +1,33 @@
+[
+  {
+    "question_text": "Which configuration setting blocks the detection of a kernel debugger by an anti-reversing technique that checks `SystemKernelDebuggerInformation`?",
+    "correct_answer": "There is no direct configuration setting to block `SystemKernelDebuggerInformation` checks; this is an anti-reversing technique that must be bypassed or patched.",
+    "distractors": [
+      {
+        "question_text": "Disable kernel debugging in the boot configuration data (BCD) store.",
+        "misconception": "Targets misunderstanding of anti-reversing intent: Disabling kernel debugging would prevent the debugger from attaching, which is the opposite of what a reverser wants to achieve when bypassing detection."
+      },
+      {
+        "question_text": "Set the `DebuggerEnabled` flag to FALSE in the registry.",
+        "misconception": "Targets confusion between kernel state and user-modifiable settings: The `DebuggerEnabled` flag is a kernel-internal state reported by `NtQuerySystemInformation`, not a directly configurable registry setting that can be manipulated to fool the check."
+      },
+      {
+        "question_text": "Install a different type of kernel debugger like SoftICE.",
+        "misconception": "Targets partial understanding of detection methods: While SoftICE is not detected by `SystemKernelDebuggerInformation`, it has its own distinct detection methods (e.g., checking for `\\.SIWVID`), so simply switching debuggers doesn&#39;t &#39;block&#39; the detection mechanism but rather shifts the detection vector."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `SystemKernelDebuggerInformation` check is an anti-reversing technique that queries the kernel&#39;s internal state to determine if a debugger is attached. There isn&#39;t a simple configuration setting to &#39;block&#39; this detection. Instead, a reverser would typically need to bypass this check by patching the `NtQuerySystemInformation` function in memory, modifying the returned `DebuggerInfo` structure, or using a debugger that operates at a lower level or in a stealthier manner not detected by this specific API call.",
+      "distractor_analysis": "Disabling kernel debugging prevents the debugger from working, which is counterproductive for reverse engineering. The `DebuggerEnabled` flag is a kernel-reported status, not a user-configurable registry setting. While SoftICE isn&#39;t detected by this specific API, it has other detection vectors, meaning it doesn&#39;t &#39;block&#39; the `SystemKernelDebuggerInformation` check but rather avoids it, only to potentially be caught by other anti-reversing measures.",
+      "analogy": "This is like trying to hide a secret by changing your clothes, but the guard is checking your fingerprints. Changing clothes (disabling kernel debugging) won&#39;t work, and you can&#39;t just tell the guard your fingerprints are different (setting a registry flag). You&#39;d need to alter the fingerprint database or use a different identity altogether."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "WINDOWS_KERNEL_DEBUGGING",
+      "ANTI_REVERSING_TECHNIQUES",
+      "NATIVE_APIS"
+    ]
+  }
+]

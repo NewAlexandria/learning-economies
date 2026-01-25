@@ -1,0 +1,144 @@
+[
+  {
+    "question_text": "To minimize exposure to BIND version fingerprinting, which configuration change in `named.conf` is recommended?",
+    "correct_answer": "Adding `version &quot;Unknown&quot;;` to the options section",
+    "distractors": [
+      {
+        "question_text": "Disabling recursive queries for external clients",
+        "misconception": "Targets scope misunderstanding: Students might confuse general DNS security best practices (like disabling recursion) with specific fingerprinting evasion."
+      },
+      {
+        "question_text": "Implementing DNSSEC validation for all zones",
+        "misconception": "Targets concept conflation: Students might associate DNSSEC with general security improvements, not specific version hiding."
+      },
+      {
+        "question_text": "Changing the default listening port from 53 to a high ephemeral port",
+        "misconception": "Targets protocol misunderstanding: Students might think changing the port hides the service, but DNS fingerprinting still works if the service is found."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `version` option in `named.conf` allows administrators to control the response to `version.bind` queries. By setting it to &#39;Unknown&#39; or another misleading string, the actual BIND version and underlying OS information are hidden from basic fingerprinting attempts.",
+      "distractor_analysis": "Disabling recursive queries is a general security measure to prevent amplification attacks, not to hide server version. Implementing DNSSEC validates DNS records but does not obscure the server&#39;s software version. Changing the default port is a weak security measure (security through obscurity) and does not prevent fingerprinting once the service is located.",
+      "analogy": "This is like putting a &#39;No Entry&#39; sign on a door, but the door is still clearly visible. It deters casual observers but won&#39;t stop a determined intruder from trying to open it."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "dig @192.168.1.15 version.bind chaos txt",
+        "context": "Command used by attackers to fingerprint BIND server versions."
+      },
+      {
+        "language": "bash",
+        "code": "version &quot;Unknown&quot;;",
+        "context": "Line to add to the `options` section of `named.conf` to hide the BIND version."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "NET_BASICS",
+      "SEC_BASICS"
+    ]
+  },
+  {
+    "question_text": "To ensure an implant executes automatically every time a specific user logs into a Windows workstation, even after reboots, which persistence mechanism is the most direct and least privileged option?",
+    "correct_answer": "Registry Run Key in `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`",
+    "distractors": [
+      {
+        "question_text": "Scheduled Task configured to run at system startup with highest privileges",
+        "misconception": "Targets privilege confusion: Students might think &#39;system startup&#39; implies user-level, but this requires elevated privileges and runs before user login."
+      },
+      {
+        "question_text": "Service created with `sc.exe` set to automatic start",
+        "misconception": "Targets scope misunderstanding: Services run as SYSTEM or other accounts, not tied to a specific user&#39;s login, and require administrative privileges to create."
+      },
+      {
+        "question_text": "Modifying `winlogon.exe` to load a malicious DLL",
+        "misconception": "Targets complexity overestimation: While effective, this is a highly advanced, system-level technique requiring significant privileges and is not &#39;least privileged&#39; or &#39;most direct&#39; for user-level persistence."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Registry Run Keys under `HKCU` (HKEY_CURRENT_USER) are specifically designed for user-level applications to launch automatically upon that user&#39;s login. They survive reboots and do not require administrative privileges to create or modify, making them a direct and low-privilege method for user-specific persistence.",
+      "distractor_analysis": "A scheduled task at system startup runs before any user logs in and typically requires administrative privileges to configure. Creating a service with `sc.exe` also requires administrative privileges and runs independently of a specific user&#39;s login session, usually as SYSTEM. Modifying `winlogon.exe` is a kernel-level or highly privileged system modification, far from a &#39;least privileged&#39; or &#39;most direct&#39; user-level option.",
+      "analogy": "Think of the HKCU Run key as a personal &#39;startup applications&#39; list for a user. Just like you can add programs to launch when you log in, an attacker can add their implant here without needing administrator approval."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Set-ItemProperty -Path &#39;HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run&#39; -Name &#39;MyImplant&#39; -Value &#39;C:\\Users\\Public\\malicious.exe&#39;",
+        "context": "PowerShell command to establish user-level persistence by adding an entry to the current user&#39;s Run key."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "ATTACK_PERSIST",
+      "FRAMEWORK_MITRE"
+    ]
+  },
+  {
+    "question_text": "To ensure an implant automatically executes after a user logs into a Windows system, which persistence mechanism is explicitly mentioned as leveraging standard operating system features?",
+    "correct_answer": "Registry Run Keys/Startup Folder (T1547.001)",
+    "distractors": [
+      {
+        "question_text": "Process Injection (T1055)",
+        "misconception": "Targets mechanism confusion: Students might confuse process injection (for code execution within another process) with a direct autostart mechanism."
+      },
+      {
+        "question_text": "Scheduled Task (T1053)",
+        "misconception": "Targets scope misunderstanding: While a valid persistence mechanism, it&#39;s not explicitly mentioned in the provided list as a &#39;Boot or Logon Autostart Execution&#39; technique, and the question asks for what is explicitly mentioned."
+      },
+      {
+        "question_text": "WMI Event Subscription (T1546.003)",
+        "misconception": "Targets complexity overestimation: Students might choose a more advanced, stealthy technique, overlooking the more direct and common autostart methods explicitly listed."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The document explicitly lists &#39;Persistence &amp; Privilege Escalation: T1547.001 – Boot or Logon Autostart Execution: Registry Run Keys/Startup Folder&#39;. This technique directly addresses the requirement of automatic execution after user login by leveraging standard Windows autostart locations.",
+      "distractor_analysis": "Process Injection (T1055) is mentioned for defense evasion and privilege escalation, but not as a primary autostart mechanism. Scheduled Tasks (T1053) are a common persistence method but are not explicitly listed under &#39;Boot or Logon Autostart Execution&#39; in the provided text. WMI Event Subscription (T1546.003) is a valid persistence technique but is not mentioned in the provided list at all.",
+      "analogy": "Think of Registry Run Keys/Startup Folder like placing a program in your computer&#39;s &#39;start-up&#39; folder – it&#39;s a well-known, direct way to make sure something runs every time you turn on your computer and log in."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Set-ItemProperty -Path &#39;HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run&#39; -Name &#39;MyMaliciousApp&#39; -Value &#39;C:\\Users\\Public\\malware.exe&#39;",
+        "context": "PowerShell command to add an entry to the current user&#39;s Registry Run key, ensuring &#39;malware.exe&#39; executes upon user login."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_PERSIST",
+      "FRAMEWORK_MITRE"
+    ]
+  },
+  {
+    "question_text": "Which information gathering technique is MOST likely to yield sensitive documents like invoices or internal reports without requiring direct digital access to a target&#39;s systems?",
+    "correct_answer": "Dumpster diving",
+    "distractors": [
+      {
+        "question_text": "Analyzing corporate websites and social media profiles",
+        "misconception": "Targets scope misunderstanding: Students may believe all sensitive information is publicly available online, overlooking physical security bypasses."
+      },
+      {
+        "question_text": "Using Google Dorks to search for `filetype:pdf` on the target&#39;s domain",
+        "misconception": "Targets process order errors: While effective for publicly exposed files, it won&#39;t reveal documents that were never digitized or were improperly disposed of offline."
+      },
+      {
+        "question_text": "Performing Whois reconnaissance for domain registration details",
+        "misconception": "Targets terminology confusion: Students might conflate Whois data (public registration info) with internal company documents, which are distinct categories of information."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Dumpster diving involves physically sifting through a target&#39;s discarded waste, which frequently contains sensitive documents, invoices, internal reports, and other physical artifacts that were not properly shredded or disposed of. This method bypasses digital security measures entirely.",
+      "distractor_analysis": "Analyzing corporate websites and social media provides publicly available information, not typically sensitive internal documents. Google Dorks can find publicly exposed digital files, but not physical documents that were improperly discarded. Whois reconnaissance provides domain registration details, which are public and not internal sensitive documents.",
+      "analogy": "Dumpster diving is like finding a treasure map in someone&#39;s trash bin – it&#39;s not where they intended you to look, but it can reveal hidden secrets they carelessly discarded."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "INFORMATION_GATHERING"
+    ]
+  }
+]

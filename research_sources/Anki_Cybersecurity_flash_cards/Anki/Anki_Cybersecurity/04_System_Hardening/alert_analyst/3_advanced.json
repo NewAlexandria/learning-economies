@@ -1,0 +1,455 @@
+[
+  {
+    "question_text": "A SIEM alert indicates &#39;Unusual process creation: powershell.exe with encoded command executed by SYSTEM on DC01&#39;. Simultaneously, a separate alert shows &#39;Access Token modification detected on DC01 for user &#39;svc_backup&#39;&#39;. What is the MOST critical immediate action for a SOC analyst?",
+    "correct_answer": "Isolate DC01 from the network and begin forensic acquisition",
+    "distractors": [
+      {
+        "question_text": "Review the encoded PowerShell command to understand its functionality",
+        "misconception": "Targets premature analysis: Student focuses on understanding the payload before containing the potential compromise, allowing further damage or lateral movement."
+      },
+      {
+        "question_text": "Check if &#39;svc_backup&#39; account has legitimate reasons for token modification",
+        "misconception": "Targets normalization bias: Student attempts to rationalize suspicious activity as legitimate without acknowledging the combined severity of the alerts."
+      },
+      {
+        "question_text": "Block the source IP of the PowerShell execution if available",
+        "misconception": "Targets incomplete remediation: Student focuses on blocking a potential source IP, which might not be relevant if the execution is local or the attacker has already moved laterally."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The combination of SYSTEM-level encoded PowerShell execution and access token modification on a Domain Controller (DC01) strongly indicates a critical compromise. The immediate priority is containment to prevent further damage or lateral movement. Isolating the DC and initiating forensic acquisition preserves evidence and stops the attack&#39;s progression.",
+      "distractor_analysis": "Reviewing the command is part of analysis, but containment comes first. Legitimate reasons for token modification by &#39;svc_backup&#39; are highly unlikely in conjunction with SYSTEM-level encoded PowerShell. Blocking an IP is insufficient if the compromise is already internal or the attacker has established persistence.",
+      "analogy": "If you see smoke and hear a fire alarm, you don&#39;t stop to analyze the type of smoke; you evacuate and call the fire department immediately."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-NetAdapter | ForEach-Object { Disable-NetAdapter -Name $_.Name -Confirm:$false }",
+        "context": "PowerShell command to quickly disable all network adapters on a Windows server for isolation."
+      },
+      {
+        "language": "splunk",
+        "code": "index=windows (EventCode=4688 AND NewProcessName=&quot;*powershell.exe&quot; AND CommandLine=&quot;*EncodedCommand*&quot;) OR (EventCode=4672 AND TargetUserName=&quot;svc_backup&quot;) | sort _time",
+        "context": "Splunk query to correlate process creation and access token modification events."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Unusual process creation: powershell.exe with encoded command on DC01, followed by new scheduled task creation.&#39; During your investigation, you discover the process running with &#39;SeDebugPrivilege&#39; enabled. What is the MOST critical implication of &#39;SeDebugPrivilege&#39; in this context?",
+    "correct_answer": "The process can inject malicious code into other running processes, including SYSTEM processes, leading to privilege escalation.",
+    "distractors": [
+      {
+        "question_text": "It allows the process to bypass file system Access Control Lists (ACLs) and read any file on the system.",
+        "misconception": "Targets privilege confusion: Student confuses SeDebugPrivilege with SeBackupPrivilege, which grants read access regardless of ACLs."
+      },
+      {
+        "question_text": "It enables the process to load or unload kernel-mode drivers, potentially installing a rootkit.",
+        "misconception": "Targets privilege confusion: Student confuses SeDebugPrivilege with SeLoadDriverPrivilege, which allows driver manipulation."
+      },
+      {
+        "question_text": "It means the process is running with SYSTEM privileges, indicating full compromise.",
+        "misconception": "Targets privilege level misunderstanding: Student equates having a powerful privilege with already being SYSTEM, rather than seeing it as a means to achieve SYSTEM."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "SeDebugPrivilege is a highly potent Windows privilege that allows a process to debug other processes. This capability can be abused to obtain handles to other processes (including those running as SYSTEM), inject arbitrary code (e.g., DLLs) into them, and thus escalate privileges to the level of the targeted process. In the context of an encoded PowerShell command and scheduled task creation on a Domain Controller, this privilege significantly increases the likelihood of a full system compromise and persistence.",
+      "distractor_analysis": "Bypassing ACLs for file reads is associated with SeBackupPrivilege. Loading/unloading drivers is associated with SeLoadDriverPrivilege. While SeDebugPrivilege can lead to SYSTEM privileges, it doesn&#39;t mean the process is *already* running as SYSTEM; it&#39;s a mechanism for escalation.",
+      "analogy": "Imagine having a master key that not only opens any door but also lets you take control of anyone already inside. SeDebugPrivilege is that master key, allowing an attacker to take over other processes and gain their privileges."
+    },
+    "code_snippets": [
+      {
+        "language": "kql",
+        "code": "DeviceProcessEvents\n| where DeviceName == &quot;DC01&quot;\n| where FileName =~ &quot;powershell.exe&quot;\n| where ProcessCommandLine contains &quot;-EncodedCommand&quot;\n| join kind=inner (DeviceProcessInfo | where DeviceName == &quot;DC01&quot; | project ProcessId, ProcessPrivileges) on ProcessId\n| where ProcessPrivileges contains &quot;SeDebugPrivilege&quot;\n| project Timestamp, InitiatingProcessFileName, ProcessCommandLine, ProcessPrivileges",
+        "context": "KQL query to find PowerShell processes with encoded commands on DC01 that also have SeDebugPrivilege enabled."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert triggers for &#39;Multiple failed login attempts to critical infrastructure (SCADA system) from an external IP address, followed by a successful login from a different internal IP within 5 minutes.&#39; As a Senior SOC Analyst, what is your IMMEDIATE primary concern?",
+    "correct_answer": "Potential credential compromise and lateral movement within the operational technology (OT) network.",
+    "distractors": [
+      {
+        "question_text": "A misconfigured network device causing a false positive login attempt.",
+        "misconception": "Targets normalization bias: Student dismisses a critical alert as a benign misconfiguration, ignoring the successful internal login which strongly suggests compromise."
+      },
+      {
+        "question_text": "An external brute-force attack that was successfully mitigated by the firewall.",
+        "misconception": "Targets incomplete analysis: Student focuses only on the failed external attempts and overlooks the successful internal login, missing the critical indicator of potential compromise."
+      },
+      {
+        "question_text": "A legitimate administrator performing maintenance from an unusual internal jump host.",
+        "misconception": "Targets &#39;assume good intent&#39; bias: Student rationalizes highly suspicious activity as legitimate, failing to recognize the combination of external failed attempts and a successful internal login as a strong indicator of malicious activity."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The sequence of failed external logins followed by a successful internal login to a critical SCADA system strongly suggests that the external attempts were reconnaissance or credential stuffing, leading to a successful compromise that enabled lateral movement from an internal host. This indicates a high-severity incident requiring immediate investigation and containment.",
+      "distractor_analysis": "A misconfigured device wouldn&#39;t typically result in a successful login from a different internal IP after external failures. An external brute-force attack, if mitigated, wouldn&#39;t be followed by a successful internal login. While legitimate admin activity can occur, the combination of external failed attempts and a successful internal login to SCADA from a *different* internal IP is highly suspicious and warrants treating it as malicious until proven otherwise.",
+      "analogy": "Imagine someone trying to pick a lock on your front door multiple times, then suddenly a different door inside your house opens. You wouldn&#39;t assume it was a delivery or a faulty lock; you&#39;d immediately suspect an intruder."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "index=scada_logs (event_type=&quot;failed_login&quot; OR event_type=&quot;successful_login&quot;) \n| transaction src_ip dest_ip user maxspan=5m \n| where mvcount(event_type) &gt; 1 AND mvfind(event_type, &quot;failed_login&quot;) AND mvfind(event_type, &quot;successful_login&quot;) \n| table _time, src_ip, dest_ip, user, event_type",
+        "context": "Splunk query to correlate failed external logins with subsequent successful internal logins to the SCADA system."
+      },
+      {
+        "language": "kql",
+        "code": "SecurityEvent\n| where EventID == 4625 or EventID == 4624 // Failed and successful logins\n| where TargetResource contains &quot;SCADA&quot;\n| summarize LoginAttempts = make_list(TimeGenerated, IpAddress, EventID) by Account, TargetResource\n| where array_length(LoginAttempts) &gt; 1\n| extend FailedExternal = array_any(LoginAttempts, (t) {t[2] == 4625 and t[1] !startswith &#39;10.&#39; and t[1] !startswith &#39;172.16.&#39; and t[1] !startswith &#39;192.168.&#39;})\n| extend SuccessfulInternal = array_any(LoginAttempts, (t) {t[2] == 4624 and (t[1] startswith &#39;10.&#39; or t[1] startswith &#39;172.16.&#39; or t[1] startswith &#39;192.168.&#39;)})\n| where FailedExternal and SuccessfulInternal\n| project Account, TargetResource, LoginAttempts",
+        "context": "KQL query to identify correlated failed external and successful internal login attempts to SCADA systems."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "SEC_BASICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Unusual process execution: powershell.exe with encoded command detected on DC01, immediately followed by new scheduled task creation.&#39; As a Senior SOC Analyst, what is the MOST critical initial step to determine the scope and impact?",
+    "correct_answer": "Isolate DC01 from the network and begin forensic acquisition of memory and disk images.",
+    "distractors": [
+      {
+        "question_text": "Check Active Directory logs for recent password changes or new user creations.",
+        "misconception": "Targets scope expansion before containment: Student prioritizes looking for related activity over containing the immediate threat and preserving evidence."
+      },
+      {
+        "question_text": "Review firewall logs to see if DC01 has initiated any outbound connections.",
+        "misconception": "Targets impact assessment before containment: While important, checking outbound connections is secondary to stopping potential further compromise and ensuring evidence integrity."
+      },
+      {
+        "question_text": "Notify the system administrator to review the scheduled task for legitimacy.",
+        "misconception": "Targets delegation without immediate action: Student defers critical immediate action to another team, potentially allowing the threat to persist or spread."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The alert pattern (encoded PowerShell, scheduled task on a Domain Controller) strongly suggests a successful compromise and persistence mechanism. The immediate priority is to contain the threat to prevent further damage or lateral movement, and to preserve volatile evidence (memory) before it&#39;s lost. Isolating the DC and initiating forensic acquisition achieves both.",
+      "distractor_analysis": "Checking AD logs or firewall logs are valid subsequent steps for investigation but should not precede containment and evidence preservation. Notifying an admin without taking immediate action risks further compromise. The combination of encoded PowerShell and scheduled task on a DC is highly suspicious and warrants immediate, decisive action.",
+      "analogy": "If you see smoke coming from the engine of a critical server, you don&#39;t first check the log files for error messages; you pull the plug and then investigate the cause."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-ScheduledTask | Where-Object {$_.TaskName -like &quot;*&quot; -and $_.State -eq &quot;Ready&quot; -and $_.LastRunTime -ge (Get-Date).AddMinutes(-10)} | Select-Object TaskName, Action, Author, LastRunTime",
+        "context": "PowerShell command to quickly list recently created or modified scheduled tasks on a Windows system for initial verification."
+      },
+      {
+        "language": "splunk",
+        "code": "index=windows (EventCode=4688 CommandLine=&quot;*powershell.exe* -EncodedCommand*&quot;) OR (EventCode=4698) host=DC01 | sort _time",
+        "context": "Splunk query to correlate PowerShell execution with encoded commands and scheduled task creation events on DC01."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Unauthorized kernel-mode driver loaded on a Windows 11 workstation with Hardware Stack Protection enabled.&#39; As a Senior SOC Analyst, what is the MOST critical immediate concern?",
+    "correct_answer": "The integrity of the operating system kernel and potential for deep system compromise, bypassing advanced security features.",
+    "distractors": [
+      {
+        "question_text": "The user is attempting to install unsupported hardware drivers, leading to system instability.",
+        "misconception": "Targets misattribution to user error: Student assumes a benign user action rather than recognizing the severity of a kernel-mode driver alert, especially with advanced protections."
+      },
+      {
+        "question_text": "A legitimate software update failed to install correctly, causing a false positive.",
+        "misconception": "Targets normalization bias: Student rationalizes the alert as a common IT issue, overlooking the specific context of &#39;unauthorized&#39; and &#39;kernel-mode&#39; with security features enabled."
+      },
+      {
+        "question_text": "The workstation&#39;s antivirus software is malfunctioning and needs immediate reinstallation.",
+        "misconception": "Targets incorrect remediation focus: Student focuses on a specific security tool failure rather than the underlying compromise indicated by the alert, which suggests a deeper breach."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "An unauthorized kernel-mode driver loading on a system with Hardware Stack Protection enabled is a severe security event. It implies a sophisticated attack has likely bypassed or exploited fundamental OS security mechanisms, granting deep access and control over the system. The primary concern is the compromise of the kernel&#39;s integrity, which can lead to complete system takeover, data exfiltration, or further lateral movement.",
+      "distractor_analysis": "User error or failed updates typically don&#39;t manifest as &#39;unauthorized kernel-mode driver loaded&#39; alerts, especially with advanced protections. While antivirus malfunction is a concern, it&#39;s a symptom, not the core problem when a kernel-level compromise is indicated. The alert points to a successful bypass of security, not just a tool failure.",
+      "analogy": "Imagine a high-security vault with multiple layers of protection, including a reinforced steel door and laser grids. An alert indicating &#39;unauthorized entry detected *inside* the vault, past all defenses&#39; means the primary concern isn&#39;t a faulty lock, but that someone is already inside and has bypassed everything."
+    },
+    "code_snippets": [
+      {
+        "language": "kql",
+        "code": "DeviceDriverLoadEvents\n| where DeviceName == &quot;&lt;compromised_workstation_name&gt;&quot;\n| where DriverName == &quot;&lt;unauthorized_driver_name&gt;&quot;\n| project Timestamp, DeviceName, DriverName, DriverVersion, InitiatingProcessCommandLine, InitiatingProcessParentFileName",
+        "context": "KQL query to investigate details of the unauthorized driver load event on the specific workstation."
+      },
+      {
+        "language": "powershell",
+        "code": "Get-WinEvent -LogName &#39;Microsoft-Windows-CodeIntegrity/Operational&#39; | Where-Object {$_.Id -eq 3077 || $_.Id -eq 3076}",
+        "context": "PowerShell command to check Code Integrity events related to driver loading and policy enforcement, which might log details about the unauthorized driver."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Unusual process creation: powershell.exe with encoded command on DC01, immediately following a successful VPN login for &#39;admin_backup&#39; from an unknown geolocation.&#39; As a Senior SOC Analyst, what is your MOST immediate concern and initial investigation focus?",
+    "correct_answer": "Confirming if the &#39;admin_backup&#39; account is compromised and if persistence has been established on DC01.",
+    "distractors": [
+      {
+        "question_text": "Blocking the source IP of the VPN login at the firewall and resetting the &#39;admin_backup&#39; password.",
+        "misconception": "Targets premature containment: Student prioritizes immediate blocking and password reset without fully understanding the scope or potential persistence, which could alert the attacker or miss other compromised systems."
+      },
+      {
+        "question_text": "Checking for other successful VPN logins from the same unusual geolocation across the organization.",
+        "misconception": "Targets scope expansion before impact assessment: While important for broader threat hunting, the immediate priority is to assess the impact on the already identified compromised system (DC01) and account (&#39;admin_backup&#39;)."
+      },
+      {
+        "question_text": "Analyzing the encoded PowerShell command to understand its functionality.",
+        "misconception": "Targets deep analysis before initial triage: While crucial for later stages, the immediate concern is the *fact* of the encoded command and its context (DC01, admin_backup), not its specific payload details, which can be analyzed after initial containment/scoping."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The alert describes a classic attack chain: initial access (unusual VPN login with a privileged account), followed by execution (encoded PowerShell on a Domain Controller), which strongly suggests credential compromise and an attempt to establish persistence or further compromise the environment. The immediate focus must be on validating the compromise and identifying any persistence mechanisms to prevent further damage.",
+      "distractor_analysis": "Premature blocking and password resets without full understanding can alert the attacker, allowing them to pivot or destroy evidence. Broad scope expansion is important but secondary to understanding the immediate impact. Analyzing the command&#39;s functionality is a later step; the initial concern is the *occurrence* of such a command in this context.",
+      "analogy": "Imagine a fire alarm going off in a specific room. Your first concern is to confirm if there&#39;s a fire in that room and if it&#39;s spreading, not to immediately evacuate the entire building or to analyze the chemical composition of the smoke."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "index=windows (host=DC01 OR user=admin_backup) \n| where _time &gt; relative_time(now(), &quot;-15m&quot;) \n| search (EventCode=4624 AND LogonType=10 AND NOT src_ip IN [&quot;internal_vpn_ranges&quot;]) OR (EventCode=4688 AND CommandLine=&quot;*powershell.exe*&quot; AND CommandLine=&quot;*encodedcommand*&quot;) OR (EventCode=4698) \n| sort _time",
+        "context": "A Splunk query to correlate the VPN login, PowerShell execution, and potential scheduled task creation on DC01 for &#39;admin_backup&#39; within a short timeframe."
+      },
+      {
+        "language": "kql",
+        "code": "IdentityLogonEvents\n| where AccountName == &#39;admin_backup&#39; and ActionType == &#39;VPN logon&#39; and isempty(ISP) == false and CountryCode != &#39;US&#39; // Assuming US is normal\n| join kind=inner (DeviceProcessEvents\n    | where DeviceName == &#39;DC01&#39; and FileName == &#39;powershell.exe&#39; and ProcessCommandLine contains &#39;EncodedCommand&#39;\n    | project DeviceName, ProcessCommandLine, InitiatingProcessCreationTime)\n    on $left.TimeGenerated between $right.InitiatingProcessCreationTime - 5m and $right.InitiatingProcessCreationTime + 5m\n| project TimeGenerated, AccountName, RemoteIP, CountryCode, DeviceName, ProcessCommandLine",
+        "context": "A KQL query to correlate the unusual VPN login with the encoded PowerShell execution on DC01, focusing on the &#39;admin_backup&#39; account."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_LOG"
+    ]
+  },
+  {
+    "question_text": "A critical alert fires indicating &#39;Unauthorized deletion of multiple GCP compute instances and network resources (VPC, subnets, firewall rules) within a 10-minute window by a service account&#39;. As a Senior SOC Analyst, what is your IMMEDIATE primary concern and investigation focus?",
+    "correct_answer": "Confirm the scope of compromise and identify if the service account credentials were stolen or misused, and if any data exfiltration occurred prior to deletion.",
+    "distractors": [
+      {
+        "question_text": "Initiate a full forensic investigation on the Ansible control machine for malware.",
+        "misconception": "Targets premature deep dive: Student jumps to a specific forensic task (malware on Ansible machine) without first understanding the broader impact or confirming the nature of the compromise."
+      },
+      {
+        "question_text": "Immediately restore all deleted GCP resources from the latest backup.",
+        "misconception": "Targets remediation before understanding root cause: Student prioritizes restoration without ensuring the attacker is removed, risking re-compromise or further damage."
+      },
+      {
+        "question_text": "Block the service account and all associated IP addresses at the network perimeter.",
+        "misconception": "Targets containment without full context: While blocking is important, it&#39;s a containment step. The primary concern is understanding the *why* and *what else* before just blocking, especially if the service account is legitimate but misused."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The alert describes a complete teardown of infrastructure, which is highly destructive. The immediate primary concern is to understand the extent of the compromise (what else was accessed or exfiltrated before deletion) and the root cause (stolen credentials vs. insider misuse) to prevent further damage and ensure effective remediation. Data exfiltration is a critical concern with such destructive actions.",
+      "distractor_analysis": "Forensic investigation on the Ansible machine is a later step, after initial scoping. Restoring resources without addressing the root cause is akin to patching a hole while the leak is still active. Blocking the service account is a necessary containment step, but it doesn&#39;t address the primary concern of understanding the full impact and root cause.",
+      "analogy": "Imagine your house is burning down. Your immediate concern isn&#39;t just putting out the fire (restoration) or investigating the arsonist&#39;s tools (forensics on Ansible machine), but first ensuring everyone is safe, understanding how the fire started, and if anything valuable was stolen before it burned down."
+    },
+    "code_snippets": [
+      {
+        "language": "gcloud",
+        "code": "gcloud logging read &#39;resource.type=&quot;audited_resource&quot; AND protoPayload.methodName=&quot;*Delete*&quot; AND protoPayload.authenticationInfo.principalEmail=&quot;&lt;compromised_service_account&gt;&quot; AND timestamp&gt;=&quot;&lt;start_time&gt;&quot;&#39; --format=json",
+        "context": "Query GCP Cloud Logging for all activities performed by the compromised service account, focusing on deletion events and preceding actions."
+      },
+      {
+        "language": "gcloud",
+        "code": "gcloud logging read &#39;resource.type=&quot;audited_resource&quot; AND protoPayload.methodName=&quot;*Export*&quot; AND protoPayload.authenticationInfo.principalEmail=&quot;&lt;compromised_service_account&gt;&quot; AND timestamp&gt;=&quot;&lt;start_time&gt;&quot;&#39; --format=json",
+        "context": "Query GCP Cloud Logging for any data export or exfiltration attempts by the service account."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_LOG",
+      "SEC_BASICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Multiple failed login attempts from an external IP address to a critical internal server, followed by a successful VPN connection from the same external IP using a different user account.&#39; As a Senior SOC Analyst, what is the MOST critical immediate action?",
+    "correct_answer": "Isolate the internal server and the VPN-connected endpoint, then initiate a full incident response investigation.",
+    "distractors": [
+      {
+        "question_text": "Block the external IP address at the firewall and reset the password for the VPN-connected user account.",
+        "misconception": "Targets premature remediation without full scope: Student focuses on blocking and password reset without understanding the full impact or potential persistence, potentially alerting the attacker and losing forensic data."
+      },
+      {
+        "question_text": "Review firewall logs to confirm the failed login attempts and VPN connection details.",
+        "misconception": "Targets insufficient action: Student performs only data gathering, failing to recognize the urgency of containment given the successful VPN connection after failed attempts, indicating potential compromise."
+      },
+      {
+        "question_text": "Notify the user whose account was used for the successful VPN connection to verify their activity.",
+        "misconception": "Targets user-centric verification over system-level containment: Student prioritizes user verification, which is important but secondary to containing a potential breach and could tip off an attacker if the account is compromised."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The sequence of failed external logins followed by a successful VPN connection from the same external IP, even with a different user, strongly suggests a credential stuffing attack or brute-force leading to a successful compromise. The successful VPN connection indicates potential network access. Immediate isolation is crucial to contain the threat and prevent further lateral movement or data exfiltration, followed by a comprehensive incident response.",
+      "distractor_analysis": "Blocking the IP and resetting the password are good steps but are insufficient if the attacker has already established persistence or moved laterally. Reviewing logs is part of investigation but not the immediate critical action. Notifying the user is important for gathering information but should not delay containment of a potential active threat.",
+      "analogy": "Imagine a burglar trying multiple keys on your front door, then successfully entering through a back door. Your immediate action isn&#39;t to just change the front door lock or ask if a family member let them in; it&#39;s to secure the house and investigate the intrusion."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "index=vpn (src_ip=&quot;&lt;external_ip&gt;&quot; AND action=success) OR (index=firewall src_ip=&quot;&lt;external_ip&gt;&quot; dest_ip=&quot;&lt;critical_server_ip&gt;&quot; action=fail) | transaction src_ip maxspan=15m | where mvcount(action) &gt; 1",
+        "context": "SIEM query to correlate failed external logins to a critical server with a successful VPN connection from the same source IP within a short timeframe."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_LOG"
+    ]
+  },
+  {
+    "question_text": "A critical alert indicates a potential unauthorized modification to an NTFS volume&#39;s Master File Table (MFT). As a Senior SOC Analyst, what is the MOST critical piece of information you would immediately seek to determine the scope and impact of this alert?",
+    "correct_answer": "The specific file reference IDs associated with the modified MFT entries and their corresponding file numbers.",
+    "distractors": [
+      {
+        "question_text": "The cluster size configured for the NTFS volume.",
+        "misconception": "Targets technical detail over impact: Student focuses on a configuration detail (cluster size) that is not directly relevant to assessing the immediate impact of MFT modification."
+      },
+      {
+        "question_text": "Whether the volume manager is protecting the volume with RAID.",
+        "misconception": "Targets infrastructure resilience over incident impact: Student focuses on data redundancy (RAID) which is a recovery mechanism, not an indicator of the current compromise&#39;s scope or impact."
+      },
+      {
+        "question_text": "The contents of the log file that records all metadata updates.",
+        "misconception": "Targets secondary evidence over primary identifier: While the log file is crucial for forensics, the file reference IDs are the direct identifiers of *what* was affected, making them the immediate priority for scoping."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The MFT contains records for every file, identified by unique file reference IDs (file number + sequence number). If the MFT is modified, knowing which specific file reference IDs were affected directly tells you which files or directories might have been altered, deleted, or created, thus defining the immediate scope and potential impact of the incident. This is more critical than general volume configuration or recovery mechanisms for initial impact assessment.",
+      "distractor_analysis": "Cluster size is a formatting detail, not an incident impact indicator. RAID protects against data loss but doesn&#39;t tell you what was compromised. The log file provides historical context, but the file reference IDs directly identify the affected entities in the MFT.",
+      "analogy": "If a library&#39;s card catalog (MFT) is tampered with, knowing which specific card entries (file reference IDs) were changed is more critical for understanding the damage than knowing the size of the catalog cards (cluster size) or if the catalog is backed up (RAID)."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-WinEvent -LogName &#39;Microsoft-Windows-Ntfs/Operational&#39; | Where-Object {$_.Id -eq 1000 || $_.Id -eq 1001} | Select-Object TimeCreated, Id, Message",
+        "context": "PowerShell command to query NTFS operational logs for MFT-related events (e.g., MFT corruption, metadata changes), which might contain file reference IDs."
+      },
+      {
+        "language": "kql",
+        "code": "SecurityEvent\n| where EventID == 4663 // An attempt was made to access an object.\n| where ObjectType == &#39;File&#39; and ObjectName contains &#39;$MFT&#39;\n| project TimeGenerated, Computer, SubjectUserName, AccessMask, ObjectName, RelativeTargetName",
+        "context": "KQL query for Windows Security Events to detect access attempts on the MFT file itself, indicating potential tampering."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Unusual process injection detected in lsass.exe from an unsigned executable&#39;. Further investigation reveals the injecting process is attempting to hook `ZwEnumerateKey`. As a Senior SOC Analyst, what is the MOST immediate concern and next step?",
+    "correct_answer": "Potential credential theft and persistence attempt; isolate the affected host and initiate memory forensics.",
+    "distractors": [
+      {
+        "question_text": "This is likely a false positive from a legitimate security tool; close the alert after verifying the executable&#39;s publisher.",
+        "misconception": "Targets false positive bias/normalization: Student dismisses a critical alert due to commonality of &#39;process injection&#39; without recognizing the specific target (lsass.exe), the unsigned nature, and the specific API hook (ZwEnumerateKey) as strong indicators of compromise."
+      },
+      {
+        "question_text": "Block the unsigned executable&#39;s hash at the endpoint and network perimeter; then monitor for further activity.",
+        "misconception": "Targets premature containment without understanding impact: Student jumps to blocking without first understanding the scope of compromise or collecting volatile evidence, potentially losing critical forensic data."
+      },
+      {
+        "question_text": "Escalate to the threat hunting team for a proactive search for similar hooking techniques across the environment.",
+        "misconception": "Targets scope expansion before initial incident response: While important, proactive hunting is secondary to containing and investigating the immediate, confirmed compromise on the affected host."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process injection into `lsass.exe` is a classic technique for credential dumping (e.g., Mimikatz). Hooking `ZwEnumerateKey` (a kernel API for registry enumeration) further suggests an attempt to gain system information or establish persistence by manipulating registry keys. This combination points to a high-severity incident requiring immediate containment (isolation) and detailed forensic analysis (memory forensics) to understand the full extent of compromise.",
+      "distractor_analysis": "Dismissing this as a false positive ignores multiple strong indicators of compromise. Blocking the executable&#39;s hash is a good step but should follow isolation and evidence collection. Escalating to threat hunting is valuable but comes after initial incident response on the affected system.",
+      "analogy": "Imagine a fire alarm going off in a critical server room, and you see smoke. Your first action isn&#39;t to check if it&#39;s a drill or to search other rooms for smoke; it&#39;s to contain the immediate fire and investigate its source."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-Process lsass | Select-Object -ExpandProperty Modules | Where-Object {$_.FileName -notlike &#39;*windows\\system32*&#39;} | Select-Object FileName, BaseAddress, Size",
+        "context": "PowerShell command to inspect loaded modules in lsass.exe for suspicious, non-system DLLs."
+      },
+      {
+        "language": "splunk",
+        "code": "index=windows EventCode=7 | ProcessName=&quot;lsass.exe&quot; | ParentProcessName!=(&quot;winlogon.exe&quot;, &quot;services.exe&quot;) | CommandLine=&quot;*ZwEnumerateKey*&quot;",
+        "context": "SIEM query (example for Windows Event ID 7 - Process Injection) to identify similar injection events targeting lsass.exe and potentially hooking specific APIs."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Multiple failed login attempts to a critical database server from an internal IP address (192.168.1.10) that is not part of the database administration subnet.&#39; Simultaneously, a separate alert shows &#39;Unusual outbound network traffic from 192.168.1.10 to an external IP known for C2 activity.&#39; As a Senior SOC Analyst, how would you classify the MOST likely threat scenario and prioritize your response?",
+    "correct_answer": "Specific target attack, likely involving an internal compromised host attempting lateral movement or data exfiltration, requiring immediate isolation of the internal IP and full incident response.",
+    "distractors": [
+      {
+        "question_text": "Target of opportunity, likely a misconfigured internal system, requiring investigation of the internal IP&#39;s purpose and network configuration.",
+        "misconception": "Targets misclassification of intent: Student might focus on the &#39;internal IP&#39; aspect and assume misconfiguration (target of opportunity) rather than recognizing the combined indicators of a deliberate attack (specific target)."
+      },
+      {
+        "question_text": "Low-priority alert, as the failed logins indicate the database is secure, and the outbound traffic might be a false positive.",
+        "misconception": "Targets underestimation of risk: Student dismisses the combined alerts, failing to recognize that failed logins often precede successful ones or indicate reconnaissance, and outbound C2 traffic is a critical indicator."
+      },
+      {
+        "question_text": "External brute-force attack, as the database is a critical asset, requiring immediate blocking of the external C2 IP at the perimeter.",
+        "misconception": "Targets misattribution of source and premature remediation: Student focuses on the &#39;critical database&#39; and &#39;C2 activity&#39; but misidentifies the source as external brute-force, ignoring the internal failed logins and the need to address the internal compromised host first."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The combination of failed logins to a critical server from an unusual internal source AND outbound C2 traffic from that same internal source strongly indicates a specific target attack. An internal host is likely compromised and attempting to move laterally or exfiltrate data. This is not a random &#39;target of opportunity&#39; but a deliberate action against a specific asset. The priority is to contain the compromised internal host and initiate a full incident response.",
+      "distractor_analysis": "Classifying this as a &#39;target of opportunity&#39; ignores the specific targeting of a critical database and the C2 communication. Dismissing it as &#39;low-priority&#39; overlooks the clear indicators of compromise. Focusing solely on &#39;external brute-force&#39; and blocking the C2 IP without addressing the internal compromised host leaves the root cause unaddressed and the internal network vulnerable.",
+      "analogy": "Imagine a security guard seeing someone trying to pick the lock of a vault door (failed logins) while simultaneously noticing that person&#39;s accomplice inside the building sending coded messages out (C2 traffic). This isn&#39;t a random passerby; it&#39;s a coordinated, specific attack."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "index=firewall (src_ip=192.168.1.10 OR dest_ip=192.168.1.10) OR (dest_ip=&quot;&lt;C2_IP&gt;&quot;) | stats count by src_ip, dest_ip, dest_port, action, _time | sort _time",
+        "context": "Query firewall logs to trace all network connections involving the suspicious internal IP and the known C2 IP."
+      },
+      {
+        "language": "kql",
+        "code": "SecurityEvent\n| where IpAddress == &#39;192.168.1.10&#39;\n| where EventID == 4625 // Failed logins\n| join kind=inner (\n    DeviceNetworkEvents\n    | where RemoteIP == &#39;&lt;C2_IP&gt;&#39;\n    | where InitiatingProcessFileName != &#39;&#39;\n) on IpAddress\n| project TimeGenerated, Computer, IpAddress, RemoteIP, InitiatingProcessFileName, EventID",
+        "context": "KQL query to correlate failed logins from the internal IP with outbound C2 communication from the same host."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "SEC_BASICS"
+    ]
+  }
+]

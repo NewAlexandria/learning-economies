@@ -1,0 +1,34 @@
+[
+  {
+    "question_text": "When analyzing a Mac OS X memory dump for hidden kernel rootkits, what advanced technique can detect kernel extensions that have manipulated linked lists and zeroed out their Mach-O headers?",
+    "correct_answer": "Utilizing the `g_kext_map` global variable to enumerate loaded kernel modules",
+    "distractors": [
+      {
+        "question_text": "Running `kextstat` on the live system before memory acquisition",
+        "misconception": "Targets scope misunderstanding: Students might confuse live system analysis with memory forensics, or believe `kextstat` is sufficient even for hidden rootkits, missing that rootkits specifically evade this."
+      },
+      {
+        "question_text": "Carving for Mach-O headers within the kernel address space",
+        "misconception": "Targets partial knowledge: Students recall that carving for Mach-O headers is a detection method, but overlook the anti-forensics technique of zeroing out the header, making this method ineffective."
+      },
+      {
+        "question_text": "Using `mac_lsmod` and `mac_lsmod_iokit` plugins to enumerate kernel extensions",
+        "misconception": "Targets outdated information: Students might remember these plugins as standard tools, but miss that sophisticated rootkits specifically alter the data structures these plugins rely on for detection."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Sophisticated kernel rootkits on Mac OS X can hide by manipulating the kernel&#39;s linked lists and even zeroing out their Mach-O headers to evade detection by traditional methods like `kextstat` or Mach-O header carving. The `g_kext_map` global variable, a `_vm_map` structure, maintains a list of all loaded kernel modules. By examining this map, investigators can find the start address of kernel extensions, even if other forensic artifacts have been tampered with. This method provides an alternate, more robust source for identifying hidden kernel extensions.",
+      "distractor_analysis": "`kextstat` is for live systems and easily evaded by rootkits. Carving for Mach-O headers is effective unless the rootkit specifically zeros out the header, which is a known anti-forensics technique. `mac_lsmod` and `mac_lsmod_iokit` plugins rely on data structures that rootkits like Crisis are known to alter, making them unreliable for detecting hidden extensions.",
+      "analogy": "Imagine a secret agent who changes their face and destroys their ID. Traditional methods would fail. But if there&#39;s a hidden guest list at the party that tracks everyone who entered, regardless of their current appearance or ID, you can still find them. The `g_kext_map` is like that hidden, more reliable guest list."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "MEMORY_FORENSICS_BASICS",
+      "MACOS_KERNEL_ARCHITECTURE",
+      "ROOTKIT_DETECTION_TECHNIQUES",
+      "VOLATILITY_FRAMEWORK"
+    ]
+  }
+]

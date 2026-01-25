@@ -1,0 +1,39 @@
+[
+  {
+    "question_text": "A threat actor has compromised a Linux system and is attempting to hide their malicious files. Which `inode_operations` function, if hooked or manipulated, would allow the actor to prevent their files from being listed or found by standard directory traversal tools?",
+    "correct_answer": "`lookup`",
+    "distractors": [
+      {
+        "question_text": "`create`",
+        "misconception": "Targets lifecycle confusion: Students might think file creation is relevant to hiding, but `create` only handles initial file generation, not subsequent discovery."
+      },
+      {
+        "question_text": "`truncate`",
+        "misconception": "Targets function scope misunderstanding: Students might associate `truncate` with data modification or deletion, not with preventing file discovery in a directory listing."
+      },
+      {
+        "question_text": "`permission`",
+        "misconception": "Targets access vs. discovery confusion: Students might think `permission` controls visibility, but it primarily governs read/write/execute access, not whether a file appears in a directory listing."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `lookup` operation is responsible for searching a directory for an inode corresponding to a filename. If a threat actor can hook or manipulate this function, they could prevent their malicious files from being returned during directory searches, effectively hiding them from tools like `ls` or `find` that rely on directory traversal.",
+      "distractor_analysis": "`create` is for making new files, not hiding existing ones. `truncate` modifies a file&#39;s size. `permission` checks access rights but doesn&#39;t remove a file from a directory listing. Manipulating `lookup` directly interferes with the mechanism by which files are discovered within a directory.",
+      "analogy": "Imagine `lookup` as the directory&#39;s index. If you can remove an entry from that index, even if the &#39;book&#39; (file) is still on the shelf, no one will find it by looking in the index."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "struct dentry * (*lookup) (struct inode *, struct dentry *, struct nameidata *);",
+        "context": "The `lookup` function pointer within the `inode_operations` structure, which is critical for directory traversal."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "FRAMEWORK_MITRE",
+      "FRAMEWORK_KILLCHAIN"
+    ]
+  }
+]

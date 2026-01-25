@@ -1,0 +1,68 @@
+[
+  {
+    "question_text": "A security team is implementing a new web application and needs to manage the cryptographic keys used for TLS/SSL, database encryption, and API signing. They want to ensure that private keys are generated and stored in a way that prevents their extraction, even by system administrators. Which key management practice, often facilitated by a Hardware Security Module (HSM), directly addresses this requirement?",
+    "correct_answer": "Generating keys with a non-exportable attribute within an HSM",
+    "distractors": [
+      {
+        "question_text": "Implementing a robust key rotation schedule for all keys",
+        "misconception": "Targets scope misunderstanding: Students may confuse key rotation (lifecycle management) with key protection against extraction."
+      },
+      {
+        "question_text": "Encrypting all private keys at rest using a strong passphrase",
+        "misconception": "Targets partial protection: Students may think encryption alone prevents extraction, but an encrypted key can still be copied and decrypted elsewhere."
+      },
+      {
+        "question_text": "Using a multi-factor authentication system for key access",
+        "misconception": "Targets access control vs. key property: Students may conflate authentication for key usage with the inherent non-extractability of the key material itself."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The most effective way to prevent private key extraction, even by administrators, is to generate them with a non-exportable attribute within a Hardware Security Module (HSM). HSMs are designed to create a secure boundary where keys can be used for cryptographic operations but cannot be physically or logically removed from the device. This hardware-enforced protection is superior to software-based controls or encryption alone.",
+      "distractor_analysis": "Key rotation is a critical security practice for limiting the impact of a compromise, but it does not prevent the initial extraction of a key. Encrypting keys at rest protects them from unauthorized access while stored, but if an attacker gains access to the encrypted key and the decryption passphrase, they can still extract it. Multi-factor authentication controls who can access and use keys, but it doesn&#39;t prevent an authorized user (like an administrator) from extracting a key if the key&#39;s attributes or the HSM&#39;s configuration allow it.",
+      "analogy": "Think of it like a secure vault (HSM) where you can put documents in and retrieve processed results, but the original documents (private keys) are physically fused to the vault and cannot be taken out, even by the vault manager. Other security measures might protect the vault or its contents, but only this &#39;fused&#39; property prevents extraction."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "# Example of PKCS#11 template for a non-exportable private key\nfrom PyKCS11 import *\n\ntemplate = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_TOKEN, True),       # Stored on token (HSM)\n    (CKA_PRIVATE, True),     # Private key\n    (CKA_EXTRACTABLE, False) # CRITICAL: Key cannot be extracted\n]\n\n# Further code would involve generating the key using C_GenerateKeyPair with this template",
+        "context": "This Python snippet demonstrates how to specify the CKA_EXTRACTABLE=False attribute when generating a key via the PKCS#11 interface, which is commonly used to interact with HSMs. This attribute instructs the HSM to prevent the key material from ever leaving the device."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "A sophisticated Linux rootkit like Phalanx2, which abuses the Loadable Kernel Module (LKM) system and performs operations through `/dev/mem`, presents significant challenges for traditional analysis. What key management concept is most directly impacted by such a rootkit&#39;s ability to hide its presence and operations within the kernel?",
+    "correct_answer": "The integrity and confidentiality of cryptographic keys stored or processed in kernel memory",
+    "distractors": [
+      {
+        "question_text": "The rotation schedule for user-level application keys",
+        "misconception": "Targets scope misunderstanding: Students might focus on user-level keys, but kernel rootkits primarily impact kernel-level operations and data."
+      },
+      {
+        "question_text": "The secure distribution of public keys via PKI",
+        "misconception": "Targets irrelevant concept: Students might conflate general key management with the specific threat of a kernel rootkit, which doesn&#39;t directly attack PKI distribution mechanisms."
+      },
+      {
+        "question_text": "The physical security of Hardware Security Modules (HSMs)",
+        "misconception": "Targets incorrect protection layer: Students might think of HSMs as a universal solution, but a kernel rootkit operates at a software layer that can compromise data before it reaches or after it leaves an HSM if not properly isolated."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "A kernel rootkit like Phalanx2 operates at the highest privilege level, allowing it to manipulate or exfiltrate any data within kernel memory. This directly impacts the integrity and confidentiality of cryptographic keys, which might be stored or processed in kernel memory for various system functions (e.g., disk encryption, network communication). The rootkit could potentially intercept, modify, or steal these keys, rendering any security relying on them compromised.",
+      "distractor_analysis": "The rotation schedule for user-level application keys is a separate concern; while a compromised kernel could eventually affect user applications, the direct and immediate impact is on kernel-level data. Secure distribution of public keys via PKI is about initial trust establishment, not the runtime compromise of keys within a system. Physical security of HSMs is crucial for protecting keys at rest and during cryptographic operations, but a kernel rootkit can compromise keys *before* they enter an HSM or *after* they are used by the kernel, if the HSM integration isn&#39;t perfectly isolated.",
+      "analogy": "Imagine a master thief (the rootkit) who has gained control of the entire bank vault&#39;s security system (the kernel). Even if individual safety deposit boxes (user applications) have their own locks, the thief can access the vault&#39;s main control panel, potentially bypassing or observing all operations, including the handling of sensitive documents (cryptographic keys) by the bank staff (kernel processes)."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  }
+]

@@ -1,0 +1,271 @@
+[
+  {
+    "question_text": "To evade EDR detection that relies on kernel-mode notification callback routines for process and thread creation, which of the following techniques is MOST likely to succeed?",
+    "correct_answer": "Directly manipulating kernel objects to create processes or threads without triggering standard API calls",
+    "distractors": [
+      {
+        "question_text": "Using obfuscated PowerShell scripts to launch new processes",
+        "misconception": "Targets obfuscation over technique: Student believes obfuscation alone bypasses kernel-level monitoring, not understanding that the underlying process creation event is still observed"
+      },
+      {
+        "question_text": "Injecting shellcode into an existing legitimate process to spawn a new thread",
+        "misconception": "Targets injection method confusion: Student focuses on process injection, but the question is about evading the *notification* of the new thread creation, which injection alone doesn&#39;t prevent"
+      },
+      {
+        "question_text": "Employing a custom user-mode loader to execute a payload",
+        "misconception": "Targets scope misunderstanding: Student thinks a custom loader in user-mode will bypass kernel-mode callbacks, not realizing that any process or thread creation will still eventually call kernel functions that trigger these callbacks"
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Kernel-mode notification callback routines are triggered by specific system events, often tied to standard Windows API calls that eventually transition to kernel mode. By directly manipulating kernel objects or using undocumented kernel functions to create processes or threads, an attacker might bypass the standard notification mechanisms that EDRs hook into. This is a highly advanced technique that requires deep understanding of Windows kernel internals.",
+      "distractor_analysis": "Obfuscated PowerShell still uses standard process creation APIs that trigger kernel callbacks. Injecting shellcode into an existing process to create a new thread will still result in a thread creation event that EDRs monitor. A custom user-mode loader, while potentially evading user-mode hooks, will still rely on kernel-mode functions for process/thread creation, which are subject to EDR callbacks.",
+      "analogy": "Imagine a security guard at a gate who logs every car that passes through. Instead of trying to hide your car or disguise it (obfuscation), you find a secret, unmonitored path around the gate entirely."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "WINDOWS_KERNEL_INTERNALS",
+      "EDR_EVASION_TECHNIQUES",
+      "PROCESS_THREAD_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "To execute a .NET assembly like Seatbelt within an existing Beacon process without spawning a new process, while minimizing EDR detection, the MOST effective approach involves:",
+    "correct_answer": "Using an `InlineExecute-Assembly` Beacon Object File (BOF) within a managed process, coupled with AMSI and ETW bypasses.",
+    "distractors": [
+      {
+        "question_text": "Spawning a new unmanaged process and injecting the .NET assembly into it.",
+        "misconception": "Targets process spawning detection: Student believes creating a new process is less detectable than in-process execution, ignoring that process creation itself is a high-fidelity EDR event."
+      },
+      {
+        "question_text": "Directly loading the .NET assembly into any existing process using `LoadLibrary`.",
+        "misconception": "Targets CLR loading misunderstanding: Student assumes `LoadLibrary` is sufficient for .NET assemblies, not realizing the Common Language Runtime (CLR) must be initialized and managed for .NET code execution."
+      },
+      {
+        "question_text": "Executing the .NET assembly via `powershell.exe -c` with obfuscated commands.",
+        "misconception": "Targets PowerShell logging and script-based detection: Student overlooks that PowerShell execution is heavily monitored by EDRs, and obfuscation alone may not bypass script analysis or AMSI for PowerShell."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Executing .NET assemblies in-process using tools like `InlineExecute-Assembly` BOF avoids the creation of new processes, which is a significant EDR detection vector. When the host process is already a managed (.NET) process, loading the Common Language Runtime (CLR) is expected behavior, further reducing suspicion. Bypassing AMSI and the .NET Runtime ETW provider addresses additional layers of .NET-specific detection.",
+      "distractor_analysis": "Spawning a new process is a common EDR detection point. Directly loading a .NET assembly with `LoadLibrary` into an arbitrary process won&#39;t correctly initialize the CLR for execution. Using `powershell.exe` is often heavily monitored and subject to script analysis and AMSI, even with obfuscation.",
+      "analogy": "Imagine trying to smuggle a message into a secure building. Spawning a new process is like sending a new, suspicious delivery truck. `InlineExecute-Assembly` is like slipping the message to an existing, authorized delivery person already inside, making it much harder to detect."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "EDR_EVASION_BASICS",
+      "COBALT_STRIKE_FUNDAMENTALS",
+      "DOTNET_EXECUTION",
+      "AMSI_BYPASS"
+    ]
+  },
+  {
+    "question_text": "A red team operator needs to inject a custom DLL into `explorer.exe` on a Windows 10 system, aiming to execute a function within the DLL. The objective is to achieve this without writing the DLL to disk, and to ensure the injected code runs. Which sequence of actions is MOST appropriate for this scenario?",
+    "correct_answer": "Allocate memory in `explorer.exe` using `VirtualAllocEx`, write the DLL&#39;s raw bytes into the allocated memory, then use `CreateRemoteThread` to execute a specific export from the in-memory DLL.",
+    "distractors": [
+      {
+        "question_text": "Use `CreateRemoteThread` to directly execute a function pointer to `LoadLibraryA` in `explorer.exe`, passing the path to the DLL on the attacker&#39;s local machine.",
+        "misconception": "Targets misunderstanding of remote process context: Student believes `LoadLibraryA` in the target process can load a DLL from a path on the *attacker&#39;s* machine, not realizing it needs a path accessible to the *target* process."
+      },
+      {
+        "question_text": "Inject a small shellcode payload into `explorer.exe` that downloads the DLL from a C2 server, writes it to a temporary file, and then loads it using `LoadLibraryA`.",
+        "misconception": "Targets evasion misunderstanding: Student misses the &#39;without writing to disk&#39; constraint and suggests a disk-based method, which increases detection risk."
+      },
+      {
+        "question_text": "Use `SetWindowsHookEx` to install a global hook, and within the hook procedure, load the DLL into `explorer.exe`&#39;s address space.",
+        "misconception": "Targets technique confusion and stealth: Student suggests a hook-based injection, which is a valid technique but often less stealthy and more complex for direct DLL execution compared to `CreateRemoteThread` with in-memory loading."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To inject a DLL without writing it to disk and execute a function within it, the most direct method involves manually mapping the DLL into the target process&#39;s memory. This typically involves allocating memory in the target process (`VirtualAllocEx`), writing the DLL&#39;s raw bytes (or a specially crafted reflective loader) into that memory (`WriteProcessMemory`), and then using `CreateRemoteThread` to start a thread that executes a specific entry point or function within the now-resident DLL. This avoids disk artifacts and allows for direct execution of the DLL&#39;s code.",
+      "distractor_analysis": "Passing a local path to `LoadLibraryA` in a remote process will fail because the target process cannot access the attacker&#39;s local file system. Downloading and writing to disk violates the &#39;without writing to disk&#39; constraint and increases detection surface. `SetWindowsHookEx` is a form of DLL injection, but directly executing a specific function from an in-memory DLL is more efficiently achieved with `CreateRemoteThread` after manual mapping, and hook-based injection can be more easily detected due to the nature of global hooks.",
+      "analogy": "Imagine you want to run a program on a friend&#39;s computer without installing it. Instead of giving them a disk (writing to disk) or telling them to download it from your website (C2 download), you physically copy the program&#39;s code into their computer&#39;s RAM and then tell their computer to start executing that code directly from memory."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "LPVOID remoteMem = VirtualAllocEx(hProcess, NULL, dllSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);\nWriteProcessMemory(hProcess, remoteMem, dllBuffer, dllSize, NULL);\nCreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)GetProcAddress(GetModuleHandleA(&quot;kernel32.dll&quot;), &quot;LoadLibraryA&quot;), remoteMem, 0, NULL);",
+        "context": "This snippet shows the basic steps for injecting a DLL path and using LoadLibraryA. For full in-memory DLL injection, the `remoteMem` would point to a reflective loader or the DLL&#39;s base, and `lpStartAddress` would be the entry point of the in-memory DLL."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "WINDOWS_INTERNALS",
+      "PROCESS_INJECTION_BASICS",
+      "DLL_LOADING"
+    ]
+  },
+  {
+    "question_text": "When analyzing a heavily obfuscated malware sample that uses control-flow flattening and VM-based obfuscation, which deobfuscation approach is MOST effective for understanding its core logic after initial unpacking?",
+    "correct_answer": "Translating the dynamically executed code into an LLVM intermediate representation for further analysis and optimization passes.",
+    "distractors": [
+      {
+        "question_text": "Applying standard static analysis tools directly to the unpacked binary to reconstruct control flow graphs.",
+        "misconception": "Targets static analysis limitations: Student believes static analysis alone can overcome complex dynamic obfuscation, not realizing the code&#39;s structure is intentionally broken for static tools."
+      },
+      {
+        "question_text": "Manually stepping through the unpacked binary in a debugger, tracing every instruction to understand its behavior.",
+        "misconception": "Targets efficiency and scale: Student understands debugging but underestimates the complexity and time required for heavily obfuscated code, making it impractical for full understanding."
+      },
+      {
+        "question_text": "Using a disassembler to convert the binary into assembly code and then manually deobfuscating the assembly.",
+        "misconception": "Targets manual effort vs. automated techniques: Student knows assembly but doesn&#39;t recognize that manual deobfuscation of complex control flow and VM-based obfuscation is extremely time-consuming and error-prone without higher-level representations."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "For heavily obfuscated malware, especially with control-flow flattening or VM-based obfuscation, directly analyzing the binary or assembly is extremely difficult. Translating the dynamically executed code into an intermediate representation like LLVM allows for the application of various optimization and normalization passes. This process simplifies the code, resolves dynamic elements like imports and relocations, and makes the underlying logic much clearer for analysis.",
+      "distractor_analysis": "Standard static analysis tools struggle with obfuscated control flow. Manual debugging is too time-consuming for complex obfuscation. Manual assembly deobfuscation is impractical due to the scale and complexity of modern obfuscation techniques. The LLVM approach provides a higher-level, more manageable representation for automated simplification.",
+      "analogy": "Imagine trying to understand a complex, scrambled message by looking at individual letters versus translating it into a known language and then using a grammar checker and spell corrector to make sense of it."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "REVERSE_ENGINEERING_BASICS",
+      "CODE_OBFUSCATION",
+      "INTERMEDIATE_REPRESENTATIONS"
+    ]
+  },
+  {
+    "question_text": "To effectively dump LSASS memory on a Windows system while attempting to evade common EDR detections, which of the following techniques is MOST likely to succeed without triggering immediate alerts?",
+    "correct_answer": "Dumping LSASS.exe memory using direct system calls and API unhooking",
+    "distractors": [
+      {
+        "question_text": "Using Powershell Mimikatz directly from a standard PowerShell console",
+        "misconception": "Targets detection bypass misunderstanding: Student believes Mimikatz is always effective, not realizing that its signature and PowerShell usage are heavily monitored."
+      },
+      {
+        "question_text": "Creating a minidump of LSASS.exe using the legitimate procdump.exe utility",
+        "misconception": "Targets LOLBIN detection ignorance: Student overlooks that while legitimate, tools like procdump are known LOLBINs and are specifically monitored for LSASS access."
+      },
+      {
+        "question_text": "Dumping LSASS.exe memory using comsvcs.dll via rundll32.exe",
+        "misconception": "Targets LOLBIN detection ignorance: Student doesn&#39;t realize that comsvcs.dll used with rundll32 for dumping is a well-known and monitored technique."
+      },
+      {
+        "question_text": "Using the Windows Task Manager to create a dump of the LSASS process",
+        "misconception": "Targets interactive detection: Student might think a GUI tool is less suspicious, but Task Manager&#39;s dump functionality is often logged and can be detected by EDRs."
+      },
+      {
+        "question_text": "Executing a custom C# assembly that directly calls MiniDumpWriteDump from a .NET application",
+        "misconception": "Targets API monitoring: Student might think custom code is stealthy, but direct calls to MiniDumpWriteDump are a common EDR hook point for LSASS dumping."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Direct system calls and API unhooking aim to bypass user-mode EDR hooks by interacting directly with the kernel or restoring original API functions before calling them. This makes it significantly harder for EDRs to detect the memory access, as they often rely on hooking user-mode API calls like ReadProcessMemory or MiniDumpWriteDump.",
+      "distractor_analysis": "Powershell Mimikatz is highly signatured and its execution patterns are well-known. Procdump.exe and comsvcs.dll via rundll32.exe are legitimate binaries (LOLBINs) but their use for LSASS dumping is a common detection signature. Using Task Manager for dumping is often logged and can be detected. Direct calls to MiniDumpWriteDump, even from custom code, are still API calls that EDRs can hook and monitor.",
+      "analogy": "Imagine a security guard at a door. Instead of walking through the door (standard API call) or disguising yourself (obfuscated Mimikatz), you either dig a tunnel under the wall (direct system call) or temporarily disable the guard&#39;s vision before walking through the door (API unhooking)."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "WINDOWS_INTERNALS",
+      "EDR_BYPASS_TECHNIQUES",
+      "LSASS_CREDENTIAL_DUMPING"
+    ]
+  },
+  {
+    "question_text": "When analyzing kernel memory for a malicious kernel module that has unlinked itself from `PsLoadedModuleList` and zeroed out its `KLDR_DATA_TABLE_ENTRY` metadata, which forensic technique is MOST likely to still detect its presence?",
+    "correct_answer": "Scanning kernel memory for Portable Executable (PE) headers (MZ signature) not present in the legitimate module list",
+    "distractors": [
+      {
+        "question_text": "Walking the `PsLoadedModuleList` for unlinked entries",
+        "misconception": "Targets misunderstanding of anti-forensic techniques: Student believes simple unlinking is the only hiding method, not accounting for metadata zeroing."
+      },
+      {
+        "question_text": "Using pool scanning to find `MmLd` tagged structures",
+        "misconception": "Targets incomplete understanding of advanced rootkit evasion: Student knows about pool scanning but misses that the `MmLd` tag itself can be zeroed out by stealthier rootkits."
+      },
+      {
+        "question_text": "Analyzing the System Service Dispatch Table (SSDT) for direct hooks to the module&#39;s code",
+        "misconception": "Targets confusion between detection methods and indirect artifacts: While SSDT hooks are an *artifact* of the rootkit&#39;s function, they are not a direct method to *locate the module&#39;s code* itself when its metadata is destroyed."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Even if a malicious kernel module unlinks itself from `PsLoadedModuleList` and zeroes out its `KLDR_DATA_TABLE_ENTRY` metadata (including the `MmLd` pool tag), its executable code must still reside in memory to function. This code will typically begin with a PE header (MZ signature). By scanning kernel memory for these signatures and cross-referencing them against the legitimately loaded modules, an unlisted PE header indicates a hidden module.",
+      "distractor_analysis": "Walking `PsLoadedModuleList` will fail because the entry is unlinked. Pool scanning for `MmLd` tags will fail if the tag itself has been zeroed out. While SSDT hooks are a strong indicator of a rootkit&#39;s activity, they are an indirect artifact of its function, not a direct method to locate the module&#39;s base code when its primary metadata is destroyed. The question asks for a technique to *detect its presence* in memory, which the PE header scan directly addresses.",
+      "analogy": "Imagine a person hiding in a crowd. If they remove their name tag and tear up their ID, you can&#39;t find them by checking the guest list or looking for their specific ID. However, if you know they are wearing a unique hat, you can still scan the crowd for that hat, even if you don&#39;t know their name."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "WINDOWS_KERNEL_INTERNALS",
+      "MEMORY_FORENSICS",
+      "PE_FILE_FORMAT"
+    ]
+  },
+  {
+    "question_text": "A red team operator aims to load a kernel module on a Linux system to patch a kernel function, but wants to avoid leaving persistent traces in the `lsmod` output. Which technique would BEST achieve this stealth objective?",
+    "correct_answer": "Return a negative value from the module&#39;s `init` function after the patch is applied",
+    "distractors": [
+      {
+        "question_text": "Unlink the module from the kernel&#39;s module list after loading",
+        "misconception": "Targets misunderstanding of kernel module lifecycle: Student might think direct unlinking is a common or simple method, not realizing the complexities and potential for system instability or crashes."
+      },
+      {
+        "question_text": "Use a rootkit to hide the module&#39;s entry in `/proc/modules`",
+        "misconception": "Targets conflation of techniques: Student confuses the goal of avoiding `lsmod` output with general rootkit hiding, not recognizing that the module itself can self-destruct from the kernel&#39;s perspective."
+      },
+      {
+        "question_text": "Load the module with `insmod` and immediately `rmmod` it",
+        "misconception": "Targets process order error: Student might think `rmmod` would remove the module after its `init` function has executed and applied the patch, but `rmmod` would also undo the patch if the module is properly unloaded."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "By returning a negative value from the kernel module&#39;s `init` function after the desired kernel patch has been applied, the kernel interprets the module load as a failure. Consequently, the kernel automatically unloads all of the module&#39;s components and frees them from memory, preventing it from appearing in `lsmod` output while still allowing the patch to persist if it was applied before the return.",
+      "distractor_analysis": "Directly unlinking a module from the kernel&#39;s module list is complex, prone to errors, and can lead to system instability. Using a rootkit to hide `/proc/modules` entries is a separate hiding mechanism, not a method to prevent the module from being registered in the first place. Loading with `insmod` and then immediately `rmmod` would typically cause the kernel to undo any changes made by the module&#39;s `init` function during its `exit` function, thus removing the patch.",
+      "analogy": "Imagine a temporary worker who comes in, performs a specific task, and then immediately &#39;quits&#39; before their employment is officially registered. They&#39;ve done the work, but their name never appears on the employee roster."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "static int __init my_module_init(void)\n{\n    // Apply kernel patch here\n    // ...\n\n    // Return a negative value to make the kernel unload the module\n    return -EFAULT; // Or any other negative error code\n}",
+        "context": "Example of a Linux kernel module&#39;s init function returning a negative value to trigger self-unloading."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "LINUX_KERNEL_MODULES",
+      "KERNEL_HOOKING",
+      "ANTI_FORENSICS"
+    ]
+  },
+  {
+    "question_text": "To detect a macOS kernel rootkit that hides its kernel extension (`kext`) by manipulating kernel data structures and zeroing out its Mach-O header, which memory forensics technique is MOST effective?",
+    "correct_answer": "Enumerating kernel extensions using the `g_kext_map` global variable",
+    "distractors": [
+      {
+        "question_text": "Using the `kextstat` command on the live system",
+        "misconception": "Targets live system vs. memory dump confusion: Student believes live system commands are effective against rootkits designed to evade them, not understanding that these commands rely on the same manipulated data structures."
+      },
+      {
+        "question_text": "Carving for Mach-O header signatures within the kernel address space",
+        "misconception": "Targets anti-forensics technique ignorance: Student doesn&#39;t realize that zeroing out the Mach-O header specifically defeats signature-based carving methods."
+      },
+      {
+        "question_text": "Analyzing the `mac_lsmod` plugin output for discrepancies",
+        "misconception": "Targets data structure manipulation ignorance: Student believes `mac_lsmod` will reveal hidden kexts, not understanding that rootkits specifically alter the linked module lists this plugin relies on."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Rootkits can manipulate linked lists and zero out Mach-O headers to evade detection by standard tools and carving techniques. The `g_kext_map` global variable, a `_vm_map` structure, maintains a separate list of all loaded kernel modules. This map stores the original start address of the Mach-O header, allowing forensic tools to locate and identify hidden kernel extensions even after their headers have been modified or removed from other lists.",
+      "distractor_analysis": "The `kextstat` command and `mac_lsmod` plugin rely on kernel data structures that rootkits specifically manipulate to hide. Carving for Mach-O header signatures is defeated if the rootkit has zeroed out its header as an anti-forensics measure.",
+      "analogy": "Imagine a library where a book is removed from the main catalog and its cover is torn off. While you can&#39;t find it through the catalog or by looking for its cover, a hidden inventory list (the `g_kext_map`) still records its original location and contents."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "MACOS_KERNEL_INTERNALS",
+      "MEMORY_FORENSICS_BASICS",
+      "ROOTKIT_DETECTION"
+    ]
+  }
+]

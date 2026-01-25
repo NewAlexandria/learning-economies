@@ -1,0 +1,39 @@
+[
+  {
+    "question_text": "A sophisticated malware variant hides a running service on a Windows EC2 instance by unlinking its `_SERVICE_RECORD` structure from the Service Control Manager&#39;s (SCM) linked list. Which AWS security service is best suited to detect this specific type of low-level operating system manipulation?",
+    "correct_answer": "AWS Systems Manager (SSM) with State Manager or Run Command for OS-level integrity checks",
+    "distractors": [
+      {
+        "question_text": "AWS GuardDuty for anomaly detection and threat intelligence",
+        "misconception": "Targets service scope misunderstanding: GuardDuty focuses on network and account-level anomalies, not deep OS process integrity."
+      },
+      {
+        "question_text": "AWS Security Hub for centralized security posture management",
+        "misconception": "Targets service aggregation confusion: Security Hub aggregates findings but doesn&#39;t perform the low-level OS integrity checks itself."
+      },
+      {
+        "question_text": "Amazon Inspector for vulnerability management and compliance",
+        "misconception": "Targets security domain conflation: Inspector focuses on CVEs and compliance, not runtime process hiding or unlinking of service records."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Detecting a hidden service that has been unlinked from the SCM&#39;s linked list requires deep operating system visibility and the ability to perform integrity checks at the OS level. AWS Systems Manager (SSM) provides the capability to run scripts and commands on EC2 instances, including custom scripts that could enumerate services directly from memory or compare expected service lists with actual running processes, thus detecting discrepancies caused by unlinking. State Manager or Run Command can be used to automate these checks.",
+      "distractor_analysis": "AWS GuardDuty is excellent for detecting network-level anomalies, compromised credentials, and suspicious API calls, but it does not have the granular visibility into the operating system&#39;s internal data structures (like the SCM linked list) required to detect this specific type of service hiding. AWS Security Hub aggregates security findings from various AWS services but doesn&#39;t perform the underlying detection of OS-level process manipulation itself. Amazon Inspector focuses on identifying software vulnerabilities and unintended network exposure, not on detecting runtime process hiding or tampering with OS service lists.",
+      "analogy": "If your car&#39;s engine light is on (GuardDuty), you know there&#39;s a problem. If you want to know if someone tampered with the engine&#39;s internal wiring to hide a fault (hidden service), you need a mechanic to open the hood and inspect the wiring directly (SSM running a custom script)."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-WmiObject -Class Win32_Service | Select-Object Name, State, ProcessId\n# A more advanced script would involve memory scanning tools or comparing against a baseline",
+        "context": "Example PowerShell command to list services, which would be bypassed by the unlinking. A custom script executed via SSM would need to go deeper, potentially using memory forensics tools or comparing against a known good state."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "AWS_SSM",
+      "WINDOWS_OS_INTERNALS",
+      "MALWARE_ANALYSIS"
+    ]
+  }
+]

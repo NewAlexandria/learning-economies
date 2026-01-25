@@ -1,0 +1,155 @@
+[
+  {
+    "question_text": "When defining intelligence requirements for Network Security Monitoring (NSM), what is the primary distinction between &#39;friendly intelligence&#39; and &#39;threat intelligence&#39; requirements?",
+    "correct_answer": "Friendly intelligence requirements focus on continuous baselining of internal assets, while threat intelligence requirements are situational and specific to potential hostile entities.",
+    "distractors": [
+      {
+        "question_text": "Friendly intelligence is gathered from internal logs, whereas threat intelligence is exclusively from external feeds.",
+        "misconception": "Targets source confusion: Students might incorrectly assume a strict separation of data sources rather than a difference in focus and application."
+      },
+      {
+        "question_text": "Friendly intelligence aims to identify internal policy violations, while threat intelligence focuses on external attack vectors.",
+        "misconception": "Targets scope misunderstanding: While friendly intelligence can inform policy, its primary goal is baselining, not just violation detection. Threat intelligence is broader than just attack vectors."
+      },
+      {
+        "question_text": "Friendly intelligence is always automated, and threat intelligence always requires manual analysis.",
+        "misconception": "Targets process confusion: Students might conflate the nature of the intelligence with the methods of its collection or analysis, assuming one is always automated and the other manual."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The core distinction lies in their purpose and temporal nature. Friendly intelligence requirements are continuous, aiming to establish and maintain baselines of normal internal network behavior. Threat intelligence requirements are situational, driven by specific investigations into potential hostile activity or entities.",
+      "distractor_analysis": "The source of intelligence (internal vs. external) is not the primary distinguishing factor; both can draw from various sources. While friendly intelligence can help identify policy violations, its main goal is understanding normal operations. Threat intelligence is broader than just external attack vectors. The automation level is a characteristic of implementation, not the fundamental definition of the intelligence type.",
+      "analogy": "Think of friendly intelligence as a doctor regularly checking a patient&#39;s vital signs to know what&#39;s normal for them. Threat intelligence is like the doctor investigating a specific symptom or illness that has just appeared."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": []
+  },
+  {
+    "question_text": "To ensure an application automatically launches every time a specific user logs into a Windows system, which persistence mechanism is most appropriate and least likely to require elevated privileges?",
+    "correct_answer": "Registry Run Key at `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`",
+    "distractors": [
+      {
+        "question_text": "Create a new Windows Service set to automatic startup",
+        "misconception": "Targets privilege confusion: Students may not realize creating a new Windows service typically requires administrative privileges, and services run as system or a specific service account, not necessarily the logged-in user."
+      },
+      {
+        "question_text": "Place a shortcut in the `Startup` folder for all users (`C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Startup`)",
+        "misconception": "Targets scope misunderstanding: Students might confuse the &#39;all users&#39; Startup folder with the user-specific one, and while it&#39;s a valid method, it still requires elevated privileges to write to `ProgramData`."
+      },
+      {
+        "question_text": "Configure a scheduled task to run at system startup with highest privileges",
+        "misconception": "Targets privilege and scope confusion: Students may not differentiate between system startup (which requires admin rights to configure) and user logon, and &#39;highest privileges&#39; explicitly contradicts the &#39;least likely to require elevated privileges&#39; constraint."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Registry Run Keys under `HKCU` (HKEY_CURRENT_USER) are designed to execute applications when the currently logged-in user starts their session. This method is user-specific, survives reboots, and does not require administrative privileges for the user to modify their own `HKCU` hive, making it ideal for user-level persistence.",
+      "distractor_analysis": "Creating a new Windows Service generally requires administrative privileges and runs in a system context, not necessarily tied to a specific user&#39;s logon. Placing a shortcut in the &#39;all users&#39; Startup folder (`C:\\ProgramData\\...`) also typically requires elevated privileges to write to that system directory. Configuring a scheduled task to run at system startup with &#39;highest privileges&#39; explicitly requires administrative rights and is a system-wide event, not specific to a user&#39;s logon without further configuration.",
+      "analogy": "Think of `HKCU\\Run` as a personal &#39;to-do&#39; list that Windows checks only for you when you sit down at your desk. It&#39;s your list, you can change it, and it ensures your personal tasks get done every time you start work."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Set-ItemProperty -Path &#39;HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run&#39; -Name &#39;MyPersistentApp&#39; -Value &#39;C:\\Users\\&lt;username&gt;\\AppData\\Local\\MyApplication\\app.exe&#39;",
+        "context": "PowerShell command to create a user-level Registry Run Key entry. Replace `&lt;username&gt;` and `app.exe` path with actual values."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "ATTACK_PERSIST",
+      "FRAMEWORK_MITRE"
+    ]
+  },
+  {
+    "question_text": "When assessing internal system vulnerabilities, what is the primary limitation of relying solely on conventional vulnerability scanning?",
+    "correct_answer": "It effectively de-prioritizes vulnerabilities not present but struggles to accurately prioritize those that are found.",
+    "distractors": [
+      {
+        "question_text": "It frequently misses critical vulnerabilities due to outdated signature databases.",
+        "misconception": "Targets scope misunderstanding: Students might think the limitation is about detection completeness rather than prioritization."
+      },
+      {
+        "question_text": "It requires extensive manual configuration for each new system added to the network.",
+        "misconception": "Targets operational overhead confusion: Students may conflate scanning limitations with deployment or management challenges."
+      },
+      {
+        "question_text": "It generates excessive false positives, leading to alert fatigue among security analysts.",
+        "misconception": "Targets symptom vs. cause: While alert fatigue can be a result, the core limitation is the lack of prioritization context, not just the volume of alerts."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Conventional vulnerability scanning is excellent for identifying what vulnerabilities are NOT present on a system, thus helping to de-prioritize patching efforts for non-existent issues. However, its primary limitation is its inability to accurately prioritize the vulnerabilities it *does* find, as it lacks the contextual threat intelligence needed to assess real-world exploitability or impact.",
+      "distractor_analysis": "Missing critical vulnerabilities due to outdated signatures is a problem with scanner maintenance, not an inherent limitation of scanning itself. Extensive manual configuration is a deployment challenge, not a core limitation of the scanning output. While scanning can lead to alert fatigue, this is a symptom of poor prioritization, which is the actual limitation.",
+      "analogy": "Think of a conventional scanner as a doctor who can tell you every possible disease you *don&#39;t* have, and every disease you *do* have, but can&#39;t tell you which of your existing diseases is most urgent or life-threatening without further tests and context."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "analysis",
+    "prerequisites": []
+  },
+  {
+    "question_text": "A security team is investigating a series of targeted spearphishing attempts against its executive leadership. To understand the specific TTPs (Tactics, Techniques, and Procedures) used by the threat actors and develop effective countermeasures, which type of threat intelligence would be MOST beneficial?",
+    "correct_answer": "Tactical threat intelligence",
+    "distractors": [
+      {
+        "question_text": "Strategic threat intelligence",
+        "misconception": "Targets scope misunderstanding: Students might confuse the high-level, long-term focus of strategic intelligence with the immediate, actionable details needed for specific TTPs."
+      },
+      {
+        "question_text": "Technical threat intelligence",
+        "misconception": "Targets detail level confusion: Students may think technical indicators (IPs, hashes) are sufficient, overlooking the need for context on TTPs and actor behavior that tactical intelligence provides."
+      },
+      {
+        "question_text": "Operational threat intelligence",
+        "misconception": "Targets source confusion: Students might associate &#39;targeted attacks&#39; with &#39;criminal communities&#39; and think operational intelligence (dark web monitoring) is the primary source, rather than the TTP-focused nature of tactical intelligence."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Tactical threat intelligence focuses on the TTPs of threat actors, providing insights into how specific attacks are carried out. This level of detail is crucial for understanding spearphishing methodologies and developing targeted defenses and training for highly privileged users.",
+      "distractor_analysis": "Strategic threat intelligence is high-level and long-term, focusing on business risks, not specific attack TTPs. Technical threat intelligence provides indicators like IPs and hashes, which are useful for blocking but lack the TTP context needed for understanding and countering spearphishing campaigns. Operational threat intelligence focuses on actor motivations and capabilities, often from sources like the dark web, but doesn&#39;t provide the granular TTPs as directly as tactical intelligence for specific attack vectors.",
+      "analogy": "If an enemy is using a specific type of weapon, tactical intelligence tells you how that weapon works and how to defend against it, rather than just knowing the enemy exists (strategic) or seeing a bullet casing (technical)."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "analysis",
+    "prerequisites": []
+  },
+  {
+    "question_text": "On a compromised Windows system, an attacker wants to ensure their malicious payload executes every time a specific user logs in, without requiring administrative privileges. Which persistence mechanism is the MOST suitable for this scenario?",
+    "correct_answer": "Creating a Registry Run Key in `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`",
+    "distractors": [
+      {
+        "question_text": "Establishing a new service using `sc.exe`",
+        "misconception": "Targets privilege confusion: Students may not realize that creating system services typically requires administrative privileges."
+      },
+      {
+        "question_text": "Modifying the `bootmgr` configuration for early execution",
+        "misconception": "Targets scope and privilege confusion: Students might conflate user-level persistence with low-level boot persistence, which requires kernel-level access and is highly privileged."
+      },
+      {
+        "question_text": "Placing a malicious DLL in `C:\\Windows\\System32` for DLL hijacking",
+        "misconception": "Targets mechanism misunderstanding: Students may think simply placing a DLL guarantees execution, not realizing it requires a specific vulnerable application to load it."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Registry Run Keys located in `HKCU` (HKEY_CURRENT_USER) are designed to execute programs automatically when the associated user logs into Windows. This mechanism does not require administrative privileges to create or modify, making it ideal for user-level persistence on a compromised system where an attacker only has user context.",
+      "distractor_analysis": "Creating a new Windows service using `sc.exe` or similar methods requires administrative privileges. Modifying `bootmgr` is a highly privileged, low-level boot persistence technique, far beyond user-level access. Placing a DLL in `C:\\Windows\\System32` for DLL hijacking requires a specific application to attempt to load that DLL, and simply placing it there does not guarantee execution upon user login.",
+      "analogy": "Think of an HKCU Run Key as a sticky note you put on a user&#39;s monitor that says &#39;Run this program!&#39; every time they sit down at their computer. It&#39;s personal to them and doesn&#39;t need the IT department&#39;s permission."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Set-ItemProperty -Path &#39;HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run&#39; -Name &#39;MyPayload&#39; -Value &#39;C:\\Users\\Public\\malicious.exe&#39;",
+        "context": "PowerShell command to create a user-level Registry Run Key that executes &#39;malicious.exe&#39; upon user login."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "ATTACK_PERSIST",
+      "FRAMEWORK_MITRE"
+    ]
+  }
+]

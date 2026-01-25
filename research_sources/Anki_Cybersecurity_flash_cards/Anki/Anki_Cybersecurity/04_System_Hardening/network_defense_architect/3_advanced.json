@@ -1,0 +1,199 @@
+[
+  {
+    "question_text": "To prevent an attacker from using stolen password hashes to authenticate to other network resources, which network security architecture principle should be primarily enforced?",
+    "correct_answer": "Implement Zero Trust Network Access (ZTNA) requiring continuous verification of identity and device health for every access request",
+    "distractors": [
+      {
+        "question_text": "Deploy a strong perimeter firewall to block all unauthorized inbound connections to the network",
+        "misconception": "Targets perimeter-centric thinking: Students may focus on traditional perimeter defenses which are ineffective against internal threats like stolen credentials."
+      },
+      {
+        "question_text": "Segment the network into large VLANs based on department to limit broadcast domains",
+        "misconception": "Targets coarse segmentation: Students may believe broad VLAN segmentation is sufficient, but it still allows lateral movement within segments if credentials are stolen."
+      },
+      {
+        "question_text": "Enforce multi-factor authentication (MFA) for all external VPN access to the corporate network",
+        "misconception": "Targets partial solution bias: Students may focus on external access, but stolen hashes can be used internally or via compromised internal systems, bypassing VPN MFA."
+      },
+      {
+        "question_text": "Utilize an Intrusion Prevention System (IPS) to detect and block known pass-the-hash attack signatures",
+        "misconception": "Targets detection vs. prevention confusion: Students may rely on signature-based detection, which can be bypassed by novel attacks or if the hash is used for legitimate-looking access."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Stolen password hashes enable &#39;pass-the-hash&#39; attacks, allowing an attacker to authenticate to services without knowing the plaintext password. Zero Trust principles, especially ZTNA, mandate continuous verification of identity, device posture, and context for every access attempt, regardless of location. This makes it significantly harder for an attacker to use stolen hashes to move laterally or access resources, as the authentication is not solely based on the hash but also on other contextual factors.",
+      "distractor_analysis": "Distractor 1 focuses on inbound threats, while pass-the-hash is often an internal or post-compromise lateral movement technique. Distractor 2 provides insufficient granularity for preventing lateral movement once a segment is breached. Distractor 3 addresses external access but doesn&#39;t fully mitigate internal lateral movement with stolen hashes. Distractor 4 is a reactive detection mechanism, which can be bypassed, rather than a proactive architectural prevention.",
+      "analogy": "Imagine a building where every door requires not just a key (password hash) but also a fingerprint scan and a check of your current work schedule (ZTNA). Even if someone steals your key, they can&#39;t get in without the other verifications."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "ZERO_TRUST_PRINCIPLES",
+      "NETWORK_SEGMENTATION",
+      "IDENTITY_MANAGEMENT",
+      "THREAT_MODELS"
+    ]
+  },
+  {
+    "question_text": "Which network security architecture decision would best mitigate the risk of &#39;process-image modification&#39; techniques (like hollowing or doppelgänging) used to bypass application whitelisting and host firewall rules?",
+    "correct_answer": "Implement application control solutions that validate process integrity and digital signatures at runtime, not just at creation",
+    "distractors": [
+      {
+        "question_text": "Deploy a network intrusion detection system (NIDS) at the perimeter to block malicious executables",
+        "misconception": "Targets perimeter-centric thinking: Students may focus on network-level detection, which is ineffective against internal process manipulation."
+      },
+      {
+        "question_text": "Configure host-based firewalls to block all outbound connections except those to known good IP addresses and ports",
+        "misconception": "Targets incomplete control: While good for egress, this doesn&#39;t prevent the initial process modification or internal lateral movement if the modified process still uses allowed ports."
+      },
+      {
+        "question_text": "Segment the network into separate VLANs for different application tiers to limit lateral movement",
+        "misconception": "Targets coarse-grained segmentation: Students may believe network segmentation alone is sufficient, but it doesn&#39;t address process-level evasion within a segment."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process-image modification techniques exploit a timing window in Windows process creation where the kernel notifies drivers before the process image is fully finalized. This allows attackers to modify the process&#39;s attributes post-notification, bypassing initial image-based detection, application whitelisting, and host firewall rules tied to the original image. To mitigate this, security controls must continuously validate process integrity and digital signatures throughout the process lifecycle, not just at the initial creation or based on the file name.",
+      "distractor_analysis": "Distractor 1 is a network-level control, ineffective against host-level process manipulation. Distractor 2 is an egress control that can be bypassed if the modified process uses allowed ports or communicates internally. Distractor 3 is a network segmentation strategy that doesn&#39;t prevent process-level evasion within a segment.",
+      "analogy": "Imagine a security guard checking a person&#39;s ID at the entrance (process creation notification). Process-image modification is like the person changing their clothes and identity *after* passing the guard but *before* entering their final destination. The solution is to have continuous checks or biometric verification throughout the building."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "EDR_CONCEPTS",
+      "WINDOWS_PROCESS_LIFECYCLE",
+      "APPLICATION_WHITELISTING",
+      "HOST_FIREWALLS"
+    ]
+  },
+  {
+    "question_text": "To prevent an attacker from reading the memory of a sensitive process like `lsass.exe` via handle manipulation, which EDR driver action, leveraging `OB_PRE_OPERATION_INFORMATION` callbacks, is most effective?",
+    "correct_answer": "Modify the `DesiredAccess` field in the `OB_PRE_CREATE_HANDLE_INFORMATION` structure to remove `PROCESS_VM_READ` access during a pre-operation callback.",
+    "distractors": [
+      {
+        "question_text": "Block the handle creation operation entirely if `OriginalDesiredAccess` includes `PROCESS_ALL_ACCESS`.",
+        "misconception": "Targets over-blocking: Students might think a complete block is always best, but it can cause system instability or be too noisy, and a more granular modification is often preferred for specific access rights."
+      },
+      {
+        "question_text": "Log the `OriginalDesiredAccess` value in a post-operation callback for later analysis.",
+        "misconception": "Targets detection vs. prevention confusion: Students may confuse logging for detection with active prevention, which is the goal here."
+      },
+      {
+        "question_text": "Monitor the `KernelHandle` flag to ensure only user-mode applications are attempting to open handles.",
+        "misconception": "Targets scope misunderstanding: Students might focus on filtering kernel handles, which is a different optimization, and doesn&#39;t directly prevent a user-mode attacker from requesting specific access rights."
+      },
+      {
+        "question_text": "Inspect the `ObjectType` to confirm the operation targets a process, then allow the handle creation.",
+        "misconception": "Targets incomplete filtering: Students might think identifying the object type is sufficient, but it doesn&#39;t address the specific access rights being requested, which is the core of the attack."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Pre-operation callbacks allow an EDR driver to intercept and modify handle operations before they complete. By receiving an `OB_PRE_OPERATION_INFORMATION` structure, the driver can access the `Parameters` member, which points to an `OB_PRE_CREATE_HANDLE_INFORMATION` structure for handle creation. Within this structure, the `DesiredAccess` field can be modified to remove specific access rights, such as `PROCESS_VM_READ`, effectively preventing an attacker from gaining the necessary permissions to read process memory, even if they initially requested `PROCESS_ALL_ACCESS`.",
+      "distractor_analysis": "Blocking the operation entirely (Distractor 1) is a blunt instrument that might cause legitimate applications to fail. Logging (Distractor 2) is a detection mechanism, not a prevention mechanism. Monitoring the `KernelHandle` flag (Distractor 3) is an optimization for EDRs to reduce scope, not a direct prevention of specific access rights. Inspecting `ObjectType` (Distractor 4) is a necessary first step but doesn&#39;t address the critical `DesiredAccess` modification for prevention.",
+      "analogy": "Imagine a bouncer at a club entrance. Instead of just checking if someone is trying to enter (handle creation) or completely denying entry if they look suspicious (blocking), the bouncer (EDR driver) checks their ID (OriginalDesiredAccess) and then, if they&#39;re trying to bring in something forbidden (PROCESS_VM_READ), the bouncer confiscates only that item (modifies DesiredAccess) while still allowing them to enter with everything else."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "WINDOWS_KERNEL_BASICS",
+      "EDR_ARCHITECTURE",
+      "HANDLE_OPERATIONS",
+      "ACCESS_MASKS"
+    ]
+  },
+  {
+    "question_text": "Which CPU technology is designed to protect sensitive computations from a potentially compromised operating system or hypervisor?",
+    "correct_answer": "Trusted Execution Environments (TEEs)",
+    "distractors": [
+      {
+        "question_text": "Supervisor Mode Execution Protection (SMEP)",
+        "misconception": "Targets scope confusion: Students might confuse SMEP, which protects the kernel from user processes, with TEEs, which protect user processes from the kernel/hypervisor."
+      },
+      {
+        "question_text": "Data Execution Prevention (DEP)",
+        "misconception": "Targets function confusion: Students might associate DEP with general memory protection without understanding its specific role in preventing code execution from data segments, distinct from TEEs&#39; broader isolation."
+      },
+      {
+        "question_text": "Cache Allocation Technology (CAT)",
+        "misconception": "Targets feature conflation: Students might recognize CAT as a hardware-assisted security feature but misunderstand its purpose, which is cache partitioning for side-channel mitigation, not full execution environment isolation."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Trusted Execution Environments (TEEs) create a secure &#39;enclave&#39; on the CPU where sensitive computations can occur. Hardware guarantees that even a compromised operating system or hypervisor cannot access the data or code within this enclave, providing a higher level of isolation for critical applications.",
+      "distractor_analysis": "SMEP protects the kernel from executing user-mode code, not the other way around. DEP prevents execution from writable memory regions, a different type of memory protection. CAT is for cache partitioning to mitigate side-channel attacks, not for creating isolated execution environments.",
+      "analogy": "Imagine a bank vault (TEE) inside a regular bank (OS/hypervisor). Even if the bank itself is compromised, the contents of the vault remain secure."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "OPERATING_SYSTEM_SECURITY",
+      "CPU_ARCHITECTURE",
+      "TRUSTED_COMPUTING_BASE"
+    ]
+  },
+  {
+    "question_text": "To enforce granular access policies based on dynamic user attributes (e.g., &#39;full-time employee&#39; or &#39;located in building X&#39;), which access control mechanism should a network defense architect recommend for an application protecting its private objects?",
+    "correct_answer": "Claims Based Access Control (CBAC) via the AuthZ API",
+    "distractors": [
+      {
+        "question_text": "Identity-Based Access Control (IBAC) using standard SIDs and security groups",
+        "misconception": "Targets static vs. dynamic attribute confusion: Students may conflate traditional identity-based access with the need for dynamic, attribute-driven policies."
+      },
+      {
+        "question_text": "Security Reference Monitor (SRM) access checks for all object access",
+        "misconception": "Targets performance and granularity misunderstanding: Students may incorrectly assume kernel-mode SRM is always superior, overlooking the performance benefits and CBAC&#39;s specific capabilities for user-mode applications."
+      },
+      {
+        "question_text": "Discretionary Access Control Lists (DACLs) with explicit user and group entries",
+        "misconception": "Targets DACL limitation: Students may think standard DACLs can handle dynamic attributes, not realizing they are primarily for static identity-based permissions."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Claims Based Access Control (CBAC) allows access to be granted based on arbitrary attributes assigned to the accessor, rather than just their identity or group membership. This enables highly granular and dynamic policies, such as those based on employment status or physical location. The AuthZ API provides the user-mode implementation for applications to leverage CBAC without incurring kernel-mode transition costs.",
+      "distractor_analysis": "Distractor 1 (IBAC) is suitable for static identity-based access but cannot handle dynamic attributes. Distractor 2 (SRM) is a kernel-mode component that does not understand conditional ACEs used by CBAC, and its use would incur performance overhead for user-mode applications. Distractor 3 (DACLs) are the foundation for IBAC and are not designed for dynamic attribute-based access without CBAC.",
+      "analogy": "Imagine a club where entry isn&#39;t just based on having a membership card (IBAC), but also on whether you&#39;re wearing a &#39;VIP&#39; badge (an attribute) that changes daily, or if you&#39;re currently in a specific &#39;event zone&#39; (another attribute). CBAC allows these dynamic, attribute-based rules."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "WINDOWS_SECURITY_MODEL",
+      "ACCESS_CONTROL_CONCEPTS",
+      "USER_MODE_KERNEL_MODE"
+    ]
+  },
+  {
+    "question_text": "To prevent an attacker from escalating privileges by manipulating memory allocation, which heap security feature should be prioritized?",
+    "correct_answer": "Randomizing user address spaces and implementing segment heaps",
+    "distractors": [
+      {
+        "question_text": "Utilizing low-fragmentation heaps (LFH) for efficient memory usage",
+        "misconception": "Targets efficiency vs. security: Students might confuse memory efficiency features with security hardening features."
+      },
+      {
+        "question_text": "Debugging heaps with tools like Pageheap for leak detection",
+        "misconception": "Targets reactive vs. proactive: Students might focus on post-exploit analysis tools rather than preventative security measures."
+      },
+      {
+        "question_text": "Synchronizing heap access with locks to prevent race conditions",
+        "misconception": "Targets concurrency vs. exploitation: Students might confuse thread safety mechanisms with protection against memory corruption exploits."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Heap manipulation is a common technique for privilege escalation. Randomizing user address spaces (ASLR) makes it harder for attackers to predict memory locations. Segment heaps, by design, can introduce additional randomization and isolation, making heap-based exploits more difficult to execute reliably.",
+      "distractor_analysis": "Distractor 1 focuses on performance, not security. Distractor 2 is a debugging technique, not a preventative security measure. Distractor 3 addresses concurrency issues, which are distinct from memory corruption vulnerabilities used for privilege escalation.",
+      "analogy": "Like constantly rearranging the furniture in a house (randomization) and building each room with unique, unpredictable layouts (segment heaps) to make it harder for an intruder to navigate or hide."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "WINDOWS_INTERNALS",
+      "MEMORY_MANAGEMENT",
+      "EXPLOIT_MITIGATION"
+    ]
+  }
+]

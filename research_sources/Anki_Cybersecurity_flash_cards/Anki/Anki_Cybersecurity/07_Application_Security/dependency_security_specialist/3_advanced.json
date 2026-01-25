@@ -1,0 +1,108 @@
+[
+  {
+    "question_text": "A security researcher reports an SSRF vulnerability, providing a payload that appears to successfully access an internal server status page. During validation, the program manager observes the reported behavior. However, the development team cannot replicate it. What is the most likely reason for this discrepancy, and what does it imply about the reported vulnerability?",
+    "correct_answer": "The researcher&#39;s payload redirected to a service on their own machine, not the enterprise&#39;s internal server, meaning it&#39;s an open redirect, not an SSRF.",
+    "distractors": [
+      {
+        "question_text": "The development environment lacks the specific configuration present in production that allows the SSRF to manifest.",
+        "misconception": "Targets environment mismatch: Student assumes a difference in environments is the cause, overlooking the possibility of the researcher&#39;s local setup influencing the report."
+      },
+      {
+        "question_text": "The program manager&#39;s testing setup inadvertently hosts a service that responds to the SSRF payload, creating a false positive.",
+        "misconception": "Targets program manager error: Student correctly identifies a false positive but misattributes it solely to the program manager&#39;s testing setup, rather than the researcher&#39;s payload design."
+      },
+      {
+        "question_text": "The SSRF is intermittent, only occurring under specific network conditions that were present during the researcher&#39;s test but not the development team&#39;s.",
+        "misconception": "Targets transient vulnerability: Student attributes the discrepancy to an elusive, hard-to-reproduce bug, rather than a fundamental misunderstanding of the vulnerability type."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The scenario describes a common pitfall in vulnerability validation, particularly with SSRF. An open redirect vulnerability can be leveraged by a researcher to point to their own local services (e.g., `http://127.0.0.1/server-status` on their machine). When the program manager tests this payload, they are also redirected to the researcher&#39;s local service, making it appear as if an internal enterprise resource is being accessed. The key is that the GET request is pulling results from services hosted on the *client&#39;s* end, not the enterprise&#39;s, meaning it&#39;s a true redirect without association to enterprise assets. The vulnerability is an open redirect, not an SSRF.",
+      "distractor_analysis": "The first distractor suggests an environment mismatch, which is a plausible reason for non-replication but doesn&#39;t fit the specific details of the example where the program manager *can* replicate it, but the dev team cannot, and the root cause is a misinterpretation of the redirect. The second distractor correctly identifies a false positive but places the blame solely on the program manager&#39;s setup, whereas the core issue stems from the researcher&#39;s payload design exploiting an open redirect. The third distractor suggests an intermittent bug, which is a common issue but doesn&#39;t explain the specific mechanism of the false SSRF as described.",
+      "analogy": "This situation is like someone claiming they found a secret door into your house, but they actually just walked through their own front door after you gave them directions to &#39;any door&#39;."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "BUG_BOUNTY_TRIAGE",
+      "SSRF_BASICS",
+      "OPEN_REDIRECT_VULNERABILITIES"
+    ]
+  },
+  {
+    "question_text": "A malware sample modifies `cisvc.exe` by injecting shellcode and altering its entry point. When `cisvc.exe` is executed, the shellcode first loads `inet_epar32.dll` and calls its exported function `zzz69806582`, then jumps to the original entry point of `cisvc.exe`. What advanced static analysis technique was primarily used to identify this entry-point redirection and shellcode injection?",
+    "correct_answer": "Disassembly and comparison of the PE headers and code sections of the original and modified `cisvc.exe` binaries in a disassembler like IDA Pro.",
+    "distractors": [
+      {
+        "question_text": "Monitoring file system changes and process activity using tools like Procmon to observe `WriteFile` operations.",
+        "misconception": "Targets static vs. dynamic analysis confusion: Student might confuse dynamic observation of file changes with the static analysis needed to understand the *how* of the modification and the shellcode&#39;s logic."
+      },
+      {
+        "question_text": "Analyzing network traffic for suspicious connections initiated by `cisvc.exe` after it starts.",
+        "misconception": "Targets irrelevant analysis technique: Student focuses on network-level indicators, which are not directly relevant to identifying entry-point redirection or shellcode injection within the binary itself."
+      },
+      {
+        "question_text": "Examining strings within `cisvc.exe` for indicators like `inet_epar32.dll` and `zzz69806582`.",
+        "misconception": "Targets incomplete analysis: Student identifies relevant strings but misses that string analysis alone cannot confirm entry-point redirection or the full execution flow of the injected shellcode."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Identifying entry-point redirection and injected shellcode requires in-depth static analysis. This involves loading both the original and the modified binaries into a disassembler (like IDA Pro), comparing their PE headers (specifically the Entry Point field), and then disassembling the code at the new entry point to understand the shellcode&#39;s logic. The shellcode&#39;s function (loading a DLL and calling an export) is revealed by analyzing its assembly instructions and the strings it references.",
+      "distractor_analysis": "Procmon is a dynamic analysis tool that shows *what* files are written or processes started, but not *how* the binary itself was modified or the internal logic of the injected code. Network analysis is for C2 communication, not binary modification. While string analysis can provide clues, it doesn&#39;t reveal the execution flow or the mechanism of entry-point redirection; it&#39;s a preliminary step, not the primary technique for this specific discovery.",
+      "analogy": "Imagine you find a book with a new introduction. Dynamic analysis tells you the book now has an introduction. Static analysis (reading the original and new book side-by-side) tells you exactly where the new introduction was inserted, what it says, and how it leads into the original story."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "# Example of using a disassembler to view entry point\n# (Conceptual, actual command depends on tool like IDA Pro or Ghidra)\nida64 -L cisvc_original.exe\nida64 -L cisvc.exe\n\n# In IDA Pro, navigate to the Entry Point (EP) in the &#39;Functions&#39; window\n# Compare the EP address and the code at that address in both binaries.",
+        "context": "Conceptual steps for using a disassembler to compare binaries and identify entry-point redirection."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "MALWARE_ANALYSIS_BASICS",
+      "PE_FILE_FORMAT",
+      "ASSEMBLY_LANGUAGE",
+      "DISASSEMBLERS"
+    ]
+  },
+  {
+    "question_text": "An input validation mechanism designed to block cross-site scripting (XSS) attacks performs the following sequence of steps on an item of input: 1. Strip any `&lt;script&gt;` expressions. 2. Truncate to 50 characters. 3. Remove any quotation marks. 4. URL-decode the input. 5. If any items were deleted, return to step 1. Can you bypass this validation mechanism to smuggle the following data past it: `&quot;&gt;&lt;script&gt;alert(&quot;foo&quot;)&lt;/script&gt;`?",
+    "correct_answer": "Yes, by encoding parts of the payload to bypass initial stripping and then leveraging the URL-decode step.",
+    "distractors": [
+      {
+        "question_text": "No, the stripping and truncation steps will prevent the full payload from being processed.",
+        "misconception": "Targets misunderstanding of iterative processing: Student assumes the steps are linear and final, not recognizing the loop and the impact of URL-decoding after stripping."
+      },
+      {
+        "question_text": "No, the removal of quotation marks will break the JavaScript payload.",
+        "misconception": "Targets misunderstanding of XSS payload flexibility: Student focuses on a single character removal without considering alternative XSS syntax or encoding that can bypass this."
+      },
+      {
+        "question_text": "Yes, but only if the truncation limit is increased, as the current limit is too restrictive.",
+        "misconception": "Targets misunderstanding of encoding&#39;s effect on length: Student incorrectly believes the length is the primary issue, not realizing that encoding can make a shorter, initially harmless string expand into a longer, malicious one after decoding."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The key to bypassing this validation is the iterative nature of the process combined with the URL-decoding step. An attacker could encode the `&lt;script&gt;` tag, for example, as `%3cscript%3e`. On the first pass, the stripping mechanism would not detect `&lt;script&gt;` because it&#39;s encoded. The URL-decode step (step 4) would then convert `%3cscript%3e` back to `&lt;script&gt;`. Since items were &#39;deleted&#39; (the encoding was removed), the process returns to step 1, where the now-decoded `&lt;script&gt;` tag would be stripped. However, if the attacker uses double URL encoding or other obfuscation, they can bypass this. For instance, `%%3cscript%3e` would become `%3cscript%3e` after one URL-decode, then `&lt;script&gt;` after a second, allowing it to slip past the initial strip.",
+      "distractor_analysis": "The first distractor fails because the iterative nature and URL-decode step allow for re-evaluation. The second distractor overlooks that XSS payloads can often be crafted without quotes or with alternative encoding. The third distractor incorrectly assumes length is the primary barrier, when encoding can make a short input expand into a longer, malicious one after decoding, or simply bypass the stripping logic.",
+      "analogy": "Imagine a security guard checking bags. If he checks for knives, then lets you through, but then someone else unpacks your bag and reveals a knife, and the guard doesn&#39;t re-check, you&#39;ve bypassed security. The URL-decode is like the unpacking, and the loop is the re-check, but clever encoding can still fool it."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "# Original payload\nPAYLOAD=&#39;&quot;&gt;\\u003cscript\\u003ealert(&quot;foo&quot;)\\u003c/script\\u003e&#39;\n\n# Example of double URL encoding to bypass a single decode + strip loop\n# Initial input: %253cscript%253ealert(1)%253c/script%253e\n# After 1st URL-decode: %3cscript%3ealert(1)%3c/script%3e (still encoded, bypasses strip)\n# After 2nd URL-decode (due to loop): &lt;script&gt;alert(1)&lt;/script&gt; (now executable)",
+        "context": "Illustrates how encoding can be used to bypass iterative stripping and decoding mechanisms in input validation."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "XSS_BASICS",
+      "INPUT_VALIDATION",
+      "URL_ENCODING"
+    ]
+  }
+]

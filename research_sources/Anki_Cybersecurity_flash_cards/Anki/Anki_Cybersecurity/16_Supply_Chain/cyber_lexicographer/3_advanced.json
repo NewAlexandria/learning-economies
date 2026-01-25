@@ -1,0 +1,128 @@
+[
+  {
+    "question_text": "Which of the following BEST describes the purpose of customizing Python&#39;s `import` functionality in an offensive security context?",
+    "correct_answer": "To enable a remote machine (trojan) to dynamically load external Python modules from a remote repository, even if those modules are not locally installed.",
+    "distractors": [
+      {
+        "question_text": "To prevent the trojan from importing standard Python libraries, thereby reducing its footprint and evading detection.",
+        "misconception": "Targets scope misunderstanding: Students might think customization is for restriction, not expansion, or for evasion by limiting imports rather than enabling remote ones."
+      },
+      {
+        "question_text": "To allow the trojan to execute arbitrary shell commands on the remote system by masquerading them as Python module imports.",
+        "misconception": "Targets function confusion: Students might confuse module import customization with direct command execution, which are distinct attack vectors."
+      },
+      {
+        "question_text": "To encrypt all imported modules before they are executed, ensuring that the trojan&#39;s code remains confidential on the compromised system.",
+        "misconception": "Targets purpose confusion: Students might incorrectly associate module import customization with encryption for confidentiality, rather than dynamic loading for functionality."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Customizing Python&#39;s `import` functionality, specifically by modifying `sys.meta_path`, allows an attacker to define how modules are located and loaded. In an offensive context, this is used to enable a trojan on a remote machine to fetch and load Python libraries from a controlled remote repository (like GitHub) on demand, bypassing the need for local installation and expanding the trojan&#39;s capabilities dynamically.",
+      "distractor_analysis": "The first distractor incorrectly suggests restriction or evasion through limiting imports, whereas the goal is to expand capabilities. The second distractor confuses module loading with direct shell command execution. The third distractor incorrectly attributes an encryption purpose to the import customization, which is about dynamic loading, not confidentiality of the code itself.",
+      "analogy": "This is like giving a remote agent a custom instruction manual that tells it, &#39;If you need a tool not in your toolbox, here&#39;s how to order it directly from our secret warehouse and use it immediately,&#39; rather than having to install it beforehand."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "import sys\n\nclass GitImporter:\n    def find_module(self, name, path=None):\n        # Logic to retrieve module from a remote repo\n        # ...\n        return self # if found\n\n    def load_module(self, name):\n        # Logic to load the retrieved code into a new module object\n        # ...\n        sys.modules[name] = new_module\n        return new_module\n\nsys.meta_path.append(GitImporter())",
+        "context": "Illustrates how a custom importer is added to `sys.meta_path` to intercept module import requests and handle them remotely."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": [
+      "SEC_BASICS",
+      "NET_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which of the following BEST describes the technique used by the Blazgel Trojan to hide services?",
+    "correct_answer": "Unlinking the target service&#39;s record from the Service Control Manager&#39;s (SCM) active list by overwriting Flink and Blink pointers.",
+    "distractors": [
+      {
+        "question_text": "Encrypting the service&#39;s executable file on disk to prevent detection by antivirus software.",
+        "misconception": "Targets scope misunderstanding: Students might think malware hides services by disk-based encryption, but this technique specifically targets in-memory structures."
+      },
+      {
+        "question_text": "Modifying the service&#39;s registry entries to remove its startup configuration.",
+        "misconception": "Targets process order errors: Students might confuse hiding a running service with preventing it from starting, which involves registry manipulation."
+      },
+      {
+        "question_text": "Injecting malicious code into legitimate service processes to mask its presence.",
+        "misconception": "Targets similar concept conflation: While code injection is a common malware technique, Blazgel&#39;s method is about manipulating data structures to hide a service, not necessarily injecting into it."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Blazgel Trojan hides services by manipulating the doubly linked list used by the Service Control Manager (SCM). It finds the target service&#39;s _SERVICE_RECORD structure in memory and then overwrites the &#39;Flink&#39; (forward link) and &#39;Blink&#39; (backward link) pointers of the adjacent service records. This effectively removes the target service from the SCM&#39;s active list, making it invisible to standard enumeration tools, even though the service continues to run.",
+      "distractor_analysis": "Encrypting executables or modifying registry entries are methods for evading detection or preventing startup, not for hiding an actively running service from the SCM&#39;s view. Injecting code into a process is a different technique for persistence or privilege escalation, not directly for unlinking a service from the SCM&#39;s list.",
+      "analogy": "Imagine a library catalog where each book has pointers to the previous and next book. Blazgel is like finding a book you want to hide, then changing the &#39;next&#39; pointer of the previous book to skip over it, and changing the &#39;previous&#39; pointer of the next book to also skip over it. The book is still on the shelf, but it&#39;s no longer in the catalog&#39;s sequence."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": [
+      "SEC_BASICS",
+      "NET_BASICS"
+    ]
+  },
+  {
+    "question_text": "Which statement accurately describes how a browser-based port scan using JavaScript can identify open ports on a user&#39;s local network?",
+    "correct_answer": "It attempts to dynamically load a script from targeted hosts and ports, detecting an error if a web server is running and returns content, or a timeout if no service is present.",
+    "distractors": [
+      {
+        "question_text": "It directly processes HTTP responses from arbitrary hosts and ports to identify service banners, bypassing the Same-Origin Policy.",
+        "misconception": "Targets misunderstanding of SOP: Students might incorrectly assume that browser-based attacks can fully bypass the Same-Origin Policy to read arbitrary cross-domain responses."
+      },
+      {
+        "question_text": "It uses a Java applet to send ICMP echo requests to all IP addresses in the local subnet and analyzes the responses.",
+        "misconception": "Targets incorrect protocol/method: Students might confuse browser-based port scanning with traditional network-level port scanning techniques (e.g., using ICMP) or misattribute the method of network discovery."
+      },
+      {
+        "question_text": "It leverages DNS queries to resolve hostnames on the local network and then attempts to establish direct TCP connections to common service ports.",
+        "misconception": "Targets incorrect mechanism: Students might think DNS resolution is the primary mechanism for identifying local network hosts for port scanning, rather than inferring IP ranges or using applets for IP discovery."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Browser-based port scanning using JavaScript works by attempting to load resources (like scripts) from various IP addresses and ports. If a web server is active on a port, it will return content, leading to a JavaScript error (due to invalid script content) that the attacker&#39;s script can detect. If no service is running, the connection will time out, and no error will be thrown, allowing the script to infer the port&#39;s status.",
+      "distractor_analysis": "The Same-Origin Policy (SOP) prevents direct processing of cross-domain HTTP responses, making the first distractor incorrect. Browser-based attacks typically don&#39;t use ICMP for port scanning, and while Java applets can help with IP discovery, the core port scanning mechanism relies on script loading and error detection, not direct TCP connection attempts or DNS for port status.",
+      "analogy": "Imagine trying to open many different doors in a dark hallway. If a door opens and something falls out, you know someone is behind it (error). If it just stays shut, you assume no one is there (timeout)."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "NET_BASICS",
+      "FRAMEWORK_OWASP"
+    ]
+  },
+  {
+    "question_text": "Which of the following BEST defines DNS rebinding?",
+    "correct_answer": "A technique where a malicious website causes a user&#39;s browser to resolve the attacker&#39;s domain name to a different IP address (e.g., a target internal system) on subsequent requests, bypassing same-origin policy restrictions to interact with the target.",
+    "distractors": [
+      {
+        "question_text": "An attack where an attacker redirects a user&#39;s DNS queries to a malicious DNS server, leading them to fake websites.",
+        "misconception": "Targets confusion with DNS spoofing/cache poisoning: Students might confuse DNS rebinding with other DNS-related attacks that manipulate DNS resolution to redirect users to malicious sites."
+      },
+      {
+        "question_text": "A method to trick a browser into sending requests to a different domain by manipulating the &#39;Host&#39; header in HTTP requests.",
+        "misconception": "Targets confusion with Host header injection: While the Host header is mentioned as a challenge, the core mechanism of DNS rebinding is about manipulating DNS resolution, not directly forging the Host header to bypass SOP."
+      },
+      {
+        "question_text": "An attack that exploits vulnerabilities in a browser&#39;s JavaScript engine to execute arbitrary code on the user&#39;s machine.",
+        "misconception": "Targets confusion with client-side code execution (e.g., XSS, browser exploits): Students might broadly categorize this as a client-side attack without understanding the specific DNS manipulation aspect."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "DNS rebinding specifically leverages the browser&#39;s reliance on domain names for the Same-Origin Policy, while HTTP requests ultimately use IP addresses. By changing the IP address associated with the attacker&#39;s domain after the initial page load, the attacker can make the browser send requests to a different target IP address (e.g., an internal network resource) while still believing it&#39;s communicating with the original (attacker&#39;s) domain, thus bypassing SOP for that target.",
+      "distractor_analysis": "DNS spoofing/cache poisoning involves redirecting users to malicious sites by corrupting DNS records. Host header injection manipulates the Host header, which is a separate mechanism. Client-side code execution (like XSS) focuses on injecting and running malicious scripts, which is a different attack vector than the DNS resolution manipulation central to DNS rebinding.",
+      "analogy": "Imagine you tell your friend to call &#39;Alice&#39;s House&#39; (attacker&#39;s domain). Initially, you give them Alice&#39;s phone number. Later, you secretly change Alice&#39;s phone number in their contact list to &#39;Bob&#39;s House&#39; (target IP), but they still think they are calling &#39;Alice&#39;s House&#39;. They can now talk to Bob, believing it&#39;s Alice, and report back to you."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "definition",
+    "prerequisites": [
+      "NET_BASICS",
+      "FRAMEWORK_OWASP"
+    ]
+  }
+]

@@ -1,0 +1,121 @@
+[
+  {
+    "question_text": "To prevent the creation of public S3 buckets in an AWS environment using IaC, what is the most effective policy as code approach?",
+    "correct_answer": "Implement an AWS Organizations Service Control Policy (SCP) to deny s3:PutBucketAcl and s3:PutBucketPolicy actions that allow public access.",
+    "distractors": [
+      {
+        "question_text": "Use a Checkov custom policy to scan Terraform configurations for public S3 bucket definitions before deployment.",
+        "misconception": "Targets pre-deployment vs. runtime enforcement: Checkov is a static analysis tool, effective for pre-deployment checks, but an SCP provides hard enforcement at the AWS account level, preventing manual or IaC misconfigurations from being applied."
+      },
+      {
+        "question_text": "Configure an AWS Config rule to detect public S3 buckets and trigger an alert.",
+        "misconception": "Targets detection vs. prevention: AWS Config is a detection and compliance monitoring tool, not a preventative control. It identifies issues after they&#39;ve been created, rather than blocking their creation."
+      },
+      {
+        "question_text": "Create an IAM role that only allows authorized personnel to create S3 buckets.",
+        "misconception": "Targets authorization vs. configuration control: While IAM roles are crucial for authorization, they don&#39;t prevent authorized users from creating misconfigured (public) S3 buckets if their permissions allow it. An SCP directly controls the *type* of configuration allowed."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "An AWS Organizations Service Control Policy (SCP) provides the highest level of preventative control. By denying specific actions (like s3:PutBucketAcl or s3:PutBucketPolicy) when they attempt to grant public access, an SCP ensures that no account within the organization can create or modify S3 buckets to be public, regardless of the IAM permissions or IaC used. This acts as a &#39;guardrail&#39; at the organizational level.",
+      "distractor_analysis": "Checkov is a static analysis tool that scans IaC *before* deployment, but it doesn&#39;t prevent manual changes or bypasses. AWS Config detects misconfigurations *after* they occur, which is reactive. IAM roles control *who* can perform actions, but not *what kind* of configuration they can apply if they have the necessary permissions. An SCP is a proactive, preventative measure that enforces security at the AWS API level.",
+      "analogy": "Think of an SCP as a building code that prevents the construction of unsafe structures (public S3 buckets) at the city level. Checkov is like an architect reviewing blueprints for safety before construction begins. AWS Config is like a building inspector identifying unsafe structures after they&#39;re built. An IAM role is like a permit that allows a builder to build, but doesn&#39;t dictate the safety of the design itself."
+    },
+    "code_snippets": [
+      {
+        "language": "json",
+        "code": "{\n  &quot;Version&quot;: &quot;2012-10-17&quot;,\n  &quot;Statement&quot;: [\n    {\n      &quot;Sid&quot;: &quot;DenyPublicS3BucketAcl&quot;,\n      &quot;Effect&quot;: &quot;Deny&quot;,\n      &quot;Action&quot;: [\n        &quot;s3:PutBucketAcl&quot;,\n        &quot;s3:PutBucketPolicy&quot;\n      ],\n      &quot;Resource&quot;: &quot;arn:aws:s3:::*&quot;,\n      &quot;Condition&quot;: {\n        &quot;BooleanEquals&quot;: {\n          &quot;s3:x-amz-acl&quot;: [\n            &quot;public-read&quot;,\n            &quot;public-read-write&quot;,\n            &quot;authenticated-read&quot;\n          ]\n        },\n        &quot;StringLike&quot;: {\n          &quot;s3:policy&quot;: [\n            &quot;*\\&quot;Effect\\&quot;:\\&quot;Allow\\&quot;,\\&quot;Principal\\&quot;:\\&quot;*\\&quot;*&quot;,\n            &quot;*\\&quot;Effect\\&quot;:\\&quot;Allow\\&quot;,\\&quot;Principal\\&quot;:{\\&quot;AWS\\&quot;:\\&quot;*\\&quot;}*&quot;\n          ]\n        }\n      }\n    }\n  ]\n}",
+        "context": "Example AWS Organizations SCP to deny public S3 bucket access. Note: This is a simplified example; a robust SCP would require more detailed conditions to cover all public access vectors."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "AWS_ORGANIZATIONS",
+      "AWS_SCP",
+      "AWS_S3_CONCEPTS",
+      "POLICY_AS_CODE"
+    ]
+  },
+  {
+    "question_text": "Which IaC security concept aligns with the &#39;Mandatory Access Control&#39; (MAC) model?",
+    "correct_answer": "Policy as Code (e.g., OPA Gatekeeper, Sentinel) enforcing strict, system-wide rules based on resource labels or classifications.",
+    "distractors": [
+      {
+        "question_text": "Terraform IAM policies granting specific users permissions to resources they create.",
+        "misconception": "Targets DAC conflation: Students confuse MAC with DAC, where resource creators (owners) define access. MAC is centrally enforced, not owner-discretionary."
+      },
+      {
+        "question_text": "CloudFormation templates defining roles with predefined permissions for different job functions.",
+        "misconception": "Targets RBAC conflation: Students confuse MAC with RBAC, which uses roles. While both are non-discretionary, MAC&#39;s core is labels/classifications, not job functions."
+      },
+      {
+        "question_text": "Pulumi code allowing developers to set access controls on their deployed services.",
+        "misconception": "Targets DAC conflation: Similar to the first distractor, this implies owner-based control, which is characteristic of DAC, not MAC."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Mandatory Access Control (MAC) model is characterized by system-wide, centrally enforced rules based on labels or classifications applied to both subjects (users/processes) and objects (resources). Policy as Code tools like OPA Gatekeeper or HashiCorp Sentinel are ideal for implementing MAC in IaC by enforcing strict, non-discretionary policies across all deployments, often based on metadata (labels, tags) attached to resources.",
+      "distractor_analysis": "The distractors describe scenarios more aligned with Discretionary Access Control (DAC) where resource owners set permissions, or Role-Based Access Control (RBAC) where permissions are tied to job functions/roles. MAC&#39;s defining characteristic is the rigid, system-enforced classification and labeling, which is best implemented via strong Policy as Code.",
+      "analogy": "If DAC is like a homeowner deciding who can enter their house, and RBAC is like a company assigning access based on job titles, MAC is like a military base where every person and document has a security clearance label, and access is strictly determined by matching those labels, regardless of who &#39;owns&#39; the document."
+    },
+    "code_snippets": [
+      {
+        "language": "rego",
+        "code": "package kubernetes.admission\n\ndeny[msg] {\n  input.request.kind.kind == &quot;Pod&quot;\n  not input.request.object.metadata.labels[&quot;security-classification&quot;]\n  msg := &quot;Pods must have a &#39;security-classification&#39; label for MAC enforcement.&quot;\n}\n\ndeny[msg] {\n  input.request.kind.kind == &quot;Pod&quot;\n  classification := input.request.object.metadata.labels[&quot;security-classification&quot;]\n  user_clearance := get_user_clearance(input.request.userInfo.username)\n  not is_clearance_sufficient(user_clearance, classification)\n  msg := sprintf(&quot;User %v with clearance %v cannot access pod with classification %v&quot;, [input.request.userInfo.username, user_clearance, classification])\n}\n\n# Helper functions for clearance logic (simplified)\nis_clearance_sufficient(user, resource) {\n  # Example: &#39;top-secret&#39; &gt; &#39;secret&#39; &gt; &#39;confidential&#39; &gt; &#39;unclassified&#39;\n  # Real implementation would use a defined hierarchy\n  user == resource\n}\n\nget_user_clearance(username) := &quot;secret&quot; { username == &quot;alice&quot; }\nget_user_clearance(username) := &quot;top-secret&quot; { username == &quot;bob&quot; }\nget_user_clearance(username) := &quot;unclassified&quot; { true }",
+        "context": "An OPA Gatekeeper (Rego) policy enforcing a simplified MAC model in Kubernetes, requiring pods to have a security classification label and checking if the requesting user&#39;s clearance is sufficient."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "ACCESS_CONTROL_MODELS",
+      "POLICY_AS_CODE",
+      "OPA_GATEKEEPER_BASICS",
+      "IAC_SECURITY_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "To enforce that a hybrid cloud connection between a private cloud and a public cloud uses a properly configured firewall, which IaC security practice is most effective for continuous assurance?",
+    "correct_answer": "Policy as Code (e.g., OPA Gatekeeper, Sentinel) to validate network configurations in IaC before deployment and drift detection to monitor deployed firewalls",
+    "distractors": [
+      {
+        "question_text": "Manual security audits of firewall rules every quarter",
+        "misconception": "Targets scalability and automation misunderstanding: Students might think manual audits are sufficient, but they are slow, error-prone, and don&#39;t scale with IaC deployments."
+      },
+      {
+        "question_text": "Using a Checkov policy to scan for firewall resources in the IaC template",
+        "misconception": "Targets depth of analysis confusion: Checkov can detect the *presence* of a firewall but struggles to validate its *proper configuration* for hybrid connectivity without complex custom policies, and it&#39;s static analysis."
+      },
+      {
+        "question_text": "Implementing a robust CI/CD pipeline that only deploys IaC templates from approved repositories",
+        "misconception": "Targets scope misunderstanding: While important for supply chain security, this ensures *approved* code is deployed, not necessarily *securely configured* firewalls for hybrid connections, nor does it detect drift."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Policy as Code (PaC) tools like OPA Gatekeeper or HashiCorp Sentinel can enforce granular rules on network configurations, including firewall rules, within IaC templates before they are deployed. This ensures that the connection between private and public clouds is secured according to defined policies. Combining this with drift detection (e.g., `terraform plan -refresh-only` or cloud-native tools) provides continuous assurance that the deployed firewall configuration remains compliant and hasn&#39;t been altered manually.",
+      "distractor_analysis": "Manual audits are not scalable or continuous. Checkov can identify if a firewall resource exists, but validating complex &#39;proper configuration&#39; for hybrid connectivity (e.g., specific ingress/egress rules, logging, etc.) is better suited for more expressive PaC. A robust CI/CD pipeline ensures code origin but doesn&#39;t inherently guarantee the security configuration of the firewall itself or detect post-deployment changes.",
+      "analogy": "Policy as Code is like a building inspector who reviews the blueprints (IaC) before construction to ensure all safety codes (security policies) are met. Drift detection is like a continuous monitoring system that alerts if someone later modifies the building&#39;s structure (firewall configuration) without approval."
+    },
+    "code_snippets": [
+      {
+        "language": "rego",
+        "code": "package firewall.hybrid_cloud\n\ndenied[msg] {\n  input.resource.type == &quot;aws_security_group&quot;\n  some i\n  ingress := input.resource.instances[i].attributes.ingress\n  some j\n  rule := ingress[j]\n  rule.from_port == 22\n  rule.to_port == 22\n  contains(rule.cidr_blocks, &quot;0.0.0.0/0&quot;)\n  msg := &quot;AWS Security Group allows SSH from 0.0.0.0/0, which is not allowed for hybrid cloud connections.&quot;\n}",
+        "context": "Example OPA Rego policy to prevent public SSH access in a security group, a common misconfiguration in hybrid cloud connections."
+      },
+      {
+        "language": "bash",
+        "code": "terraform plan -refresh-only",
+        "context": "Command to detect configuration drift by comparing the current state to the actual infrastructure."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "POLICY_AS_CODE_BASICS",
+      "HYBRID_CLOUD_CONCEPTS",
+      "FIREWALL_CONCEPTS",
+      "DRIFT_DETECTION"
+    ]
+  }
+]

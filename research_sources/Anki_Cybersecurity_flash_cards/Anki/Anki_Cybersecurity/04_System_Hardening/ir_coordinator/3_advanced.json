@@ -1,0 +1,83 @@
+[
+  {
+    "question_text": "A critical server in the DMZ has been compromised. During the Containment phase, the IR team discovers that the attacker is attempting to pivot to other servers within the same DMZ subnet. The network architecture uses Private VLANs (PVLANs). Which action, leveraging PVLANs, is the MOST effective for immediate containment of lateral movement within that subnet?",
+    "correct_answer": "Ensure all compromised servers are configured as isolated ports within the PVLAN, preventing them from communicating with other non-promiscuous ports in the same subnet.",
+    "distractors": [
+      {
+        "question_text": "Reconfigure the compromised server&#39;s port as a promiscuous port to allow full monitoring by all other devices in the PVLAN.",
+        "misconception": "Targets misunderstanding of PVLAN roles: Making a compromised server a promiscuous port would grant it more access, not less, and allow it to communicate with all other ports, exacerbating the problem."
+      },
+      {
+        "question_text": "Immediately shut down all ports in the DMZ PVLAN to prevent any further communication.",
+        "misconception": "Targets over-aggressive containment: While effective, this is a drastic measure that impacts all services in the DMZ, potentially causing a larger outage than necessary before understanding the full scope."
+      },
+      {
+        "question_text": "Apply a DHCP snooping trust command to the compromised server&#39;s port to ensure it receives legitimate DHCP leases.",
+        "misconception": "Targets confusion between security features: DHCP snooping is for DHCP server spoofing protection, not for containing lateral movement of a compromised host within a PVLAN. It&#39;s irrelevant to the immediate threat."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Private VLANs (PVLANs) are designed to prevent lateral communication between hosts within the same subnet. By configuring compromised servers as isolated ports, they can only communicate with promiscuous ports (typically the gateway/firewall), effectively preventing them from reaching other isolated or community ports in the same subnet. This directly addresses the lateral movement threat.",
+      "distractor_analysis": "Making a compromised server a promiscuous port would give it more access, which is counterproductive. Shutting down all ports is an over-aggressive containment that causes unnecessary downtime. Applying DHCP snooping trust is a network hardening measure for DHCP, not a direct containment action for a compromised host attempting lateral movement.",
+      "analogy": "Imagine a shared office space where each desk is a separate cubicle (isolated port) but all share a common hallway (promiscuous port) to the exit. If one cubicle is compromised, you want to ensure it can&#39;t reach other cubicles, only the exit. Making it a &#39;promiscuous&#39; cubicle would mean it could reach all other cubicles."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "Switch(config-if)# switchport mode private-vlan host\nSwitch(config-if)# switchport private-vlan host-association primary_vlan_id isolated_vlan_id",
+        "context": "Example Cisco IOS commands to configure an interface as an isolated port within a Private VLAN."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "PICERL_FRAMEWORK",
+      "NETWORK_SEGMENTATION",
+      "PRIVATE_VLANS",
+      "CONTAINMENT_STRATEGIES"
+    ]
+  },
+  {
+    "question_text": "During the Eradication phase of a memory-resident malware incident, the IR team has identified a malicious DLL (`ab.dll`) loaded by a legitimate process (`ab.exe`) that is communicating with a C2 server. Before removing the malicious DLL, which action is CRITICAL for ensuring complete eradication and preventing re-infection?",
+    "correct_answer": "Perform static and dynamic analysis of the extracted malicious DLL to understand its full capabilities, persistence mechanisms, and potential for lateral movement",
+    "distractors": [
+      {
+        "question_text": "Immediately delete the `ab.dll` file from the system and terminate the `ab.exe` process",
+        "misconception": "Targets premature action: Deleting files and terminating processes without full understanding can leave persistence mechanisms or other malicious components behind, leading to re-infection. This is a common mistake of rushing eradication."
+      },
+      {
+        "question_text": "Notify law enforcement and legal counsel about the identified malicious activity",
+        "misconception": "Targets notification timing error: While important, legal and law enforcement notifications are typically handled by management or legal teams and are not a critical technical step for ensuring complete eradication of the malware itself. This is a management/legal concern, not a technical eradication step."
+      },
+      {
+        "question_text": "Restore the entire system from a known good backup image to ensure all traces are removed",
+        "misconception": "Targets phase confusion/over-reaction: Restoring from backup is a Recovery phase action. While effective, it&#39;s often a last resort and skips the critical Eradication step of understanding the threat to prevent future occurrences. It also destroys forensic evidence if not handled carefully."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Eradication phase is about removing the root cause of the incident. For memory-resident malware, this means not just killing processes or deleting files, but understanding the malware&#39;s full functionality, including its persistence mechanisms, communication protocols, and any other components it might have dropped or modified. Static and dynamic analysis of the extracted DLL provides this crucial intelligence, allowing the IR team to identify and remove all traces of the threat and implement targeted preventative measures.",
+      "distractor_analysis": "Immediately deleting the DLL and terminating the process (distractor 1) is a common mistake that often leads to re-infection because persistence mechanisms or other dropped components are missed. Notifying law enforcement (distractor 2) is a management/legal decision, not a technical eradication step. Restoring from backup (distractor 3) is a Recovery phase action; while it can remove the malware, it bypasses the critical learning opportunity of Eradication and may not prevent future attacks if the initial compromise vector isn&#39;t understood and patched.",
+      "analogy": "Imagine finding a weed in your garden. Simply pulling the visible part (deleting the DLL) might seem like eradication, but if you don&#39;t understand its root system and how it spreads (persistence mechanisms), it will just grow back. True eradication requires understanding the plant to remove it completely and prevent its return."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "python vol.py -f memory.raw d11dump -p 3060 -b 0x55000000 -D /tmp/malware_analysis/",
+        "context": "Command to dump the malicious DLL (ab.dll) from memory for further analysis."
+      },
+      {
+        "language": "bash",
+        "code": "python vol.py -f memory.raw procdump -p 3060 -D /tmp/malware_analysis/",
+        "context": "Command to dump the process (ab.exe) that loaded the malicious DLL for further analysis."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "PICERL_FRAMEWORK",
+      "MEMORY_FORENSICS",
+      "MALWARE_ANALYSIS_BASICS",
+      "ERADICATION_STRATEGIES"
+    ]
+  }
+]

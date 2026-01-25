@@ -1,0 +1,38 @@
+[
+  {
+    "question_text": "Which of the following is a key characteristic that ensures private keys stored in a Hardware Security Module (HSM) cannot be extracted, even by authorized administrators?",
+    "correct_answer": "Non-exportable key attribute with hardware-enforced access controls",
+    "distractors": [
+      {
+        "question_text": "FIPS 140-2 Level 1 certification",
+        "misconception": "Targets certification confusion: Students may assume any FIPS certification level guarantees non-exportability, but Level 1 primarily focuses on cryptographic algorithm validation, not physical security or key protection against extraction."
+      },
+      {
+        "question_text": "Dual-control key ceremony procedures",
+        "misconception": "Targets procedural vs technical confusion: Students might confuse administrative controls (like dual-control) with the underlying technical and hardware-enforced mechanisms that prevent key extraction. Dual-control manages access to the HSM, not the key&#39;s inherent non-exportability."
+      },
+      {
+        "question_text": "Encrypted key backup to secure storage",
+        "misconception": "Targets backup misconception: Students may think that encrypting a key for backup provides the same level of protection as a non-exportable key within an HSM. However, an encrypted backup means the key material exists outside the HSM boundary and could potentially be compromised if the backup storage or encryption key is breached."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "HSMs are designed to provide a secure environment for cryptographic keys. A critical feature is the ability to mark private keys as &#39;non-exportable.&#39; This attribute, enforced by the HSM&#39;s hardware and firmware, physically prevents the key material from ever leaving the secure module. Even an administrator with full access to the HSM can use the key for cryptographic operations (like signing or decrypting) but cannot extract the raw key material itself. This provides a strong guarantee against key compromise.",
+      "distractor_analysis": "FIPS 140-2 Level 1 certification validates the cryptographic modules and algorithms but does not mandate physical tamper resistance or non-exportability. Higher FIPS levels (e.g., Level 3 or 4) address physical security. Dual-control key ceremonies are administrative procedures to prevent a single person from performing sensitive operations, but they don&#39;t inherently make a key non-exportable if the HSM&#39;s design allows extraction. Encrypted key backups, while a good practice for disaster recovery, mean the key material exists outside the HSM&#39;s secure boundary, making it potentially vulnerable if the backup or its encryption key is compromised.",
+      "analogy": "Imagine a secure safe (HSM) where you can put a secret recipe (private key). You can use the recipe to bake cakes (perform cryptographic operations) inside the safe, but the safe is designed so that you can never write down or take the recipe out of the safe, even if you have the combination to open the safe door. This prevents anyone from stealing the recipe itself, even if they gain access to the safe&#39;s controls."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "from PyKCS11 import *\n\n# Template for generating a non-exportable private key using PKCS#11\nprivate_key_template = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_TOKEN, True),        # Store on token (HSM)\n    (CKA_PRIVATE, True),      # Private key\n    (CKA_SENSITIVE, True),    # Sensitive key material\n    (CKA_EXTRACTABLE, False)  # CRITICAL: Key cannot be extracted\n]\n\n# Example of generating a key (simplified, actual generation involves session, mechanism, etc.)\n# session.generateKeyPair(CKM_RSA_PKCS_KEY_PAIR_GEN, public_key_template, private_key_template)",
+        "context": "This Python snippet demonstrates how the CKA_EXTRACTABLE attribute is set to False in a PKCS#11 template when generating a private key, explicitly instructing the HSM to make the key non-exportable."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  }
+]

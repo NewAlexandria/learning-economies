@@ -1,0 +1,68 @@
+[
+  {
+    "question_text": "A security architect is designing an Intrusion Detection System (IDS) for a Software-Defined Network (SDN) and is evaluating different machine learning approaches. Given that the goal is to effectively detect zero-day attacks by capturing both spatial and temporal features of network traffic, which deep learning architectural design would be most suitable?",
+    "correct_answer": "A hybrid model combining Convolutional Neural Networks (CNNs) and Long Short-Term Memory Networks (LSTMs)",
+    "distractors": [
+      {
+        "question_text": "A Deep Belief Network (DBN) for unsupervised feature learning",
+        "misconception": "Targets partial understanding of DBNs: Students might correctly identify DBNs for unsupervised learning but miss the specific requirement for spatial and temporal feature capture for zero-day attacks."
+      },
+      {
+        "question_text": "A Fully Connected Deep Neural Network (FCDNN) with a Gated Recurrent Neural Network (GRU-RNN)",
+        "misconception": "Targets conflation of similar concepts: Students might recognize RNNs for temporal data but overlook the CNN component needed for spatial features and the specific hybrid mentioned for zero-day detection."
+      },
+      {
+        "question_text": "An Autoencoder combined with a simple Recurrent Neural Network (RNN) for anomaly detection",
+        "misconception": "Targets general anomaly detection: Students might correctly associate autoencoders with anomaly detection but miss the specific architectural combination for both spatial and temporal features in zero-day attack scenarios."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To effectively detect zero-day attacks by capturing both spatial and temporal features of network traffic, a hybrid model combining Convolutional Neural Networks (CNNs) and Long Short-Term Memory Networks (LSTMs) is most suitable. CNNs are excellent at extracting spatial features (patterns within data), while LSTMs, a type of RNN, are highly effective at processing sequential data and capturing temporal dependencies (patterns over time). This combination allows the IDS to analyze both the structural characteristics and the evolving behavior of network traffic, which is crucial for identifying novel attack patterns.",
+      "distractor_analysis": "A Deep Belief Network (DBN) is good for unsupervised feature learning and can detect anomalies, but it&#39;s not specifically highlighted for capturing both spatial and temporal features in the context of zero-day attacks as effectively as the CNN-LSTM hybrid. A Fully Connected Deep Neural Network (FCDNN) with a Gated Recurrent Neural Network (GRU-RNN) primarily focuses on temporal aspects with the GRU-RNN, but the FCDNN doesn&#39;t inherently provide the spatial feature extraction capabilities of a CNN. An Autoencoder combined with a simple RNN is effective for general anomaly detection and learning hierarchical features, but the specific combination of CNN-LSTM is presented as superior for the dual requirement of spatial and temporal feature capture for zero-day attacks.",
+      "analogy": "Imagine trying to identify a new type of suspicious activity in a crowded room. A CNN is like a detective who can quickly spot unusual groupings or arrangements of people (spatial features). An LSTM is like a detective who can track the sequence of movements and interactions over time (temporal features). To catch a truly novel, sophisticated threat (zero-day attack), you need both detectives working together to analyze both the &#39;picture&#39; and the &#39;story&#39; of what&#39;s happening."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "import tensorflow as tf\nfrom tensorflow.keras.models import Model\nfrom tensorflow.keras.layers import Input, Conv1D, LSTM, Dense, Flatten\n\n# Example of a simplified CNN-LSTM hybrid model for IDS\ndef create_cnn_lstm_model(input_shape, num_classes):\n    input_layer = Input(shape=input_shape)\n    \n    # CNN part for spatial feature extraction\n    conv1 = Conv1D(filters=64, kernel_size=3, activation=&#39;relu&#39;)(input_layer)\n    \n    # LSTM part for temporal feature extraction\n    lstm1 = LSTM(units=128, return_sequences=True)(conv1)\n    lstm2 = LSTM(units=64)(lstm1)\n    \n    # Output layer\n    dense1 = Dense(units=32, activation=&#39;relu&#39;)(lstm2)\n    output_layer = Dense(units=num_classes, activation=&#39;softmax&#39;)(dense1)\n    \n    model = Model(inputs=input_layer, outputs=output_layer)\n    model.compile(optimizer=&#39;adam&#39;, loss=&#39;categorical_crossentropy&#39;, metrics=[&#39;accuracy&#39;])\n    return model\n\n# Example usage:\n# input_shape = (timesteps, features) e.g., (50, 10) for 50 time steps, 10 features per step\n# num_classes = number of attack types + normal traffic\n# model = create_cnn_lstm_model(input_shape=(50, 10), num_classes=5)\n# model.summary()",
+        "context": "This Python code snippet illustrates a conceptual structure of a CNN-LSTM hybrid model using TensorFlow/Keras. It shows how Conv1D layers can extract spatial features from sequential data, which are then fed into LSTM layers to capture temporal dependencies, making it suitable for network traffic analysis in IDS."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "A security architect is designing a system for an embedded device that requires both a general-purpose OS and real-time capabilities for safety-critical functions. The architect wants to extend the existing general-purpose OS with real-time features without rewriting the entire OS. Which virtualization approach would best meet these requirements?",
+    "correct_answer": "Using a partitioning hypervisor to run a lightweight real-time operating system in a separate guest VM domain alongside the general-purpose OS.",
+    "distractors": [
+      {
+        "question_text": "Implementing a unikernel that combines the general-purpose OS, real-time application, and necessary libraries into a single binary.",
+        "misconception": "Targets misunderstanding of unikernel scope: Students might think unikernels are for combining multiple OS types, but they are for single-application optimization, not extending an existing OS with a separate, distinct OS."
+      },
+      {
+        "question_text": "Deploying the general-purpose OS and the real-time application directly on bare metal, managing real-time priorities through OS scheduling.",
+        "misconception": "Targets ignoring the problem statement: Students might overlook the &#39;without rewriting the entire OS&#39; constraint and the need for secure separation, assuming standard OS scheduling is sufficient for hard real-time."
+      },
+      {
+        "question_text": "Using a traditional hypervisor to overcommit resources and run both operating systems, relying on its scheduling for real-time guarantees.",
+        "misconception": "Targets misunderstanding of traditional hypervisor overhead: Students might not grasp that traditional hypervisors introduce overhead and are not suitable for strict real-time guarantees, especially with overcommitment."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Partitioning hypervisors are designed to securely partition physical resources among guest VMs, allowing different operating systems (like a general-purpose OS and a real-time OS) to run concurrently without interference. This approach extends the functionality of an existing OS by adding another specialized OS in a separate, isolated VM, which is ideal for safety-critical tasks requiring real-time guarantees without rewriting the primary OS.",
+      "distractor_analysis": "Unikernels are optimized for single-application deployment, not for integrating two distinct operating systems with different functionalities. Deploying directly on bare metal and relying on OS scheduling would require significant modifications to the general-purpose OS to achieve real-time guarantees and secure separation, which goes against the &#39;without rewriting&#39; constraint. Traditional hypervisors typically have higher overhead and are not designed for the strict isolation and real-time performance required for safety-critical embedded systems, especially when overcommitting resources.",
+      "analogy": "Imagine you have a car (embedded device) that needs both a standard navigation system (general-purpose OS) and a highly precise, independent emergency braking system (real-time OS). A partitioning hypervisor is like installing the braking system in its own dedicated, isolated compartment with its own controls, ensuring it always works reliably, even if the navigation system crashes, rather than trying to integrate it deeply into the navigation system&#39;s complex software."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  }
+]

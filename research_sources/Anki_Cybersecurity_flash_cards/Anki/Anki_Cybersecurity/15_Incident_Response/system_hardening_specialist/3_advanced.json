@@ -1,0 +1,135 @@
+[
+  {
+    "question_text": "Which configuration setting blocks the use of Windows Management Instrumentation (WMI) for persistent, fileless malware on Windows systems?",
+    "correct_answer": "There is no single configuration setting that completely blocks WMI for persistence without severely impacting system functionality; defense relies on monitoring and detection.",
+    "distractors": [
+      {
+        "question_text": "Disable the Windows Management Instrumentation service entirely",
+        "misconception": "Targets operational impact misunderstanding: Disabling the WMI service breaks critical system components and management tools, making it an infeasible hardening step."
+      },
+      {
+        "question_text": "Restrict WMI access to administrators only via Group Policy",
+        "misconception": "Targets scope misunderstanding: Many legitimate applications and services require WMI access, and attackers often gain administrative privileges before establishing WMI persistence."
+      },
+      {
+        "question_text": "Block outbound traffic on port 135 (RPC/WMI) at the firewall",
+        "misconception": "Targets network vs. host-based control confusion: WMI persistence often operates locally or within the network, and blocking port 135 outbound would disrupt legitimate internal communications without preventing local persistence."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "WMI is a fundamental component of Windows for system management and monitoring. Due to its integral role, there isn&#39;t a simple &#39;off switch&#39; or single configuration setting to prevent its abuse for persistence without crippling the operating system. Effective defense against WMI persistence relies on advanced monitoring, logging, and behavioral analysis to detect malicious WMI activity, rather than outright blocking.",
+      "distractor_analysis": "Disabling the WMI service (Winmgmt) would render many system management tools and applications non-functional. Restricting WMI to administrators is insufficient because attackers typically achieve administrative privileges before deploying WMI persistence. Blocking port 135 outbound is a network control that doesn&#39;t prevent local WMI persistence and would severely impact legitimate network management functions.",
+      "analogy": "Trying to block WMI for persistence is like trying to prevent a car from being used for a getaway by removing its engine – it stops the bad act, but also makes the car useless for its intended purpose. Instead, you need to monitor who&#39;s driving and where they&#39;re going."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "WINDOWS_WMI",
+      "MALWARE_PERSISTENCE",
+      "SYSTEM_HARDENING"
+    ]
+  },
+  {
+    "question_text": "Which advanced threat mechanism can bypass Secure Boot by injecting malicious code after integrity checks are completed, operating from a privilege level below the operating system kernel?",
+    "correct_answer": "SMM-based firmware implants",
+    "distractors": [
+      {
+        "question_text": "User-mode (Ring 3) loaders exploiting kernel vulnerabilities",
+        "misconception": "Targets outdated attack vectors: User-mode loaders were an earlier method but are largely mitigated by kernel-mode signing policies and do not operate at the SMM level or bypass Secure Boot in the described manner."
+      },
+      {
+        "question_text": "Traditional bootkits infecting the MBR/VBR",
+        "misconception": "Targets limited scope: Traditional bootkits operate before the OS loads and are generally counteracted by Secure Boot, which they cannot bypass by delaying injection until after integrity checks."
+      },
+      {
+        "question_text": "Kernel-mode (Ring 0) rootkits",
+        "misconception": "Targets privilege level confusion: While powerful, kernel-mode rootkits operate within the OS kernel and cannot bypass Secure Boot from a lower privilege level or inject code after its integrity checks."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "SMM-based firmware implants operate at System Management Mode (Ring -2), a privilege level below the operating system kernel. This allows them to control physical memory and inject malicious Ring 0 rootkit modules into the OS kernel. Crucially, SMM-based code can choose to inject the implant *after* Secure Boot&#39;s integrity checks have completed, thereby bypassing its protections.",
+      "distractor_analysis": "User-mode loaders are an older technique largely mitigated by kernel-mode signing. Traditional bootkits are generally counteracted by Secure Boot. Kernel-mode rootkits operate within the OS and cannot bypass Secure Boot from a lower level or after its checks.",
+      "analogy": "SMM-based implants bypassing Secure Boot are like a saboteur who waits for the security guard to finish their patrol and check all the doors before sneaking in through a hidden tunnel, rather than trying to force a locked door directly."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "ROOTKIT_BOOTKIT_CONCEPTS",
+      "UEFI_SECURE_BOOT",
+      "PRIVILEGE_RINGS",
+      "FIRMWARE_SECURITY"
+    ]
+  },
+  {
+    "question_text": "Which configuration setting can be exploited by an attacker to subvert software-based BIOS firmware acquisition by providing forged data?",
+    "correct_answer": "Setting the FSMIE bit in the HSFC register to trigger a System Management Interrupt (SMI)",
+    "distractors": [
+      {
+        "question_text": "Modifying the FDBC field in the HSFC register to change the number of bytes transferred",
+        "misconception": "Targets scope misunderstanding: FDBC controls data transfer size, not the ability to intercept and forge data; students might confuse control over data quantity with control over data content."
+      },
+      {
+        "question_text": "Altering the FADDR register to point to a different flash memory region",
+        "misconception": "Targets attack vector confusion: FADDR changes the read location, but doesn&#39;t enable forging data for a legitimate read; students might think redirecting the read is equivalent to forging the data."
+      },
+      {
+        "question_text": "Setting the FCYCLE field in the HSFC register to an erase operation (11b)",
+        "misconception": "Targets attack type confusion: Erasing data is a denial-of-service attack, not a method for providing forged data during an acquisition; students might conflate any malicious action with the specific attack described."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The FSMIE (flash SPI SMI# enable) bit in the HSFC (hardware sequencing flash control) register, when set, causes the chipset to generate a System Management Interrupt (SMI) upon completion of a flash cycle. If an attacker has compromised SMM (System Management Mode), they can set this bit before a firmware acquisition attempt. When the flash cycle completes and the SMI is triggered, the attacker&#39;s SMM code gains control, allowing them to modify the contents of the FDATA[X] registers with forged data before the legitimate acquisition software reads them.",
+      "distractor_analysis": "Modifying FDBC would change how much data is read, but not allow an attacker to intercept and forge the data being read. Altering FADDR would cause the acquisition to read from a different location, but again, it doesn&#39;t enable forging the data from the intended location. Setting FCYCLE to an erase operation would destroy data, which is a different type of attack (denial of service) than subverting an acquisition with forged data.",
+      "analogy": "This is like a malicious postal worker intercepting a letter, opening it, replacing the contents with fake information, and then resealing it before it reaches the intended recipient. The FSMIE bit is the signal that tells the postal worker (SMM code) when the letter is ready for interception."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "FIRMWARE_SECURITY",
+      "SMM_ATTACKS",
+      "SPI_FLASH",
+      "LOW_LEVEL_HARDWARE"
+    ]
+  },
+  {
+    "question_text": "Which memory forensics technique would be most effective in detecting a sophisticated kernel rootkit like Phalanx2, which evades traditional live response tools on a Linux system?",
+    "correct_answer": "Analyzing kernel module lists and system call tables for unauthorized modifications or hidden entries.",
+    "distractors": [
+      {
+        "question_text": "Scanning running process lists for unknown or suspicious user-mode applications.",
+        "misconception": "Targets scope misunderstanding: Phalanx2 is a kernel rootkit, meaning it operates at a lower level than user-mode processes, making user-mode scanning less effective for direct detection."
+      },
+      {
+        "question_text": "Extracting network connection tables to identify unusual outbound connections.",
+        "misconception": "Targets indirect detection vs. direct evidence: While rootkits might establish connections, this is an indirect artifact; direct kernel-level analysis is more definitive for rootkit presence."
+      },
+      {
+        "question_text": "Reviewing file system metadata for recently modified or created files.",
+        "misconception": "Targets volatile vs. persistent storage confusion: Kernel rootkits primarily reside in volatile memory and manipulate runtime structures, often without leaving persistent file system traces."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Sophisticated kernel rootkits like Phalanx2 operate by modifying kernel-level structures to hide their presence and activities. Memory forensics allows investigators to inspect the actual state of the kernel, including loaded modules and system call tables (SSDT/syscall_table), for unauthorized alterations or hidden entries that indicate rootkit compromise. This direct inspection bypasses the rootkit&#39;s evasion techniques against live response tools.",
+      "distractor_analysis": "Scanning user-mode processes is insufficient as kernel rootkits operate below this layer. While network connections can be an indicator, they are an indirect artifact; direct kernel integrity checks are more effective for initial detection. Reviewing file system metadata is largely irrelevant for memory-resident kernel rootkits that aim to avoid disk-based persistence.",
+      "analogy": "Detecting a kernel rootkit by analyzing kernel structures is like checking the engine&#39;s internal components directly for tampering, rather than just looking at the dashboard lights or the car&#39;s exterior for signs of trouble."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "# Example using Volatility Framework (Linux profile)\nvol.py -f &lt;memory_dump&gt; --profile=Linux&lt;version&gt;x64 linux_modules\nvol.py -f &lt;memory_dump&gt; --profile=Linux&lt;version&gt;x64 linux_syscalls",
+        "context": "Using the Volatility Framework to list loaded kernel modules and inspect the system call table for hooks or anomalies in a Linux memory dump."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "MEMORY_FORENSICS",
+      "LINUX_KERNEL_INTERNALS",
+      "ROOTKIT_DETECTION",
+      "INCIDENT_RESPONSE"
+    ]
+  }
+]

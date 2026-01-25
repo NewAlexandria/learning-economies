@@ -1,0 +1,777 @@
+[
+  {
+    "question_text": "An adversary aims to scan a target organization while minimizing detection by an Intrusion Detection System (IDS). Which IDS evasion technique involves splitting the TCP header across multiple packets?",
+    "correct_answer": "Fragmenting",
+    "distractors": [
+      {
+        "question_text": "IP spoofing",
+        "misconception": "Targets technique confusion: IP spoofing changes the source IP to hide identity, not to evade IDS by altering packet structure."
+      },
+      {
+        "question_text": "Proxy scanning",
+        "misconception": "Targets method confusion: Proxy scanning routes traffic through intermediaries to hide the attacker&#39;s origin, not to manipulate packet headers for IDS evasion."
+      },
+      {
+        "question_text": "Anonymizer",
+        "misconception": "Targets general concept: Anonymizers hide the attacker&#39;s identity, similar to proxies, but don&#39;t specifically describe the packet manipulation technique for IDS evasion."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Fragmenting involves breaking down a single packet, including its TCP header, into multiple smaller packets. This technique can evade IDSs that are not designed to reassemble fragmented packets before inspection, allowing malicious traffic to pass undetected.",
+      "distractor_analysis": "IP spoofing, proxy scanning, and anonymizers are all methods of hiding the attacker&#39;s identity or origin, but they do not involve the specific manipulation of packet headers by splitting them across multiple packets to bypass IDS rules.",
+      "analogy": "Imagine trying to sneak a message past a guard who only reads full sentences. If you break your message into individual words and send them separately, the guard might miss the full meaning. Fragmenting does something similar with network packets."
+    },
+    "difficulty": "intermediate",
+    "question_type": "defense",
+    "prerequisites": [
+      "NET_BASICS",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "An adversary analyzes TTL fields and TCP window sizes to identify the operating system of a target. Which type of OS fingerprinting is this adversary most likely performing?",
+    "correct_answer": "Passive OS fingerprinting",
+    "distractors": [
+      {
+        "question_text": "Online OS fingerprinting",
+        "misconception": "Targets terminology confusion: &#39;Online&#39; is too broad; both active and passive methods are &#39;online&#39; in that they interact with a live system."
+      },
+      {
+        "question_text": "Aggressive OS fingerprinting",
+        "misconception": "Targets method confusion: Aggressive fingerprinting typically involves more intrusive, active probes, not just analyzing existing traffic."
+      },
+      {
+        "question_text": "Active OS fingerprinting",
+        "misconception": "Targets method confusion: Active fingerprinting sends specially crafted packets to elicit responses, whereas analyzing TTL and TCP window sizes from existing traffic is passive."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Passive OS fingerprinting involves analyzing characteristics of network traffic that a target system naturally generates, such as Time-To-Live (TTL) values, TCP window sizes, and other header fields, without sending specially crafted probes. This allows for OS identification without direct interaction.",
+      "distractor_analysis": "Active OS fingerprinting involves sending specific probes (e.g., Nmap&#39;s -O option) to elicit responses that reveal OS characteristics. Online fingerprinting is a general term. Aggressive fingerprinting is a type of active scanning that includes OS detection but is more intrusive.",
+      "analogy": "It&#39;s like identifying a car by the sound of its engine or the way it drives past you (passive), rather than asking the driver what make and model it is (active)."
+    },
+    "difficulty": "intermediate",
+    "question_type": "definition",
+    "prerequisites": [
+      "NET_BASICS",
+      "ATTACK_RECON"
+    ]
+  },
+  {
+    "question_text": "An ethical hacker performs an ACK scan against a network segment protected by a stateful firewall. If a scan packet receives no response, what does this indicate about the port?",
+    "correct_answer": "The port is filtered at the firewall.",
+    "distractors": [
+      {
+        "question_text": "The port is not filtered at the firewall.",
+        "misconception": "Targets misunderstanding of stateful firewall behavior: A stateful firewall would drop unsolicited ACK packets if the port is filtered, resulting in no response."
+      },
+      {
+        "question_text": "The firewall allows the packet, but the device has the port closed.",
+        "misconception": "Targets confusion with unfiltered closed ports: If the port were closed but unfiltered, the target host would typically send an RST packet in response to an ACK."
+      },
+      {
+        "question_text": "It is impossible to determine any port status from this response.",
+        "misconception": "Targets lack of knowledge about ACK scan interpretation: No response in an ACK scan against a stateful firewall is a strong indicator of filtering."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "An ACK scan sends TCP packets with only the ACK flag set. A stateful firewall tracks active connections. If an unsolicited ACK packet arrives for a port that isn&#39;t part of an established connection, a stateful firewall will typically drop it, resulting in no response. This indicates the port is filtered by the firewall.",
+      "distractor_analysis": "If the port were unfiltered and closed, the target host would send an RST. If it were unfiltered and open, it would also send an RST (as an ACK without a prior SYN is unexpected). Therefore, no response specifically points to filtering by a stateful device.",
+      "analogy": "Imagine knocking on a door (ACK packet). If no one answers and you know there&#39;s a security guard (stateful firewall) who would normally tell you to go away if the door was just locked, then the lack of response means the guard actively stopped your knock from even reaching the door."
+    },
+    "difficulty": "intermediate",
+    "question_type": "analysis",
+    "prerequisites": [
+      "NET_BASICS",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "An ethical hacker sends TCP packets with the SYN flag set to a target machine. If no SYN/ACK responses are received on open ports, which type of port scan is most likely being performed?",
+    "correct_answer": "Stealth",
+    "distractors": [
+      {
+        "question_text": "Ping sweep",
+        "misconception": "Targets protocol confusion: A ping sweep uses ICMP, not TCP SYN packets."
+      },
+      {
+        "question_text": "XMAS",
+        "misconception": "Targets flag confusion: XMAS scan uses FIN, PSH, and URG flags, not just SYN."
+      },
+      {
+        "question_text": "Full",
+        "misconception": "Targets response expectation: A full TCP connect scan would expect SYN/ACK and then send an ACK, indicating a complete handshake."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "This scenario describes a SYN scan (often called a &#39;stealth scan&#39; or &#39;half-open scan&#39;). The attacker sends a SYN packet but does not complete the three-way handshake if a SYN/ACK is received. The lack of SYN/ACK responses on open ports implies that the attacker is not completing the handshake, which is characteristic of a stealth scan to avoid full connection logging.",
+      "distractor_analysis": "A ping sweep uses ICMP. An XMAS scan uses specific flags (FIN, PSH, URG) to try and bypass firewalls. A full TCP connect scan would complete the handshake, which would involve receiving SYN/ACK and sending an ACK.",
+      "analogy": "It&#39;s like knocking on a door (SYN) and listening for a response (SYN/ACK). If you hear someone answer, you don&#39;t open the door all the way (don&#39;t send ACK) but you know someone is home. This is stealthier than fully entering the house."
+    },
+    "difficulty": "intermediate",
+    "question_type": "procedure",
+    "prerequisites": [
+      "NET_BASICS",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "Which MITRE ATT&amp;CK tactic describes an adversary&#39;s attempt to defeat forensic analysis by faking source fingerprints like Photo-Response Non-Uniformity (PRNU) noise patterns?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Impact (TA0040)",
+        "misconception": "Targets scope misunderstanding: Impact focuses on disrupting availability or integrity of systems/data, not on evading detection of image manipulation."
+      },
+      {
+        "question_text": "Collection (TA0009)",
+        "misconception": "Targets process order error: Collection is about gathering data; anti-forensics is about manipulating data to avoid detection after it&#39;s been created or altered."
+      },
+      {
+        "question_text": "Command and Control (TA0011)",
+        "misconception": "Targets domain confusion: C2 is about maintaining communication; anti-forensics is about manipulating evidence to avoid attribution or detection."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The act of faking source fingerprints to defeat forensic techniques, such as manipulating PRNU noise patterns, directly aligns with the MITRE ATT&amp;CK Defense Evasion tactic. This tactic involves techniques an adversary uses to avoid detection throughout the attack lifecycle.",
+      "distractor_analysis": "Impact (TA0040) relates to the adversary&#39;s final objective of affecting system availability or integrity, not evading detection. Collection (TA0009) is about gathering data, which is distinct from manipulating forensic evidence. Command and Control (TA0011) focuses on maintaining communication with compromised systems, which is unrelated to anti-forensics in this context.",
+      "analogy": "Like a criminal altering their fingerprints at a crime scene to prevent identification – the goal is to evade forensic analysis and attribution, not to cause direct damage or communicate with accomplices."
+    },
+    "code_snippets": [],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "After gaining initial access to a network, what is the primary objective for an attacker to interactively execute commands and progress their attack?",
+    "correct_answer": "Establishing a Command and Control (C2) system",
+    "distractors": [
+      {
+        "question_text": "Performing payload obfuscation",
+        "misconception": "Targets technique-tactic confusion: Obfuscation is a method to evade detection, not the primary objective for interactive command execution."
+      },
+      {
+        "question_text": "Creating launchers in C#, Go, and Nim",
+        "misconception": "Targets means-end confusion: Creating launchers is a way to deliver or execute payloads, but the goal is to establish C2 for interactive control."
+      },
+      {
+        "question_text": "Implementing Endpoint Detection and Response (EDR) evasion techniques",
+        "misconception": "Targets scope misunderstanding: EDR evasion is a defensive measure to maintain access, but it&#39;s not the primary objective of establishing interactive control itself."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "After initial access, an attacker&#39;s immediate priority is to establish a Command and Control (C2) system. This allows them to interactively execute commands on compromised systems, enabling further actions like data exfiltration, lateral movement, or privilege escalation, which are essential for achieving their overall attack goals.",
+      "distractor_analysis": "Payload obfuscation and EDR evasion are techniques used to facilitate or maintain C2 by avoiding detection, but they are not the primary objective of gaining interactive control. Creating launchers is a method for execution, which can lead to C2, but C2 itself is the goal for interactive command execution.",
+      "analogy": "Think of it like a remote-controlled drone: getting the drone into the target area (initial access) is just the start. You then need to establish a stable radio link (C2) to actually fly it and perform its mission (interactive commands)."
+    },
+    "difficulty": "intermediate",
+    "question_type": "procedure",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "NET_BASICS"
+    ]
+  },
+  {
+    "question_text": "After successfully establishing an Empire agent on a Windows system, what is the immediate next step an adversary would typically attempt to gain higher privileges?",
+    "correct_answer": "Bypass User Account Control (UAC) to obtain an elevated shell.",
+    "distractors": [
+      {
+        "question_text": "Exfiltrate sensitive files from the user&#39;s home directory.",
+        "misconception": "Targets attack phase confusion: Exfiltration (Collection/Exfiltration) typically occurs after privilege escalation and discovery, not immediately after initial agent establishment."
+      },
+      {
+        "question_text": "Perform network reconnaissance to map internal subnets.",
+        "misconception": "Targets sequence error: While reconnaissance (Discovery) is important, gaining higher privileges (Privilege Escalation) is often prioritized to access more resources for effective reconnaissance."
+      },
+      {
+        "question_text": "Establish persistence mechanisms like scheduled tasks.",
+        "misconception": "Targets tactical objective confusion: Persistence is about maintaining access, but the immediate goal after initial access is often to escalate privileges to expand control, before solidifying persistence."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "After an initial agent is established, the adversary&#39;s immediate goal is typically to escalate privileges. User Account Control (UAC) often restricts the agent&#39;s capabilities, so bypassing it is a common first step to gain an elevated shell and access more system functions, including those required for further exploitation like Mimikatz.",
+      "distractor_analysis": "Exfiltrating data is a Collection/Exfiltration activity that usually comes later. Network reconnaissance is a Discovery activity, but often more effective with higher privileges. Establishing persistence is a valid goal, but privilege escalation often precedes it to ensure the persistence mechanism itself has sufficient rights or to establish more robust persistence.",
+      "analogy": "Imagine a burglar who has just gotten through the front door of a house. Their immediate next step isn&#39;t usually to start packing up valuables or drawing a map of the house. It&#39;s to find the master key or get past internal security measures to access more rooms and valuable items."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "(Empire: CDE5236G) &gt; bypassuac http",
+        "context": "Command to attempt UAC bypass within Empire."
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "procedure",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "ATTACK_PRIVESC"
+    ]
+  },
+  {
+    "question_text": "After using ImpREC to reconstruct the Import Address Table (IAT) of a dumped executable, what is the next logical step for a digital investigator to verify the success of the unpacking process?",
+    "correct_answer": "Re-scan the newly &#39;refurbished&#39; dumped executable with a packing identification utility like PEiD.",
+    "distractors": [
+      {
+        "question_text": "Immediately execute the reconstructed binary to observe its behavior.",
+        "misconception": "Targets premature execution: While execution is a verification step, re-scanning for packing signatures is a more direct and safer initial verification of unpacking success."
+      },
+      {
+        "question_text": "Analyze the program&#39;s network traffic for Command and Control (C2) beaconing.",
+        "misconception": "Targets scope creep: Network analysis is part of broader malware analysis but not the immediate next step to verify successful unpacking."
+      },
+      {
+        "question_text": "Perform static analysis on the original, packed malware sample to identify its obfuscation techniques.",
+        "misconception": "Targets incorrect phase: Static analysis of the original packed sample would have occurred earlier; the current phase is verifying the unpacked binary."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "After reconstructing the Imports of a dumped executable, the immediate next step is to verify that the obfuscation has been successfully removed. This is best done by re-scanning the &#39;refurbished&#39; binary with a packing identification utility. This tool can confirm the absence of packing signatures and often identify the original compiler, indicating successful unpacking.",
+      "distractor_analysis": "Executing the binary immediately is a later verification step, but checking for packing signatures is more direct for confirming unpacking. Analyzing network traffic is a different phase of malware analysis. Performing static analysis on the original packed sample is a prior step, not a subsequent one after reconstruction.",
+      "analogy": "Imagine you&#39;ve removed a disguise from someone. Before asking them to perform a task, you&#39;d first check their ID to confirm the disguise is truly gone and they are who you think they are."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "peid.exe unpacked_malware.exe",
+        "context": "Command-line execution of PEiD to scan an unpacked executable."
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "procedure",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "Which MITRE ATT&amp;CK tactic is most closely associated with an adversary&#39;s attempt to &#39;Generate test traffic: Send packets containing known signatures, exploits, or attack patterns to trigger the IDS and observe its response&#39;?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Discovery (TA0007)",
+        "misconception": "Targets scope confusion: While an adversary might discover IDS presence, actively testing its response with attack patterns is about evading detection, not just finding information."
+      },
+      {
+        "question_text": "Initial Access (TA0001)",
+        "misconception": "Targets phase ordering error: Generating test traffic to trigger an IDS implies the adversary is already past initial access and is attempting to bypass defenses for further actions."
+      },
+      {
+        "question_text": "Command and Control (TA0011)",
+        "misconception": "Targets technique-tactic confusion: C2 is about maintaining communication; testing IDS response is a precursor to or part of C2, but the act of testing detection is defense evasion."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Generating test traffic with known attack patterns to observe an IDS&#39;s response is a direct attempt to understand and potentially bypass security controls. This falls under Defense Evasion, as the adversary is actively probing defenses to avoid detection during subsequent malicious activities.",
+      "distractor_analysis": "Discovery involves gathering information about the system, but actively triggering an IDS goes beyond mere information gathering into testing its effectiveness. Initial Access is about gaining a foothold, which would typically precede such detailed IDS testing. Command and Control focuses on maintaining communication, not on the act of testing detection mechanisms.",
+      "analogy": "Like a burglar testing a security alarm with a small noise to see if it triggers before attempting a full break-in. The goal isn&#39;t just to know the alarm is there, but to understand how to avoid setting it off."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "nmap -p 80 --script http-vuln-cve2017-5638 --script-args http-vuln-cve2017-5638.uri=/struts2/index.action 192.168.1.100",
+        "context": "Simulating an exploit to test IDS detection"
+      },
+      {
+        "language": "python",
+        "code": "from scapy.all import *\npacket = IP(dst=&#39;192.168.1.100&#39;)/TCP(dport=80, flags=&#39;S&#39;)/Raw(load=&#39;GET /evil.php HTTP/1.0\\r\\n\\r\\n&#39;)\nsend(packet)",
+        "context": "Crafting a malicious packet to trigger IDS"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "NET_BASICS",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "Which MITRE ATT&amp;CK tactic does &#39;Binary Instrumentation&#39; most closely align with when used by an adversary to modify program behavior for malicious purposes?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets technique-tactic confusion: While instrumentation involves execution, the primary goal of modifying behavior to avoid detection or achieve persistence is defense evasion, not just running code."
+      },
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets scope misunderstanding: Binary instrumentation can be used for persistence, but its core function of altering behavior to avoid security mechanisms is more broadly aligned with defense evasion."
+      },
+      {
+        "question_text": "Impact (TA0040)",
+        "misconception": "Targets phase ordering error: Impact is the final stage of an attack. Binary instrumentation is a method to achieve objectives, often preceding or enabling impact, but not the impact itself."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Binary instrumentation involves inserting new code into an existing binary to observe or modify its behavior. When used maliciously, this technique allows an adversary to alter how a program functions, often to bypass security controls, hide malicious activity, or prevent detection, which directly aligns with the Defense Evasion tactic.",
+      "distractor_analysis": "Execution is too broad; while instrumentation executes code, its strategic purpose in a malicious context is more specific. Persistence is a possible outcome of instrumentation, but the act of modifying behavior to avoid detection is more fundamentally defense evasion. Impact is the result of an attack, not the method of altering program behavior to achieve it.",
+      "analogy": "Think of binary instrumentation as an adversary modifying the blueprints of a security system to make it ignore their presence. The act of changing the blueprints (instrumentation) is to evade detection, not just to build something (execution) or to make sure they can always get back in (persistence)."
+    },
+    "code_snippets": [],
+    "difficulty": "intermediate",
+    "question_type": "definition",
+    "prerequisites": [
+      "ATTACK_EVASION",
+      "ATTACK_EXPLOIT"
+    ]
+  },
+  {
+    "question_text": "Which MITRE ATT&amp;CK tactic best describes the malware&#39;s action of injecting &#39;Lab12-01.dll&#39; into &#39;explorer.exe&#39; using `CreateRemoteThread`, `WriteProcessMemory`, and `VirtualAllocEx`?",
+    "correct_answer": "Defense Evasion (TA0005) and Privilege Escalation (TA0004)",
+    "distractors": [
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets scope misunderstanding: While execution is involved, the primary goal of injecting into a legitimate process like explorer.exe is to evade defenses and potentially elevate privileges, not just to execute code."
+      },
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets technique-tactic confusion: Although DLL injection can be used for persistence, the immediate action described (injecting into a running process) is more about evading detection and potentially gaining higher privileges within that process."
+      },
+      {
+        "question_text": "Initial Access (TA0001)",
+        "misconception": "Targets phase ordering error: Initial Access refers to gaining the first foothold. Process injection occurs after initial access, typically for defense evasion or privilege escalation on an already compromised system."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The malware uses DLL injection into &#39;explorer.exe&#39; by leveraging `CreateRemoteThread`, `WriteProcessMemory`, and `VirtualAllocEx`. This technique serves two primary purposes: Defense Evasion, by hiding malicious code within a legitimate process to avoid detection, and Privilege Escalation, as &#39;explorer.exe&#39; often runs with user-level privileges, and injecting into it can allow the malware to operate under those privileges or bypass sandboxing.",
+      "distractor_analysis": "Execution is too broad; while code is executed, the specific method (injection into a trusted process) points to more specific tactical goals. Persistence is a possible outcome of injection, but the act of injection itself is more directly tied to evading defenses and potentially escalating privileges. Initial Access is incorrect because injection happens after an initial compromise, not as the first entry point.",
+      "analogy": "Imagine a spy who has already entered a building (Initial Access). Instead of walking around openly, they put on a guard&#39;s uniform (Defense Evasion) and then use that uniform to access restricted areas (Privilege Escalation). The uniform itself isn&#39;t about staying in the building forever (Persistence), but about what it enables them to do once inside."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);\nLPVOID remoteBuffer = VirtualAllocEx(hProcess, NULL, dllPathSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);\nWriteProcessMemory(hProcess, remoteBuffer, dllPath, dllPathSize, NULL);\nCreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, remoteBuffer, 0, NULL);",
+        "context": "Windows API calls for DLL injection"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "ATTACK_PRIVESC",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "Which MITRE ATT&amp;CK tactic is primarily demonstrated when malware uses `VirtualAllocEx`, `WriteProcessMemory`, and `CreateRemoteThread` to inject itself into another process?",
+    "correct_answer": "Defense Evasion (TA0005) and Privilege Escalation (TA0004)",
+    "distractors": [
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets scope misunderstanding: While process injection involves execution, its primary strategic goals are to evade defenses and potentially escalate privileges by running in a trusted process, not just to execute code."
+      },
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets technique-tactic confusion: Process injection can be part of a persistence mechanism, but the act of injecting itself into another process is more directly related to evading detection and potentially gaining higher privileges."
+      },
+      {
+        "question_text": "Initial Access (TA0001)",
+        "misconception": "Targets phase ordering error: Process injection occurs after initial access has been gained and the malware is already executing on the system, not as the initial entry vector."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The use of `VirtualAllocEx`, `WriteProcessMemory`, and `CreateRemoteThread` for process injection is a common technique to inject malicious code into a legitimate process. This primarily serves Defense Evasion by hiding the malicious activity within a trusted process and can also contribute to Privilege Escalation if the target process runs with higher privileges than the injecting process.",
+      "distractor_analysis": "Execution is too broad; while code is executed, the specific method of injection points to more strategic goals. Persistence might be a follow-on goal, but the injection itself is about evading and elevating. Initial Access is incorrect as injection happens post-initial compromise.",
+      "analogy": "Think of it like a spy changing into a guard&#39;s uniform (Defense Evasion) to move freely within a secure facility, and potentially gaining access to higher-security areas (Privilege Escalation) by blending in with authorized personnel."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);\nLPVOID remoteBuffer = VirtualAllocEx(hProcess, NULL, sizeof(shellcode), MEM_COMMIT, PAGE_EXECUTE_READWRITE);\nWriteProcessMemory(hProcess, remoteBuffer, shellcode, sizeof(shellcode), NULL);\nCreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)remoteBuffer, NULL, 0, NULL);",
+        "context": "Standard Windows API calls for process injection"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "ATTACK_EVASION",
+      "ATTACK_PRIVESC"
+    ]
+  },
+  {
+    "question_text": "What is the primary purpose of the &#39;normalization module&#39; in the context of deobfuscation, as described?",
+    "correct_answer": "To generate an LLVM intermediate representation of translation blocks and apply optimizations for further analysis.",
+    "distractors": [
+      {
+        "question_text": "To unpack the binary and strip its protection loader before any other analysis.",
+        "misconception": "Targets process order error: Unpacking is mentioned as a preceding step, not the primary function of the normalization module itself."
+      },
+      {
+        "question_text": "To directly compile the obfuscated binary to C or C++ code for human readability.",
+        "misconception": "Targets scope misunderstanding: While LLVM can be compiled to C/C++, the normalization module&#39;s immediate purpose is representation and optimization, not direct compilation of the original binary."
+      },
+      {
+        "question_text": "To execute the target program in a virtual CPU (QEMU) and collect dynamic information.",
+        "misconception": "Targets component confusion: QEMU&#39;s virtual CPU is a source of dynamic information, but the normalization module *uses* this output, it doesn&#39;t perform the execution itself."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The normalization module&#39;s core function is to take the output of previous analyses (like dynamic execution via QEMU TCG) and generate an LLVM intermediate representation. This representation is then optimized, resolving imports, processing relocations, and injecting data, making it more suitable for subsequent deobfuscation and analysis of complex obfuscation mechanisms.",
+      "distractor_analysis": "Unpacking is a prerequisite step, not the normalization module&#39;s role. Direct compilation to C/C++ is a *potential outcome* of the LLVM representation, not the primary purpose of the normalization module itself. Executing the program in QEMU is a *source* of input for the normalization module, not its function.",
+      "analogy": "Think of it like a translator and editor for a complex, encrypted message. The &#39;unpacking&#39; is like decrypting the outer layer. The &#39;normalization module&#39; then takes the raw, partially decrypted message, translates it into a standardized, editable format (LLVM IR), and then cleans it up and organizes it (optimizations) so it can be properly understood and analyzed, rather than directly translating it to a final human-readable language (C/C++)."
+    },
+    "difficulty": "intermediate",
+    "question_type": "definition",
+    "prerequisites": [
+      "RE_BASICS",
+      "COMPILER_BASICS"
+    ]
+  },
+  {
+    "question_text": "What was the primary reason TDLL3, a 32-bit rootkit, evolved into the TDLL4 bootkit for 64-bit Windows systems?",
+    "correct_answer": "To bypass the Kernel-Mode Code Signing Policy by moving the infection point earlier in the boot process.",
+    "distractors": [
+      {
+        "question_text": "To gain additional privilege escalation capabilities not available to 32-bit rootkits.",
+        "misconception": "Targets scope misunderstanding: The evolution was driven by persistence and evasion on 64-bit, not new privilege escalation methods."
+      },
+      {
+        "question_text": "To improve its anti-forensic techniques, which were lacking in the TDLL3 version.",
+        "misconception": "Targets feature confusion: TDLL4 reused TDLL3&#39;s advanced evasion; the primary driver for evolution was 64-bit bypass, not anti-forensic improvement."
+      },
+      {
+        "question_text": "To infect user-mode applications more effectively on 64-bit architectures.",
+        "misconception": "Targets target confusion: Bootkits operate at a much lower level (MBR, boot process) than user-mode applications."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "TDLL3, a 32-bit rootkit, relied on modifying kernel-mode drivers for persistence. However, 64-bit Windows introduced mandatory Kernel-Mode Code Signing, preventing unsigned or modified drivers from loading. To overcome this, the developers evolved TDLL3 into TDLL4, a bootkit that infects the Master Boot Record (MBR) to gain control earlier in the boot process, before signature checks are enforced.",
+      "distractor_analysis": "The evolution was specifically to address the 64-bit code signing policy, not to gain new privilege escalation capabilities or improve anti-forensic techniques (which were already advanced). Infecting user-mode applications is not the domain of a bootkit, which operates at a much lower system level.",
+      "analogy": "Imagine a thief who used to pick a specific lock (32-bit kernel driver). When the building upgraded to a new, unpickable lock (64-bit code signing), the thief had to find a new entry point, like getting in through the basement before the new lock is even engaged (MBR infection)."
+    },
+    "code_snippets": [],
+    "difficulty": "intermediate",
+    "question_type": "analysis",
+    "prerequisites": [
+      "ATTACK_PERSIST",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "Which MITRE ATT&amp;CK tactic involves an adversary modifying the Interrupt Descriptor Table (IDT) to redirect system calls or handle exceptions for malicious purposes?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets technique-tactic confusion: While modifying the IDT involves executing code, the primary goal of such modification is to subvert OS defenses, not just to run code."
+      },
+      {
+        "question_text": "Privilege Escalation (TA0004)",
+        "misconception": "Targets capability conflation: Modifying the IDT can be part of a privilege escalation chain, but the act itself is about evading detection and control, not directly gaining higher privileges."
+      },
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets phase ordering error: Modifying the IDT can contribute to persistence, but the immediate action of subverting system functions is more aligned with evading defenses rather than maintaining access over time."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Modifying the Interrupt Descriptor Table (IDT) to redirect system calls or handle exceptions for malicious purposes, as described with examples like Shadow Walker, is a technique used by adversaries to subvert operating system controls and hide their activities. This directly aligns with the Defense Evasion tactic, which focuses on avoiding detection and analysis.",
+      "distractor_analysis": "Execution (TA0002) is too broad; while code is executed, the intent is specific to defense evasion. Privilege Escalation (TA0004) could be a subsequent goal, but the act of IDT modification itself is about evading. Persistence (TA0003) might be achieved through IDT modification, but the immediate action is to evade detection and control mechanisms.",
+      "analogy": "Imagine a burglar changing the locks on a house (Defense Evasion) so that even if the alarm goes off, the security company&#39;s response is redirected to a fake location. The act of changing the locks is to evade capture, not just to enter the house (Execution) or to stay there indefinitely (Persistence)."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "// Example (simplified) of modifying an IDT entry\nstruct idt_entry {\n    unsigned short offset_low;\n    unsigned short selector;\n    unsigned char  zero;\n    unsigned char  type_attr;\n    unsigned short offset_high;\n} __attribute__((packed));\n\nvoid *new_handler_address = (void*)0xDEADBEEF; // Malicious handler\nstruct idt_entry *idt = (struct idt_entry *)get_idt_base(); // Get IDT base address\n\n// Modify entry for interrupt 0xE (page fault)\nidt[0xE].offset_low = (unsigned short)((unsigned long)new_handler_address &amp; 0xFFFF);\nidt[0xE].offset_high = (unsigned short)(((unsigned long)new_handler_address &gt;&gt; 16) &amp; 0xFFFF);\n// Other fields like selector, type_attr would also be set appropriately",
+        "context": "Illustrative C code for direct IDT entry modification"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "To analyze a recovered hibernation file with Volatility, what critical information must first be determined from the disk image?",
+    "correct_answer": "The system&#39;s operating system version and architecture (Volatility profile)",
+    "distractors": [
+      {
+        "question_text": "The exact size of the hibernation file in bytes",
+        "misconception": "Targets scope misunderstanding: While file size is known during extraction, it&#39;s not the critical piece of information needed for Volatility&#39;s *analysis* phase."
+      },
+      {
+        "question_text": "The number of active network connections at the time of hibernation",
+        "misconception": "Targets phase confusion: Network connections are *results* of memory analysis, not a prerequisite for selecting the Volatility profile."
+      },
+      {
+        "question_text": "Whether the hibernation file was encrypted using EFS",
+        "misconception": "Targets dependency confusion: Encryption status is important for *accessing* the file, but the Volatility profile is needed for *interpreting* its contents after decryption (if applicable)."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Before Volatility can effectively analyze a hibernation file, it requires a specific profile that matches the operating system version and architecture (e.g., Win7SP0x64). This profile provides the necessary context for Volatility to correctly interpret the memory structures within the file. Without it, the analysis will be inaccurate or impossible.",
+      "distractor_analysis": "Knowing the file size is part of the acquisition process, not the analysis setup for Volatility. Active network connections are findings from the analysis, not prerequisites. While EFS encryption is a factor for accessing the file, the Volatility profile is still needed to interpret the decrypted contents.",
+      "analogy": "Imagine you have a book written in a foreign language. Before you can read and understand its contents, you first need to know which language it&#39;s written in so you can use the correct dictionary and grammar rules. The Volatility profile is like that language definition for the memory dump."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "reglookup -p &quot;Microsoft/Windows NT/CurrentVersion&quot; /media/external/software | grep ProductName\nreglookup -p &quot;ControlSet001/Control/Session Manager/Environment/PROCESSOR_ARCHITECTURE&quot; /media/external/system",
+        "context": "Commands to query registry hives for OS version and architecture"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "procedure",
+    "prerequisites": [
+      "DIGITAL_FORENSICS",
+      "OS_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which MITRE ATT&amp;CK tactic does &#39;Remote DLL Injection&#39; primarily serve when an adversary uses it to force a legitimate process to load a malicious DLL?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets technique-tactic confusion: While injection involves execution, the primary goal of injecting into another process is to evade detection, not just to execute code."
+      },
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets scope misunderstanding: Remote DLL injection can be used for persistence, but its immediate and primary function is to evade defenses by operating within a trusted process."
+      },
+      {
+        "question_text": "Privilege Escalation (TA0004)",
+        "misconception": "Targets capability conflation: Injection can sometimes lead to privilege escalation, but the core mechanism of operating within another process is for defense evasion, not necessarily to gain higher privileges."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Remote DLL Injection, as described, involves forcing a legitimate process to perform actions on behalf of malware. This technique primarily falls under Defense Evasion because it allows the malware to operate from within the context of a trusted process, making it harder for security tools to detect its malicious activity.",
+      "distractor_analysis": "Execution is a component of injection, but not its primary strategic goal in this context. Persistence might be a follow-on objective, but the act of injecting into another process is first and foremost about evading defenses. Privilege Escalation is a possible outcome but not the direct tactical classification of the injection itself.",
+      "analogy": "Think of it like a spy wearing a legitimate uniform to blend in with enemy forces. The act of wearing the uniform (injection) is for evasion, even if their ultimate goal is to carry out a mission (execution) or gain access to restricted areas (privilege escalation)."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, target_pid);\nLPVOID remote_buffer = VirtualAllocEx(hProcess, NULL, dll_path_len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);\nWriteProcessMemory(hProcess, remote_buffer, dll_path, dll_path_len, NULL);\nHANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, remote_buffer, 0, NULL);",
+        "context": "Illustrative C code for remote DLL injection steps"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "When analyzing a memory dump for process hollowing, what is the primary indicator that an `lsass.exe` process has been tampered with, even if its command line and ImageBase appear legitimate?",
+    "correct_answer": "Discrepancies between the PEB&#39;s module lists and the VAD&#39;s memory-mapped files for the ImageBase region.",
+    "distractors": [
+      {
+        "question_text": "The process&#39;s creation time is significantly later than other `lsass.exe` instances.",
+        "misconception": "Targets superficial analysis: While creation time can be suspicious, the source explicitly states it&#39;s not a definitive indicator and can be misleading."
+      },
+      {
+        "question_text": "The `lsass.exe` process has an unusually high number of threads or handles.",
+        "misconception": "Targets generic anomaly detection: High thread/handle counts can indicate malicious activity, but they are not specific to the process hollowing technique described, which focuses on code replacement."
+      },
+      {
+        "question_text": "The command line arguments for `lsass.exe` contain unusual or unexpected parameters.",
+        "misconception": "Targets command line focus: The source explicitly states that the advertised command line paths are the same, making this an unreliable indicator for the described hollowing technique."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process hollowing involves replacing the legitimate code of a process with malicious code. While the initial process creation (including PEB data like ImageBase and command line) might appear normal, the key indicator of hollowing is that the memory region where the original executable was mapped (ImageBase) no longer corresponds to the actual file on disk in the Virtual Address Descriptor (VAD) entries. The PEB&#39;s module lists, however, still retain the metadata of the original mapping, creating a detectable discrepancy.",
+      "distractor_analysis": "Creation time can be misleading as the source notes. High thread/handle counts are general indicators of suspicious activity, not specific to process hollowing. Unusual command line arguments would be a strong indicator of compromise, but the source states that for the described hollowing, the command lines appear legitimate.",
+      "analogy": "Imagine a book where the cover and title page are correct, but the actual content inside has been completely replaced with a different story. The cover (command line/ImageBase) looks fine, but if you check the library&#39;s record of what&#39;s supposed to be on those pages (PEB module lists) against what&#39;s actually there (VAD memory mapping), you&#39;d find a mismatch."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "$ python vol.py -f stuxnet.vmem ldrmodules --profile=WinXPSP3x86 -p 1928",
+        "context": "Volatility command to detect discrepancies in loaded modules for a hollowed process."
+      },
+      {
+        "language": "bash",
+        "code": "$ python vol.py -f stuxnet.vmem --profile=WinXPSP3x86 vadinfo -p 1928 --addr=0x01000000",
+        "context": "Volatility command to inspect VAD information for the ImageBase of a suspicious process."
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "analysis",
+    "prerequisites": [
+      "NET_BASICS",
+      "ATTACK_RECON"
+    ]
+  },
+  {
+    "question_text": "An adversary uses a tool like SetRegTime to modify registry key timestamps to dates far in the future. Which MITRE ATT&amp;CK tactic does this activity primarily fall under?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets scope misunderstanding: While persistence often involves registry modifications, the act of falsifying timestamps is specifically to hide activity, not to maintain access."
+      },
+      {
+        "question_text": "Impact (TA0040)",
+        "misconception": "Targets phase confusion: Impact involves disrupting or destroying systems/data. Timestamp modification is about hiding, not directly causing impact."
+      },
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets mechanism vs. goal: The tool executes, but the strategic goal of changing timestamps is to evade detection, not merely to run code."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Modifying registry key timestamps to obscure the true time of an event is an anti-forensics technique. This action is taken to avoid detection and hinder forensic analysis, which directly aligns with the Defense Evasion tactic in MITRE ATT&amp;CK. The goal is to hide malicious activity from timeline-based analysis.",
+      "distractor_analysis": "Persistence involves maintaining access, which is not the primary goal of timestamp modification. Impact refers to actions that disrupt or destroy, which is not what timestomping achieves. Execution is the means by which the timestamps are changed, but it&#39;s not the strategic objective of the adversary in this context.",
+      "analogy": "Think of it like a burglar wiping their fingerprints off a doorknob. They&#39;ve already entered (execution/initial access), but wiping the prints (timestomping) is done to avoid being caught (defense evasion), not to stay in the house longer (persistence) or to damage it (impact)."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "$ python vol.py -f XPSP3x86.vmem --profile=WinXPSP3x86 shellbags\n# ... output showing &#39;Last updated: 3024-05-21 00:00:00&#39;",
+        "context": "Example of memory forensics tool revealing a timestomped registry key"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EVASION",
+      "ATTACK_PERSIST"
+    ]
+  },
+  {
+    "question_text": "When analyzing memory with Volatility&#39;s `timers` plugin, what does an &#39;UNKNOWN&#39; module associated with a timer routine often indicate?",
+    "correct_answer": "A hidden or obfuscated kernel module, potentially malicious, attempting to evade detection.",
+    "distractors": [
+      {
+        "question_text": "A legitimate system process that Volatility could not identify due to insufficient symbols.",
+        "misconception": "Targets tool limitation confusion: While symbol issues can occur, &#39;UNKNOWN&#39; in this context specifically points to anti-forensic techniques, not just general symbol problems."
+      },
+      {
+        "question_text": "A timer routine that has been deallocated from memory and is no longer active.",
+        "misconception": "Targets state confusion: The presence of the timer entry itself indicates it was active or recently active; &#39;UNKNOWN&#39; refers to the module&#39;s identity, not its state."
+      },
+      {
+        "question_text": "A benign application&#39;s timer that is running in user-mode space, not kernel space.",
+        "misconception": "Targets scope misunderstanding: Kernel timers operate in kernel space; &#39;UNKNOWN&#39; refers to a kernel module, not a user-mode application."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `timers` plugin in Volatility lists kernel timers and their associated modules. When a timer routine points to an &#39;UNKNOWN&#39; module, it&#39;s a strong indicator that the module is employing anti-forensic techniques to hide its identity, a common characteristic of rootkits and other sophisticated malware like ZeroAccess or Rustock.C.",
+      "distractor_analysis": "While symbol issues can sometimes lead to unidentified modules, the context of malware analysis and anti-forensic techniques specifically points to malicious hiding. A deallocated timer would likely not appear in the active timer list. Kernel timers are inherently kernel-mode objects, so user-mode applications are not directly relevant to an &#39;UNKNOWN&#39; kernel module.",
+      "analogy": "Imagine a car parked in a restricted area with its license plates removed and VIN scratched out. You know a car is there, but its identity is hidden, strongly suggesting illicit activity rather than a simple registration error."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "python vol.py -f zeroaccess2.vmem timers",
+        "context": "Command to list kernel timers using Volatility"
+      },
+      {
+        "language": "powershell",
+        "code": "Offset      DueTime      Period(ms)  Signaled  Routine      Module\n0xb20bbbbb0 0x00000084:0xd4de72d2 60000     Yes        0xb20b5990   UNKNOWN",
+        "context": "Example output showing an &#39;UNKNOWN&#39; module"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "analysis",
+    "prerequisites": [
+      "ATTACK_EVASION",
+      "ATTACK_PERSIST"
+    ]
+  },
+  {
+    "question_text": "An adversary modifies the `file_operations` structure to hide a malicious file from forensic analysis tools. Which MITRE ATT&amp;CK tactic does this activity primarily fall under?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets scope confusion: While hiding files can aid persistence, the direct action of modifying `file_operations` to avoid detection is primarily defense evasion, not establishing persistence itself."
+      },
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets mechanism vs. objective: Modifying `file_operations` is a method of evasion, not the act of executing malicious code. Execution would typically precede or follow this."
+      },
+      {
+        "question_text": "Privilege Escalation (TA0004)",
+        "misconception": "Targets capability conflation: Modifying kernel structures often requires elevated privileges, but the act of hiding is not privilege escalation itself. Privilege escalation would be a prerequisite."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Modifying the `file_operations` structure to hide malicious files from forensic analysis tools is a classic rootkit technique aimed at preventing detection. This directly aligns with the Defense Evasion tactic, which focuses on techniques adversaries use to avoid detection throughout the attack lifecycle.",
+      "distractor_analysis": "Persistence involves maintaining access, which hiding files can support, but the direct action is evasion. Execution refers to running code, not hiding it. Privilege Escalation is about gaining higher permissions, which might be needed to modify kernel structures, but the modification itself for hiding is evasion.",
+      "analogy": "Think of it like a burglar painting over a security camera lens. The act of painting (modifying `file_operations`) is to avoid being seen (defense evasion), not to get into the house (initial access) or to stay in the house (persistence)."
+    },
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EVASION",
+      "ATTACK_PERSIST"
+    ]
+  },
+  {
+    "question_text": "An adversary uses `ld -r` to combine `dummy.ko` and `helper.ko` into `p2.ko`, then loads `p2.ko` into the kernel to bypass `/dev/mem` restrictions. Which MITRE ATT&amp;CK tactic does loading `p2.ko` primarily fall under?",
+    "correct_answer": "Defense Evasion (TA0005)",
+    "distractors": [
+      {
+        "question_text": "Execution (TA0002)",
+        "misconception": "Targets technique-tactic confusion: While loading a kernel module involves execution, the primary goal here is to bypass a system defense mechanism, not just run code."
+      },
+      {
+        "question_text": "Privilege Escalation (TA0004)",
+        "misconception": "Targets scope misunderstanding: Bypassing `/dev/mem` restrictions grants broader access, but the immediate action is evading a defense, not necessarily gaining higher privileges than already possessed to load a kernel module."
+      },
+      {
+        "question_text": "Persistence (TA0003)",
+        "misconception": "Targets objective confusion: The module is designed to be unloaded immediately after patching, indicating a temporary defense evasion rather than long-term access."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The primary purpose of loading `p2.ko` is to modify the `devmem_is_allowed` function, effectively bypassing the `/dev/mem` restriction. This action directly circumvents a system defense, which aligns with the Defense Evasion tactic. The module is designed to unload itself immediately after patching, further emphasizing its role in evasion rather than persistence or execution as a standalone goal.",
+      "distractor_analysis": "Execution is a component of loading any module, but it&#39;s not the strategic objective here. Privilege Escalation might be an eventual outcome of having `/dev/mem` unrestricted, but the act of bypassing the restriction itself is defense evasion. Persistence is incorrect because the module is designed to unload, an anti-forensics technique, not to maintain access.",
+      "analogy": "This is like a burglar disabling an alarm system (Defense Evasion) before entering a building. While they are &#39;executing&#39; the act of disabling, the strategic goal is to bypass a security measure, not just to perform an action."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "insmod p2.ko 2&gt;&amp;1",
+        "context": "Command to load the kernel module p2.ko"
+      },
+      {
+        "language": "c",
+        "code": "int init_module(void) {\n    // ... patch devmem_is_allowed ...\n    return -3; // Causes module to unload immediately\n}",
+        "context": "Illustrative C code for a kernel module designed for immediate unload after patching"
+      }
+    ],
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EXPLOIT",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "Which anti-forensics technique can a kernel extension use to evade detection by pattern-based scanners that rely on Mach-O headers?",
+    "correct_answer": "Overwriting its Mach-O header after loading",
+    "distractors": [
+      {
+        "question_text": "Manipulating the kernel&#39;s linked module list",
+        "misconception": "Targets scope confusion: While manipulating linked lists is a rootkit technique, it&#39;s detected by comparing with carved extensions, not by pattern-based scanners relying on headers."
+      },
+      {
+        "question_text": "Using `g_kext_map` to hide its presence",
+        "misconception": "Targets misunderstanding of defense vs. offense: `g_kext_map` is a forensic artifact used to DETECT hidden kexts, not a method for rootkits to hide."
+      },
+      {
+        "question_text": "Encrypting the kernel extension on disk",
+        "misconception": "Targets irrelevant technique: Disk encryption is not relevant to evading detection of a loaded kernel extension in memory by pattern-based scanners looking for Mach-O headers."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The text explicitly states that a kernel extension can overwrite its Mach-O header after loading. This anti-forensics technique breaks carving methods that rely on finding the Mach-O header as a signature, as the signature is no longer present or is corrupted.",
+      "distractor_analysis": "Manipulating the linked module list is a common rootkit technique, but the question specifically asks about evading &#39;pattern-based scanners&#39; that look for Mach-O headers. `g_kext_map` is a forensic method to find hidden kexts, not a hiding mechanism. Encrypting on disk is irrelevant to memory-based detection of a loaded kext&#39;s header.",
+      "analogy": "Imagine a book with a unique cover (Mach-O header). If someone tears off the cover after the book is placed on a shelf, it becomes much harder to identify it by its cover design, even if the book&#39;s content is still readable."
+    },
+    "difficulty": "intermediate",
+    "question_type": "attack",
+    "prerequisites": [
+      "ATTACK_EVASION",
+      "ATTACK_PERSIST"
+    ]
+  }
+]

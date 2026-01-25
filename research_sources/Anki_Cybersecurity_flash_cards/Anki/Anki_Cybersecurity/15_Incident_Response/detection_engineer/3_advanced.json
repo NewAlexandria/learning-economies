@@ -1,0 +1,188 @@
+[
+  {
+    "question_text": "To detect a Time-of-Check to Time-of-Use (TOCTOU) race condition vulnerability being exploited, which detection approach is MOST challenging due to the nature of the attack?",
+    "correct_answer": "Monitoring for rapid, successive changes to a resource between validation and use by a kernel process",
+    "distractors": [
+      {
+        "question_text": "Identifying kernel panics or deadlocks caused by incorrect lock release",
+        "misconception": "Targets consequence vs. exploitation: Students may focus on the *result* of a race condition (panic/deadlock) rather than the *exploitation* of a TOCTOU vulnerability, which might not always lead to such overt system failures."
+      },
+      {
+        "question_text": "Analyzing system call logs for repeated access to the same user-land data by a kernel process",
+        "misconception": "Targets insufficient granularity: While system call logs might show repeated access, they often lack the micro-temporal resolution needed to definitively identify the &#39;window&#39; of a TOCTOU race condition, especially if the re-access is legitimate."
+      },
+      {
+        "question_text": "Detecting unusual process attachment attempts to a process about to gain elevated privileges",
+        "misconception": "Targets specific race condition type: Students may conflate TOCTOU with other race condition examples given (like the process privilege elevation window), which are distinct scenarios, not the general TOCTOU pattern."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "TOCTOU vulnerabilities involve a kernel path validating user-land data, and then later using it without revalidation, creating a small window where an attacker can modify the data. Detecting this requires extremely high-resolution monitoring of resource state changes and kernel access patterns, often at a sub-millisecond level, which is difficult to achieve with standard logging or SIEM solutions.",
+      "distractor_analysis": "Kernel panics/deadlocks are consequences, not the direct exploitation of a TOCTOU. System call logs might show access but lack the temporal precision for TOCTOU. Unusual process attachment is a different type of race condition, not the core TOCTOU pattern.",
+      "analogy": "It&#39;s like trying to catch someone swapping a price tag on an item between the cashier scanning it and the system confirming the price – the window is tiny and requires very precise observation."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "ATTACK_EXPLOIT"
+    ]
+  },
+  {
+    "question_text": "To detect potential firewall bypass attempts using tunneling or VPN services, which detection approach would be MOST effective for a security engineer?",
+    "correct_answer": "Monitoring network traffic for unusual protocols or encrypted tunnels on non-standard ports, and correlating with firewall logs for blocked connections.",
+    "distractors": [
+      {
+        "question_text": "Regularly reviewing firewall configuration rules for misconfigurations or overly permissive policies.",
+        "misconception": "Targets prevention vs. detection confusion: While important for prevention, this is a proactive configuration review, not a real-time detection of an active bypass attempt."
+      },
+      {
+        "question_text": "Implementing an Intrusion Prevention System (IPS) to block all encrypted traffic at the network perimeter.",
+        "misconception": "Targets over-blocking/false positive confusion: Blocking all encrypted traffic is impractical and would cause significant business disruption, leading to high false positives and operational issues."
+      },
+      {
+        "question_text": "Analyzing endpoint logs for the installation of new VPN client software.",
+        "misconception": "Targets limited scope confusion: This only detects client-side VPN installations, missing tunneling techniques that don&#39;t require new software or VPNs initiated from compromised internal systems."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Firewall bypass attempts using tunneling or VPN services often involve encapsulating traffic in unusual protocols or using standard VPN protocols over non-standard ports to evade detection. Monitoring network traffic for these anomalies, combined with analyzing firewall logs for connections that were initially blocked but then successfully re-attempted via a tunnel, provides a strong indicator of a bypass attempt. This requires deep packet inspection capabilities and correlation across network and firewall logs.",
+      "distractor_analysis": "Reviewing firewall rules is a preventative measure, not a detection mechanism for active bypasses. Blocking all encrypted traffic is an impractical and disruptive approach. Relying solely on endpoint logs for VPN client installation misses many tunneling techniques and VPNs that don&#39;t require new client software.",
+      "analogy": "It&#39;s like a security guard (firewall) checking IDs at the main gate, but also having a separate patrol (network monitoring) looking for people trying to sneak in through a hidden tunnel (unusual protocols/ports) after being turned away at the gate."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "NET_BASICS",
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG"
+    ]
+  },
+  {
+    "question_text": "To detect the presence of an SMM-based rootkit that injects a malicious Ring 0 module, which detection strategy is MOST challenging due to the rootkit&#39;s operational level?",
+    "correct_answer": "Monitoring for unexpected kernel module loads or modifications from within the operating system",
+    "distractors": [
+      {
+        "question_text": "Analyzing user-mode application behavior for unusual process injection or API hooking",
+        "misconception": "Targets scope confusion: Students may focus on user-mode artifacts, but SMM operates at a lower level, making user-mode analysis insufficient for direct SMM detection."
+      },
+      {
+        "question_text": "Scanning for unsigned kernel drivers using standard kernel-mode security tools",
+        "misconception": "Targets bypass confusion: Students may assume standard kernel-mode tools are effective, but SMM can bypass kernel-level security, including signing policies, by injecting after checks."
+      },
+      {
+        "question_text": "Detecting modifications to the Master Boot Record (MBR) or Volume Boot Record (VBR)",
+        "misconception": "Targets attack vector confusion: Students may conflate SMM rootkits with traditional bootkits that modify MBR/VBR, but SMM operates at a lower level and can inject later in the boot process or even post-boot."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "SMM-based rootkits operate at a privilege level (Ring -2) below the operating system kernel (Ring 0). This allows them to inject malicious Ring 0 modules into the OS kernel, potentially after integrity checks like Secure Boot have completed, and to protect that code from detection by kernel-level security tools. Therefore, monitoring for these injections from within the OS is extremely difficult as the SMM rootkit can manipulate what the OS sees.",
+      "distractor_analysis": "User-mode analysis is too high-level to detect an SMM rootkit directly. Standard kernel-mode security tools are often bypassed by SMM threats. MBR/VBR modifications are characteristic of traditional bootkits, not necessarily SMM rootkits, which can inject at different points.",
+      "analogy": "Trying to detect a saboteur who controls the security cameras by watching the camera feed itself. The saboteur can simply hide their actions from the cameras they control."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "FRAMEWORK_MITRE"
+    ]
+  },
+  {
+    "question_text": "To detect the presence of a malicious kernel-mode driver creating a hidden filesystem, which type of system activity would be MOST indicative of this behavior?",
+    "correct_answer": "Direct interaction with the OS storage device driver stack by an unauthorized kernel module, bypassing standard OS filesystem drivers.",
+    "distractors": [
+      {
+        "question_text": "Unusual file access patterns by user-mode applications to standard filesystem locations.",
+        "misconception": "Targets scope confusion: Students might focus on user-mode activity, but the core detection challenge for hidden filesystems is in kernel-mode driver interaction, which bypasses user-mode visibility."
+      },
+      {
+        "question_text": "High CPU utilization by the OS filesystem driver due to increased I/O operations.",
+        "misconception": "Targets performance metric confusion: While I/O might increase, focusing on generic performance metrics misses the specific low-level driver interaction that characterizes a hidden filesystem."
+      },
+      {
+        "question_text": "Detection of a new, unsigned driver loading into the kernel, regardless of its interaction with storage.",
+        "misconception": "Targets partial detection: While an unsigned driver is suspicious, it doesn&#39;t specifically confirm hidden filesystem activity. The key is its interaction with the storage stack, not just its presence."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "A malicious kernel-mode driver creating a hidden filesystem operates by directly interfacing with the OS storage device driver stack. This bypasses the standard OS filesystem drivers, making its storage operations invisible to typical file system monitoring. Detecting this requires monitoring for unauthorized kernel modules performing low-level disk I/O or hooking into the storage stack.",
+      "distractor_analysis": "Unusual user-mode file access patterns would not reveal a hidden filesystem, as the malware&#39;s payload communicates with the hidden storage via its own kernel-mode driver, not through standard OS filesystem calls. High CPU utilization is a generic indicator and doesn&#39;t pinpoint the specific mechanism of a hidden filesystem. While an unsigned driver is a strong indicator of compromise, it doesn&#39;t specifically confirm hidden filesystem activity; the critical aspect is its direct, unauthorized interaction with the storage stack.",
+      "analogy": "Imagine a secret compartment in a house. You wouldn&#39;t find it by checking what&#39;s in the visible rooms (user-mode applications) or by listening for general noise (CPU utilization). You&#39;d need to look for unusual construction or direct access to the building&#39;s foundation (kernel-mode driver interacting with the storage stack)."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "FRAMEWORK_MITRE"
+    ]
+  },
+  {
+    "question_text": "An attacker has compromised the System Management Mode (SMM) and wants to prevent a software-based BIOS firmware acquisition from obtaining a true image. Which specific SPI register manipulation allows the attacker to achieve this by injecting forged data?",
+    "correct_answer": "Setting the FSMIE bit in the HSFC register before the acquisition software sets the FGO bit, then modifying FDATA[X] registers during the triggered SMI.",
+    "distractors": [
+      {
+        "question_text": "Modifying the FADDR register to point to an invalid memory region, causing the read operation to fail.",
+        "misconception": "Targets operational flow confusion: While FADDR manipulation could cause failure, it wouldn&#39;t allow the injection of forged data, which is the core of the described attack."
+      },
+      {
+        "question_text": "Continuously setting the SCIP bit in the HSFS register to indicate an ongoing flash cycle, preventing the acquisition from completing.",
+        "misconception": "Targets status register misunderstanding: SCIP is set by the hardware when FGO is set; an attacker cannot arbitrarily keep it set to prevent completion without causing other system instability or being detected."
+      },
+      {
+        "question_text": "Altering the FDBC field in the HSFC register to read zero bytes, effectively bypassing the data transfer.",
+        "misconception": "Targets data transfer mechanism confusion: Setting FDBC to zero bytes would prevent data transfer, but not allow the attacker to inject forged data into the FDATA[X] registers for the acquisition software to read."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The described attack leverages the FSMIE (flash SPI SMI# enable) bit in the HSFC register. By setting this bit, the attacker ensures that a System Management Interrupt (SMI) is triggered once the flash cycle completes. Since the attacker has already compromised SMM, they gain control during this SMI. At this point, they can modify the contents of the FDATA[X] registers with forged values before the legitimate firmware acquisition software reads them, thus subverting the acquisition.",
+      "distractor_analysis": "Modifying FADDR would likely cause a read error or read incorrect data, but not allow the attacker to actively inject forged data into the FDATA[X] registers. Continuously setting SCIP is not how the register works; it&#39;s a status bit set by hardware. Altering FDBC to zero bytes would prevent any data from being read, but again, doesn&#39;t allow for the injection of forged data.",
+      "analogy": "This is like a thief intercepting a message, altering its content, and then letting it continue to its destination, rather than simply destroying the message or sending it to the wrong address."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "ATTACK_EXPLOIT",
+      "DEFENSE_LOG"
+    ]
+  },
+  {
+    "question_text": "To detect a DLL that has been hidden by unlinking its `_LDR_DATA_TABLE_ENTRY` from the `LoadOrderList`, `MemoryOrderList`, or `InitOrderList` within a process&#39;s PEB, which memory forensics technique is MOST effective?",
+    "correct_answer": "Comparing the DLLs enumerated via the PEB&#39;s Ldr lists against the DLLs identified by scanning process memory for MZ headers",
+    "distractors": [
+      {
+        "question_text": "Monitoring for `LoadLibrary` API calls in the process&#39;s call stack",
+        "misconception": "Targets runtime vs. post-compromise confusion: This detects DLL loading, but not the subsequent unlinking for hiding. A hidden DLL would have already been loaded."
+      },
+      {
+        "question_text": "Checking for `ZwUnmapViewOfSection` calls in kernel logs",
+        "misconception": "Targets wrong API/log source: `ZwUnmapViewOfSection` is for unmapping memory sections, not unlinking DLL metadata. Kernel logs wouldn&#39;t directly show user-mode PEB manipulation."
+      },
+      {
+        "question_text": "Analyzing network traffic for unusual DLL download activity",
+        "misconception": "Targets wrong detection phase/source: This detects initial delivery, not the in-memory hiding technique. A DLL could be hidden regardless of how it was delivered."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Malware can hide loaded DLLs by unlinking their `_LDR_DATA_TABLE_ENTRY` from the PEB&#39;s doubly linked lists (`LoadOrderList`, `MemoryOrderList`, `InitOrderList`). This makes the DLL invisible to standard Windows API calls that enumerate loaded modules. The most effective detection technique involves scanning the entire process memory space for valid MZ headers (the signature of a PE file/DLL) and comparing this &#39;raw&#39; list of modules against the &#39;official&#39; list obtained by traversing the PEB&#39;s Ldr lists. Any DLL found in memory but not in the Ldr lists is a strong indicator of a hidden module.",
+      "distractor_analysis": "Monitoring `LoadLibrary` calls would show the DLL being loaded, but not its subsequent hiding. `ZwUnmapViewOfSection` is unrelated to unlinking LDR entries. Analyzing network traffic detects delivery, not the in-memory hiding technique itself.",
+      "analogy": "It&#39;s like comparing a library&#39;s official catalog (PEB lists) with a physical scan of all the books on the shelves (memory scan for MZ headers). Any book on a shelf but not in the catalog is hidden."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "ATTACK_EVASION"
+    ]
+  }
+]

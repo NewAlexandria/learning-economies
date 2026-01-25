@@ -1,0 +1,270 @@
+[
+  {
+    "question_text": "When performing reconnaissance against a target organization, which Nmap command option is specifically designed to quickly identify live hosts on a subnet without performing a full port scan?",
+    "correct_answer": "nmap -sn",
+    "distractors": [
+      {
+        "question_text": "nmap -A",
+        "misconception": "Targets Nmap option confusion: Student might associate &#39;-A&#39; with &#39;all&#39; or &#39;aggressive&#39; and think it includes host discovery, not realizing it&#39;s for OS detection, version detection, script scanning, and traceroute."
+      },
+      {
+        "question_text": "nmap -O",
+        "misconception": "Targets Nmap option confusion: Student might confuse &#39;-O&#39; (OS detection) with a general host discovery option, not understanding its specific purpose."
+      },
+      {
+        "question_text": "nmap -sV",
+        "misconception": "Targets Nmap option confusion: Student might think &#39;-sV&#39; (version detection) implies host discovery, not realizing it&#39;s for identifying service versions on already discovered open ports."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `nmap -sn` command (formerly `-sP`) performs a &#39;ping scan&#39; or &#39;no port scan&#39;. Its primary purpose is to determine which hosts are online and responsive on a target network without sending any actual port scanning probes. It achieves this by sending ICMP echo requests, TCP SYN packets to common ports, and/or TCP ACK packets, depending on privileges and target configuration.",
+      "distractor_analysis": "`nmap -A` is an aggressive scan that includes OS detection, version detection, script scanning, and traceroute, which is much more intrusive and time-consuming than simply identifying live hosts. `nmap -O` is specifically for OS detection. `nmap -sV` is for service version detection and requires open ports to be found first.",
+      "analogy": "Imagine you&#39;re trying to find out which houses on a street have people home. Using `nmap -sn` is like knocking on the door once to see if anyone answers. Using `-A`, `-O`, or `-sV` would be like trying to guess what kind of car is in the garage or what brand of TV they own, which is far more detailed than just knowing if someone is home."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "nmap -sn 192.168.1.0/24",
+        "context": "Example of using nmap -sn to discover live hosts on a /24 subnet."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "NETWORK_SCANNING_BASICS",
+      "NMAP_FUNDAMENTALS"
+    ]
+  },
+  {
+    "question_text": "To minimize exposure to DNS server fingerprinting attempts, which configuration change is MOST effective for a BIND DNS administrator?",
+    "correct_answer": "Modify the &#39;version&#39; string in named.conf to return a generic or misleading value",
+    "distractors": [
+      {
+        "question_text": "Block all &#39;dig&#39; queries to the DNS server",
+        "misconception": "Targets operational misunderstanding: Student believes blocking a common diagnostic tool is a viable security measure, not realizing it would break legitimate DNS resolution."
+      },
+      {
+        "question_text": "Implement DNSSEC to encrypt all query responses",
+        "misconception": "Targets protocol confusion: Student conflates DNSSEC&#39;s integrity and authenticity features with encryption, and misunderstands that DNSSEC does not encrypt query responses to hide version information."
+      },
+      {
+        "question_text": "Change the default DNS port from 53 to a high, ephemeral port",
+        "misconception": "Targets network protocol misunderstanding: Student believes changing the port will hide the service, not realizing DNS relies on standard port 53 for client resolution and that port scanning would still reveal the service."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Disabling or modifying the &#39;version&#39; string in the named.conf file prevents attackers from easily querying the BIND server for its exact version and operating system details using &#39;dig version.bind chaos txt&#39;. While not a perfect solution, it removes an immediate and direct method of reconnaissance.",
+      "distractor_analysis": "Blocking all &#39;dig&#39; queries would render the DNS server unusable for legitimate resolution. DNSSEC provides data integrity and authentication, not encryption of query responses, so it wouldn&#39;t hide version information. Changing the default DNS port would break standard DNS resolution and is easily discoverable via port scanning.",
+      "analogy": "Like removing the nameplate from a building&#39;s entrance. It doesn&#39;t stop someone from eventually figuring out what the building is, but it prevents them from knowing immediately upon arrival."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "dig @192.168.1.15 version.bind chaos txt",
+        "context": "Command used by an attacker to query BIND version information."
+      },
+      {
+        "language": "text",
+        "code": "options {\n    version &quot;Unknown&quot;;\n};",
+        "context": "Snippet from named.conf showing how to modify the version string."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "defense",
+    "prerequisites": [
+      "DNS_FUNDAMENTALS",
+      "BIND_CONFIGURATION"
+    ]
+  },
+  {
+    "question_text": "To bypass AMSI detection of a known malicious string in a PowerShell script, the MOST effective initial technique to attempt is:",
+    "correct_answer": "Splitting the malicious string into multiple parts and concatenating them at runtime",
+    "distractors": [
+      {
+        "question_text": "Encrypting the entire script with a custom key and decrypting it in memory",
+        "misconception": "Targets complexity over simplicity: Student assumes a more complex solution is always better, overlooking simpler, often effective, string-based evasions for AMSI."
+      },
+      {
+        "question_text": "Using a different scripting language like Python or VBScript",
+        "misconception": "Targets scope misunderstanding: Student confuses language-specific AMSI bypasses with general language changes, not realizing AMSI can scan content from various sources, and the issue is the string, not the language itself."
+      },
+      {
+        "question_text": "Modifying the AMSI provider&#39;s DLL in memory to disable scanning",
+        "misconception": "Targets advanced technique over basic evasion: Student jumps to a complex, high-risk memory patching technique, which is often detected by EDR, instead of a simpler content-based evasion."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "AMSI often flags specific malicious strings. By breaking these strings into smaller, benign-looking parts and then reassembling them using concatenation operators (e.g., `+` in PowerShell) at runtime, the original malicious string is not present in its entirety for AMSI to detect during the initial scan. Many AMSI providers, including Microsoft&#39;s, may not fully emulate language features like string concatenation to reconstruct the original string.",
+      "distractor_analysis": "Encrypting the entire script is a more complex technique that requires a decryption stub, which itself might be flagged, and is often overkill for simple string detection. Switching languages doesn&#39;t address the core issue of the malicious string being present in the content that AMSI scans. Modifying the AMSI provider DLL is a more advanced and risky technique (AMSI bypass) that involves memory patching, which is often heavily monitored by EDRs and is not the &#39;initial&#39; or &#39;simplest&#39; bypass for string detection.",
+      "analogy": "Imagine a security guard looking for a specific phrase on a sign. If you break the phrase into individual words and put them on separate small signs, the guard might not recognize the full phrase until they are all put together, which happens after the initial check."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "PS &gt; &quot;Ams&quot; + &quot;iS&quot; + &quot;can&quot; + &quot;Buff&quot; + &quot;er&quot;",
+        "context": "Example of string concatenation in PowerShell to evade AMSI detection of &#39;AmsiScanBuffer&#39;"
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "attack",
+    "prerequisites": [
+      "POWERSHELL_BASICS",
+      "AMSI_FUNDAMENTALS"
+    ]
+  },
+  {
+    "question_text": "When performing dynamic analysis of malware, what is the primary advantage over basic static analysis?",
+    "correct_answer": "It allows observation of the malware&#39;s true functionality during execution.",
+    "distractors": [
+      {
+        "question_text": "It guarantees the execution of all possible code paths within the malware.",
+        "misconception": "Targets scope misunderstanding: Student believes dynamic analysis inherently covers all functionality, not realizing conditional code paths might be missed without specific inputs."
+      },
+      {
+        "question_text": "It completely eliminates the risk to the analysis environment.",
+        "misconception": "Targets safety misconception: Student incorrectly assumes dynamic analysis is risk-free, overlooking the inherent dangers of executing malicious code."
+      },
+      {
+        "question_text": "It is always faster and less resource-intensive than static analysis.",
+        "misconception": "Targets efficiency misconception: Student confuses efficiency in identifying functionality with overall speed, not considering setup time or the need for advanced dynamic techniques."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Dynamic analysis involves executing the malware and observing its behavior in a controlled environment. This allows analysts to see exactly what actions the malware performs, such as file modifications, network communications, or process injections, which might be obscured or difficult to infer from static code analysis alone, especially with obfuscated or packed samples.",
+      "distractor_analysis": "Dynamic analysis does not guarantee all code paths will execute; specific inputs or conditions might be required to trigger certain functionalities. Executing malware always carries a risk, even in isolated environments. While dynamic analysis can efficiently reveal functionality, the setup and monitoring can be resource-intensive, and it&#39;s not always faster than basic static checks.",
+      "analogy": "It&#39;s like watching a play versus reading the script. The script tells you what *could* happen, but watching the play shows you exactly what *does* happen, including improvisations or subtle actions not explicitly detailed in the script."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "MALWARE_ANALYSIS_BASICS"
+    ]
+  },
+  {
+    "question_text": "When beginning malware analysis, what is the MOST effective initial step to gain insight into a malicious application&#39;s true behavior, especially considering anti-analysis techniques?",
+    "correct_answer": "Reviewing existing logs, alerts, and packet captures from real network environments where the malware was active.",
+    "distractors": [
+      {
+        "question_text": "Immediately executing the malware in a sandboxed lab environment to observe its dynamic behavior.",
+        "misconception": "Targets anti-analysis ignorance: Student overlooks that malware can detect and alter behavior in lab environments, leading to an incomplete or misleading analysis."
+      },
+      {
+        "question_text": "Disassembling the malware&#39;s executable to perform static analysis on its code structure.",
+        "misconception": "Targets analysis order confusion: Student prioritizes deep technical analysis over initial contextual gathering, missing the advantage of real-world data for guiding static analysis."
+      },
+      {
+        "question_text": "Performing a quick scan with antivirus software to identify known signatures and classifications.",
+        "misconception": "Targets superficial analysis: Student relies on automated tools for initial assessment, which may miss novel threats or provide insufficient detail for in-depth analysis."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Analyzing existing data like logs, alerts, and packet captures from real network environments provides the most transparent view of malware&#39;s true behavior. This approach bypasses anti-analysis techniques designed to detect lab environments and offers bidirectional communication insights, which are crucial for understanding both client and server-side interactions without alerting the attacker.",
+      "distractor_analysis": "Executing malware in a lab immediately risks encountering anti-analysis measures that hide its true functionality. Disassembling the code without prior context can be inefficient and may not reveal the full operational picture. Antivirus scans are useful for initial triage but often lack the depth needed for comprehensive behavioral analysis, especially for unknown or polymorphic malware.",
+      "analogy": "Instead of trying to interview a suspect in a controlled interrogation room where they might lie, it&#39;s better to first review surveillance footage and phone records from their actual activities to understand their true patterns."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "MALWARE_ANALYSIS_BASICS",
+      "NETWORK_FUNDAMENTALS"
+    ]
+  },
+  {
+    "question_text": "When designing a penetration testing lab to practice evading network defenses, which component is MOST crucial for understanding how to bypass intrusion detection systems?",
+    "correct_answer": "Snort IDS/IPS application",
+    "distractors": [
+      {
+        "question_text": "Commercial routers and switches",
+        "misconception": "Targets scope confusion: Student might associate network devices with all network defenses, not specifically IDS evasion."
+      },
+      {
+        "question_text": "Open Source firewalls",
+        "misconception": "Targets defense type confusion: Student might confuse firewall evasion techniques with IDS evasion, which are distinct."
+      },
+      {
+        "question_text": "Production network servers",
+        "misconception": "Targets environment confusion: Student might think production servers are needed for evasion practice, not realizing a controlled lab environment is preferred and more specific tools are required for IDS."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Snort IDS/IPS application is specifically mentioned as a valuable tool in a lab for learning how to modify the speed of network attacks to avoid detection. This directly addresses the objective of understanding and practicing IDS evasion techniques.",
+      "distractor_analysis": "Commercial routers and switches are for learning network penetration techniques, not specifically IDS evasion. Open Source firewalls are for learning firewall evasion. Production network servers are the targets, not the tools for learning evasion, and initial tests should be in a test network.",
+      "analogy": "If you want to learn how to avoid a security camera, you need a security camera to practice with, not just the building it&#39;s in or the doors it protects."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "defense",
+    "prerequisites": [
+      "NETWORK_SECURITY_FUNDAMENTALS",
+      "PENETRATION_TESTING_LAB_SETUP"
+    ]
+  },
+  {
+    "question_text": "A security analyst is investigating a memory dump from a potentially compromised Windows 7 system. They need to quickly determine the correct operating system profile for Volatility analysis without manually inspecting system details. Which Volatility plugin is BEST suited for this initial task?",
+    "correct_answer": "imageinfo",
+    "distractors": [
+      {
+        "question_text": "pslist",
+        "misconception": "Targets process order confusion: Student might think listing processes is a prerequisite for profile identification, not realizing profile is needed first."
+      },
+      {
+        "question_text": "kdbgscan",
+        "misconception": "Targets functionality overlap confusion: Student knows kdbgscan helps with profile but doesn&#39;t realize imageinfo provides a higher-level summary and suggestions, making it a better initial choice."
+      },
+      {
+        "question_text": "handles",
+        "misconception": "Targets irrelevant plugin selection: Student might pick a plugin related to general system analysis, not understanding its specific purpose is not profile identification."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `imageinfo` plugin provides a high-level summary of the memory sample, including suggested profiles, the date and time of collection, and other system characteristics. This makes it the ideal first step to quickly identify the correct operating system profile for subsequent Volatility analysis.",
+      "distractor_analysis": "`pslist` requires a profile to be specified before it can list processes. While `kdbgscan` is used internally by `imageinfo` and can also suggest profiles, `imageinfo` offers a more user-friendly, high-level overview and direct suggestions. `handles` is used to list open handles for processes, which is a post-profile identification task.",
+      "analogy": "Think of `imageinfo` as a quick diagnostic scan that tells you the make and model of a car, while `kdbgscan` is like looking at the engine&#39;s serial number for more detailed, but less immediate, identification. `pslist` and `handles` are like checking the car&#39;s tire pressure or oil level – useful, but only after you know what kind of car it is."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "$ python vol.py -f memory.raw imageinfo",
+        "context": "Example command to run the imageinfo plugin on a memory dump."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "MEMORY_FORENSICS_BASICS",
+      "VOLATILITY_FRAMEWORK"
+    ]
+  },
+  {
+    "question_text": "When performing memory acquisition on a macOS system, which tool is specifically designed for this purpose and mentioned in the context?",
+    "correct_answer": "MMR (Mac Memory Reader)",
+    "distractors": [
+      {
+        "question_text": "Mandiant Memoryze",
+        "misconception": "Targets platform confusion: Student might associate &#39;Memoryze&#39; with memory acquisition but not realize it&#39;s primarily for Windows, not Mac."
+      },
+      {
+        "question_text": "LiME (Linux Memory Extractor)",
+        "misconception": "Targets operating system confusion: Student recognizes a memory acquisition tool but misattributes it to the wrong operating system (Linux instead of Mac)."
+      },
+      {
+        "question_text": "OSXPmem",
+        "misconception": "Targets tool recognition: Student might confuse OSXPmem with MMR, as both are mentioned in the context of Mac memory acquisition, but MMR is specifically highlighted as a reader."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The text explicitly lists &#39;MMR (Mac Memory Reader)&#39; under the &#39;Macintosh memory acquisition&#39; section, indicating its specific role in acquiring memory from macOS systems.",
+      "distractor_analysis": "Mandiant Memoryze is a Windows-focused tool. LiME is designed for Linux memory acquisition. While OSXPmem is also mentioned for Mac memory acquisition, MMR is specifically identified as a &#39;reader&#39; in the context, making it a direct answer to a tool &#39;designed for this purpose&#39;.",
+      "analogy": "Like choosing a specific wrench for a metric bolt versus an imperial bolt; while both are wrenches, only one is designed for the specific task."
+    },
+    "code_snippets": [],
+    "difficulty": "foundational",
+    "question_type": "definition",
+    "prerequisites": [
+      "MEMORY_FORENSICS_BASICS",
+      "MACOS_FUNDAMENTALS"
+    ]
+  }
+]

@@ -1,0 +1,138 @@
+[
+  {
+    "question_text": "To detect handle duplication attempts targeting sensitive processes like LSASS, which EDR detection logic, based on object callbacks, is most effective?",
+    "correct_answer": "Monitor `OB_PRE_OPERATION_INFORMATION` where `ObjectType` is `PsProcessType` and `Operation` is `OB_OPERATION_HANDLE_DUPLICATE`, then filter by `Target Process Name` (e.g., &#39;lsass.exe&#39;).",
+    "distractors": [
+      {
+        "question_text": "Monitor `OB_PRE_OPERATION_INFORMATION` where `ObjectType` is `PsProcessType` and `Operation` is `OB_OPERATION_OPEN`, then filter by `Source Process Name`.",
+        "misconception": "Targets operation type confusion: Students might confuse handle duplication with initial handle opening, which is a different operation type (`OB_OPERATION_OPEN` vs `OB_OPERATION_HANDLE_DUPLICATE`)."
+      },
+      {
+        "question_text": "Monitor `OB_PRE_OPERATION_INFORMATION` where `ObjectType` is `PsThreadType` and `Operation` is `OB_OPERATION_HANDLE_DUPLICATE`, then filter by `Target Thread ID`.",
+        "misconception": "Targets object type confusion: Students might confuse process objects (`PsProcessType`) with thread objects (`PsThreadType`), which are distinct and would miss process handle duplication."
+      },
+      {
+        "question_text": "Monitor `NtQuerySystemInformation` calls for `SystemHandleInformation` and alert on any process making this call.",
+        "misconception": "Targets pre-operation vs. information gathering confusion: Students might focus on the initial information gathering step (`NtQuerySystemInformation`) rather than the actual handle duplication event, leading to high false positives as this API is used legitimately."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "EDRs can leverage object callbacks to intercept handle operations. Specifically, by registering a callback that inspects the `OB_PRE_OPERATION_INFORMATION` structure, a defender can check if the `ObjectType` is `PsProcessType` (indicating a process handle) and if the `Operation` is `OB_OPERATION_HANDLE_DUPLICATE`. Further filtering on the `Target Process Name` (e.g., &#39;lsass.exe&#39;) allows for precise detection of handle theft attempts against critical processes.",
+      "distractor_analysis": "Monitoring `OB_OPERATION_OPEN` would detect initial handle requests, not duplication. Monitoring `PsThreadType` would miss process handle duplication. Alerting on `NtQuerySystemInformation` calls for `SystemHandleInformation` would generate excessive false positives as this API is used by many legitimate applications to enumerate system handles.",
+      "analogy": "This is like a security guard checking specifically for &#39;duplicate key&#39; requests for a &#39;vault&#39; (LSASS), rather than just any &#39;key request&#39; or someone just &#39;looking at the vault blueprints&#39;."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "OB_PREOP_CALLBACK_STATUS ObjectNotificationCallback(\n    PVOID RegistrationContext,\n    POB_PRE_OPERATION_INFORMATION Info)\n{\n    NTSTATUS status = STATUS_SUCCESS;\n    if (Info-&gt;ObjectType == *PsProcessType)\n    {\n        if (Info-&gt;Operation == OB_OPERATION_HANDLE_DUPLICATE)\n        {\n            PUNICODE_STRING psTargetProcessName = HelperGetProcessImageName((PEPROCESS)Info-&gt;Object);\n            if (!psTargetProcessName)\n            {\n                return OB_PREOP_SUCCESS;\n            }\n\n            UNICODE_STRING sLsaProcessName = RTL_CONSTANT_STRING(L&quot;lsass&quot;);\n            if (FsRtlAreNamesEqual(psTargetProcessName, &amp;sLsaProcessName))\n            {\n                // Trigger alert or block operation\n            }\n        }\n    }\n    return OB_PREOP_SUCCESS;\n}",
+        "context": "Example EDR driver callback logic for detecting handle duplication to LSASS."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "Given the rise of unikernels and partitioning hypervisors for enhanced security and efficiency, what is the primary detection challenge posed by these technologies for traditional security monitoring tools?",
+    "correct_answer": "Reduced attack surface and consolidated execution make traditional endpoint and network-based anomaly detection less effective, as fewer distinct processes and network flows are observable.",
+    "distractors": [
+      {
+        "question_text": "Increased overhead from multiple virtual machines makes log collection and processing prohibitively expensive.",
+        "misconception": "Targets efficiency misconception: While virtualization can add overhead, the goal of unikernels and partitioning hypervisors is often to *reduce* overhead and resource footprint, not increase it to the point of making logging impossible."
+      },
+      {
+        "question_text": "The use of library operating systems eliminates the need for security monitoring, as applications are inherently secure.",
+        "misconception": "Targets security overestimation: Students might assume that &#39;reduced attack surface&#39; means &#39;no attack surface,&#39; leading to a false sense of security and the belief that monitoring is unnecessary. No system is inherently 100% secure."
+      },
+      {
+        "question_text": "The bare-metal execution capabilities of unikernels bypass hypervisors entirely, making them invisible to all virtualization-aware security tools.",
+        "misconception": "Targets scope misunderstanding: While unikernels *can* run on bare metal, they are also designed for virtual environments. The core challenge isn&#39;t invisibility to *all* tools, but rather the change in observable artifacts due to their consolidated nature, whether bare metal or virtualized."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Unikernels and partitioning hypervisors aim to shrink the attack surface and resource footprint by compiling applications, libraries, and kernel services into a single, specialized binary or by strictly partitioning resources. This consolidation means there are fewer distinct processes, fewer traditional OS-level events, and potentially fewer network interactions to monitor. Traditional security tools that rely on a rich stream of diverse endpoint and network telemetry will find their detection surface significantly reduced, making anomaly detection harder.",
+      "distractor_analysis": "The claim of increased overhead is incorrect; these technologies often aim for efficiency. The idea that security monitoring becomes unnecessary is a dangerous oversimplification. While unikernels can run on bare metal, the primary detection challenge stems from their consolidated nature, not just their bare-metal capability.",
+      "analogy": "Imagine trying to detect a specific type of activity in a bustling city (traditional OS) versus a highly specialized, single-purpose factory (unikernel). In the factory, there are fewer &#39;people&#39; (processes) and &#39;traffic&#39; (network flows), so traditional methods of observing general activity become less effective. You need more specialized sensors for the factory&#39;s specific operations."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "To detect a successful password spraying attack where an attacker tries a single password against multiple accounts, followed by a successful login on one of them, what SIEM correlation logic would be most effective?",
+    "correct_answer": "Correlate multiple failed login attempts (e.g., Event ID 4625) from a single source IP across many distinct user accounts, immediately followed by a successful login (e.g., Event ID 4624) for one of those accounts from the same source IP within a short time window.",
+    "distractors": [
+      {
+        "question_text": "Monitor for 150 failed login attempts on a single account, followed by a success for that same account from any IP address.",
+        "misconception": "Targets attack type confusion: This describes a brute-force attack against a single account, not a password spraying attack across multiple accounts."
+      },
+      {
+        "question_text": "Alert on any successful login (Event ID 4624) from an IP address that has previously generated failed logins, regardless of the user account.",
+        "misconception": "Targets scope and specificity: This is too broad and would generate many false positives from legitimate users who simply mistyped their password once. It doesn&#39;t focus on the &#39;many accounts, one password&#39; pattern."
+      },
+      {
+        "question_text": "Detect a single failed login attempt (Event ID 4625) on 300 different accounts, followed by a successful login on account #301, all originating from different source IPs.",
+        "misconception": "Targets source IP consistency: Password spraying typically originates from a single (or few) source IPs to avoid immediate lockout, and the successful login would also come from that same IP. Different IPs would indicate a distributed attack, not typical spraying."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Password spraying involves attempting a single, common password against many different user accounts. The most effective SIEM logic for this is to correlate multiple failed login events (e.g., Windows Event ID 4625) originating from the same source IP address, but targeting a high number of distinct user accounts, within a defined time window. This pattern, immediately followed by a successful login (e.g., Windows Event ID 4624) for one of those accounts from the same source IP, strongly indicates a successful password spraying attack.",
+      "distractor_analysis": "The first distractor describes a brute-force attack against a single account. The second is too generic and would lead to high false positives. The third distractor incorrectly assumes different source IPs for the failed attempts, which is not characteristic of a typical password spraying attack where a single attacker tries to remain undetected by distributing attempts across users from one origin.",
+      "analogy": "Imagine a postman trying to deliver the same letter (password) to every house on a street (accounts). If one house accepts it, that&#39;s a successful spray. We&#39;re looking for many &#39;return to sender&#39; notices (failed logins) for the same letter, followed by one &#39;delivery confirmed&#39; (successful login) for that same letter."
+    },
+    "code_snippets": [
+      {
+        "language": "kql",
+        "code": "SecurityEvent\n| where EventID == 4625 // Failed login attempts\n| summarize FailedAttempts = count(), distinct_accounts = dcount(TargetUserName) by IpAddress, bin(TimeGenerated, 5m)\n| where FailedAttempts &gt; 10 and distinct_accounts &gt; 50 // Thresholds for spraying\n| join kind=inner (\n    SecurityEvent\n    | where EventID == 4624 // Successful login attempts\n    | summarize SuccessfulLogins = count() by IpAddress, TargetUserName, bin(TimeGenerated, 5m)\n) on IpAddress\n| where TimeGenerated &lt; TimeGenerated1 + 10m and TimeGenerated &gt; TimeGenerated1 - 10m // Successful login shortly after spraying\n| project IpAddress, distinct_accounts, TargetUserName, TimeGenerated, TimeGenerated1",
+        "context": "Example KQL query for detecting password spraying by correlating failed and successful logins from the same IP."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "SIEM_CORRELATION"
+    ]
+  },
+  {
+    "question_text": "To detect web application attacks that are too subtle for generic WAF signatures, such as modifying hidden fields or out-of-sequence requests, which detection approach is MOST effective?",
+    "correct_answer": "Integrating real-time alerting tightly with the application&#39;s input validation mechanisms and other internal controls",
+    "distractors": [
+      {
+        "question_text": "Deploying an off-the-shelf Web Application Firewall (WAF) with signature-based rules",
+        "misconception": "Targets WAF limitations: Students might over-rely on WAFs for all attack types, not realizing their limitations with application-specific logic flaws."
+      },
+      {
+        "question_text": "Monitoring for large numbers of requests from a single IP address or user (usage anomalies)",
+        "misconception": "Targets anomaly type confusion: Students might confuse generic usage anomalies with the specific, subtle application logic attacks described, which often involve single, crafted requests."
+      },
+      {
+        "question_text": "Implementing a SIEM to correlate audit logs retrospectively for intrusion attempts",
+        "misconception": "Targets real-time vs. retrospective: Students might confuse retrospective analysis with real-time alerting needed for immediate defensive action."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Subtle web application attacks, like modifying hidden fields or exploiting application logic flaws through out-of-sequence requests, often involve requests that appear benign to generic WAF signatures. The most effective detection for these is to integrate real-time alerting directly into the application&#39;s internal validation and control mechanisms. This allows for fine-grained, application-specific checks that understand the expected behavior and data flow, leading to much lower false positives.",
+      "distractor_analysis": "Off-the-shelf WAFs are good for obvious attacks but struggle with application-specific logic. Usage anomalies like high request counts detect scripted attacks, not subtle logic flaws. SIEM correlation of audit logs is for retrospective investigation, not immediate, real-time defensive action against an ongoing subtle attack.",
+      "analogy": "It&#39;s like having a security guard who knows the specific routines and expected behaviors of everyone in a building, rather than just a guard who checks for obvious weapons at the door."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "FRAMEWORK_MITRE"
+    ]
+  }
+]

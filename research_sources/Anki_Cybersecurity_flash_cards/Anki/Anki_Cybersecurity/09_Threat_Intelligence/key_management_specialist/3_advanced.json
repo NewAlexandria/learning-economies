@@ -1,0 +1,39 @@
+[
+  {
+    "question_text": "A critical private key for a certificate authority (CA) has been discovered to be publicly accessible on an unencrypted server. What is the FIRST action a Key Management Specialist should take?",
+    "correct_answer": "Immediately revoke all certificates signed by the compromised CA key and generate a new CA key pair.",
+    "distractors": [
+      {
+        "question_text": "Initiate a forensic investigation to determine how the key was exposed.",
+        "misconception": "Targets sequence error: Students may prioritize investigation over containment, but the immediate threat of the compromised key needs to be addressed first."
+      },
+      {
+        "question_text": "Secure the unencrypted server and move the key to an HSM.",
+        "misconception": "Targets incomplete action: Students may focus on securing the key&#39;s current location, but the key itself is already compromised and cannot be trusted, even if moved to a secure location."
+      },
+      {
+        "question_text": "Notify all users and systems that rely on certificates from this CA about the potential compromise.",
+        "misconception": "Targets communication confusion: Students may conflate incident response communication with the immediate technical action required to mitigate the compromise."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "When a CA private key is compromised, it means an attacker could potentially issue fraudulent certificates, impersonate legitimate entities, or decrypt sensitive communications. The absolute first priority is to invalidate any trust in certificates signed by that compromised key. This is achieved by revoking them. Simultaneously, a new, secure CA key pair must be generated to restore the ability to issue trusted certificates.",
+      "distractor_analysis": "Initiating a forensic investigation is crucial but comes after the immediate threat is contained. Securing the server and moving the key to an HSM is insufficient because the key&#39;s confidentiality has already been breached; it&#39;s no longer trustworthy. Notifying users is part of the incident response plan but doesn&#39;t address the technical compromise of the CA key itself.",
+      "analogy": "If the master key to a city&#39;s entire lock system is stolen and copied, the first action isn&#39;t to investigate how it was stolen, nor is it to put the stolen key back in a safe. The first action is to declare all locks opened by that master key compromised and begin replacing them, while also issuing new master keys."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "# Example of revoking a certificate using OpenSSL CA tools\n# This assumes &#39;ca.cnf&#39; is configured for your CA\nopenssl ca -revoke compromised_cert.pem -config ca.cnf\nopenssl ca -gencrl -out crl.pem -config ca.cnf",
+        "context": "Demonstrates the command-line process for revoking a certificate and generating an updated Certificate Revocation List (CRL) for a compromised CA."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_IR",
+      "CRYPTO_PKI"
+    ]
+  }
+]

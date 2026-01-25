@@ -1,0 +1,159 @@
+[
+  {
+    "question_text": "A SIEM alert indicates &#39;Unusual process execution: powershell.exe with encoded command detected on DC01, immediately following a successful VPN login by &#39;admin_backup&#39; from an unapproved geolocation.&#39; As a Senior SOC Analyst, what is your MOST critical immediate concern?",
+    "correct_answer": "Potential credential compromise and Active Directory persistence establishment.",
+    "distractors": [
+      {
+        "question_text": "A misconfigured backup script causing a false positive.",
+        "misconception": "Targets normalization bias/technical misattribution: Student might dismiss the alert as a benign system error, failing to recognize the combination of indicators as malicious."
+      },
+      {
+        "question_text": "An IT administrator performing legitimate remote maintenance.",
+        "misconception": "Targets normalization bias: Student might assume legitimate activity, overlooking the &#39;unapproved geolocation&#39; and &#39;encoded command&#39; as strong indicators of compromise."
+      },
+      {
+        "question_text": "A user accidentally running a malicious script from a phishing email.",
+        "misconception": "Targets incorrect threat vector: While possible, the &#39;admin_backup&#39; account and DC01 target, combined with VPN login, point more strongly to credential compromise and targeted attack rather than a typical user phishing scenario."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The combination of an unusual VPN login for a privileged account (&#39;admin_backup&#39;), followed by an encoded PowerShell command on a Domain Controller (DC01), strongly suggests a credential compromise leading to an attempt at persistence or further lateral movement within the Active Directory environment. This pattern is a critical indicator of a sophisticated attack.",
+      "distractor_analysis": "Misconfigured backup scripts typically don&#39;t involve encoded PowerShell or unusual VPN logins. Legitimate remote maintenance by IT would usually not originate from an &#39;unapproved geolocation&#39; or use encoded commands without prior notification. While phishing can lead to compromise, the specific account (&#39;admin_backup&#39;) and target (DC01) point away from a typical end-user phishing scenario and towards a more targeted attack leveraging compromised credentials.",
+      "analogy": "Imagine seeing a stranger in a security guard&#39;s uniform entering a restricted server room at 3 AM using a key card that doesn&#39;t belong to them, then immediately setting up a hidden device. Each action is suspicious, but together they scream &#39;intruder&#39; rather than &#39;routine maintenance&#39; or &#39;accidental entry&#39;."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "index=vpn sourcetype=vpn_logs user=admin_backup src_ip!=&lt;approved_geo_ranges&gt; \n| join type=inner _time \n    [search index=windows sourcetype=win_security EventCode=4688 ComputerName=DC01 CommandLine=&quot;*powershell.exe* -EncodedCommand*&quot; \n    | eval _time = _time - 10m@m \n    | fields _time, ComputerName, CommandLine] \n| table _time, user, src_ip, ComputerName, CommandLine",
+        "context": "A Splunk query to correlate the VPN login with the encoded PowerShell execution on the Domain Controller within a 10-minute window."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_LOG"
+    ]
+  },
+  {
+    "question_text": "A SOC analyst receives an alert from a Network Intrusion Detection System (NIDS) indicating a potential port scan. The NIDS is part of a load-balanced deployment using a &#39;stick&#39; model. The analyst notes that the alert only shows two TCP port 80 requests from the source IP, which is below the typical threshold for a port scan signature. What is the MOST critical factor the analyst should consider when triaging this alert?",
+    "correct_answer": "The load-balancing algorithm might be distributing a single port scan across multiple NIDS sensors, desensitizing individual sensors to the full attack pattern.",
+    "distractors": [
+      {
+        "question_text": "The NIDS sensor is likely misconfigured, as it should be able to detect a full port scan regardless of load balancing.",
+        "misconception": "Targets technical misattribution: Student assumes NIDS misconfiguration rather than understanding the inherent limitations introduced by certain load-balancing designs."
+      },
+      {
+        "question_text": "The alert is a false positive because two requests are insufficient to trigger a standard port scan signature.",
+        "misconception": "Targets alert fatigue bias: Student dismisses the alert based on partial information, failing to consider how the deployment architecture could mask a true positive."
+      },
+      {
+        "question_text": "The NIDS is operating in a passive mode, and therefore cannot accurately detect active scanning attempts.",
+        "misconception": "Targets misunderstanding of NIDS function: Student confuses NIDS deployment with its operational mode, which is irrelevant to how load balancing affects signature detection."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "In a load-balanced NIDS deployment, especially with flow-based load balancing, a single attack (like a port scan) can be split across multiple NIDS sensors. This means no single sensor sees the complete attack pattern, making it difficult for signatures tuned for a full scan to trigger. The analyst must consider this architectural impact on detection.",
+      "distractor_analysis": "Assuming misconfiguration ignores the specific challenges of LB NIDS. Dismissing as a false positive without considering the LB effect is dangerous. NIDS operating mode (passive vs. inline) is not the primary reason for this specific detection issue.",
+      "analogy": "Imagine trying to identify a full sentence by giving one word to each of several people; no single person hears the whole sentence, making it hard to understand the complete message."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "index=nids sourcetype=snort OR sourcetype=suricata \n| where signature_id=&quot;port_scan_attempt&quot; \n| stats count by src_ip, dest_ip, dest_port, _time \n| eventstats sum(count) as total_requests by src_ip, dest_ip \n| where total_requests &gt; 8",
+        "context": "A Splunk query to attempt to correlate port scan attempts across multiple NIDS sensors by summing requests from the same source to the same destination within a time window, to overcome LB desensitization."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert triggers for a cloud-hosted application: &#39;High network usage detected from VPC infrastructure, exceeding baseline by 500% for 5 minutes.&#39; Simultaneously, you observe logs from an &#39;as-a-Service&#39; database showing &#39;Multiple denied access attempts to table &#39;customer_data&#39; from internal IP 10.0.0.15.&#39; What is the MOST likely scenario and immediate next step?",
+    "correct_answer": "Potential data exfiltration attempt; investigate the source IP 10.0.0.15 and its associated application/pod for compromise.",
+    "distractors": [
+      {
+        "question_text": "Legitimate application scaling event; close the alert as a false positive.",
+        "misconception": "Targets normalization bias: Student dismisses the alert based on a single factor (high network usage) without correlating it with other suspicious activity (denied database access)."
+      },
+      {
+        "question_text": "Database misconfiguration causing excessive retries; escalate to the database administration team.",
+        "misconception": "Targets technical misattribution: Student focuses on the &#39;denied access&#39; as a configuration issue rather than a symptom of a potential attack, ignoring the high network usage correlation."
+      },
+      {
+        "question_text": "DDoS attack targeting the application; activate WAF/DDoS mitigation services.",
+        "misconception": "Targets incorrect threat identification: While high network usage can indicate DDoS, the specific &#39;denied access attempts&#39; to a sensitive table from an internal IP points away from a volumetric external attack and towards internal compromise or exfiltration."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The combination of high network usage (potential exfiltration) and multiple denied access attempts to a sensitive database table from an internal IP strongly suggests a compromised internal resource attempting to access or exfiltrate data. The immediate next step is to identify and investigate the source of these attempts.",
+      "distractor_analysis": "Legitimate scaling would likely not be accompanied by denied database access attempts to specific tables. Database misconfiguration might cause denied access, but not typically a 500% spike in VPC network usage. A DDoS attack would primarily show external traffic and service unavailability, not internal denied database access attempts.",
+      "analogy": "Imagine a security camera showing a large truck leaving your warehouse (high network usage) while simultaneously an alarm sounds from your safe (denied database access). You wouldn&#39;t assume it&#39;s just a delivery or a faulty alarm; you&#39;d investigate the truck and the safe immediately."
+    },
+    "code_snippets": [
+      {
+        "language": "kql",
+        "code": "VPCFlowLogs\n| where TimeGenerated &gt; ago(10m)\n| where BytesTransferred &gt; (baseline_bytes * 5)\n| join kind=inner (DatabaseLogs\n    | where TimeGenerated &gt; ago(10m)\n    | where EventType == &#39;DeniedAccess&#39;\n    | where TargetTable == &#39;customer_data&#39;\n    | summarize count() by SourceIP\n    | where count_ &gt; 5\n) on $left.SourceIP == $right.SourceIP\n| project TimeGenerated, SourceIP, DestinationIP, BytesTransferred, DatabaseEventCount",
+        "context": "KQL query to correlate VPC flow logs with database access logs to identify the source of suspicious activity."
+      },
+      {
+        "language": "splunk",
+        "code": "index=vpc_flowlogs BytesTransferred &gt; (baseline_bytes * 5) earliest=-10m \n| join SourceIP [search index=database_logs EventType=&quot;DeniedAccess&quot; TargetTable=&quot;customer_data&quot; earliest=-10m | stats count by SourceIP | where count &gt; 5] \n| table _time, SourceIP, DestinationIP, BytesTransferred, count",
+        "context": "Splunk query to correlate VPC flow logs with database access logs to identify the source of suspicious activity."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_LOG"
+    ]
+  },
+  {
+    "question_text": "A SIEM alert indicates &#39;Unusual VPN login from new geolocation for user &#39;admin_backup&#39;, immediately followed by a &#39;PowerShell encoded command execution&#39; on DC01, and then a &#39;New scheduled task creation&#39; on DC01, all within a 5-minute window. As a Senior SOC Analyst, what is the MOST critical immediate action?",
+    "correct_answer": "Isolate DC01 from the network and initiate a full incident response investigation, including forensic imaging and credential compromise assessment for &#39;admin_backup&#39;.",
+    "distractors": [
+      {
+        "question_text": "Block the source IP of the VPN login at the firewall and reset &#39;admin_backup&#39;s password.",
+        "misconception": "Targets premature containment without full scope: Student focuses on initial access vector and user account without addressing potential persistence or lateral movement already established on the critical asset (DC01)."
+      },
+      {
+        "question_text": "Review logs on DC01 for additional suspicious activity and check if &#39;admin_backup&#39; has legitimate reasons for remote access and PowerShell usage.",
+        "misconception": "Targets delayed action/over-investigation before containment: Student prioritizes further investigation and context gathering over immediate containment of a highly suspicious, multi-stage attack on a critical asset."
+      },
+      {
+        "question_text": "Escalate to the network team to verify the VPN configuration and check for misconfigurations that might allow unusual logins.",
+        "misconception": "Targets misattribution/ignoring attack indicators: Student attributes the activity to a configuration issue rather than recognizing the clear indicators of a multi-stage attack (unusual login + encoded command + persistence)."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The sequence of events (unusual VPN login, encoded PowerShell on a Domain Controller, and scheduled task creation) strongly indicates a successful credential compromise leading to execution and persistence on a critical asset. Immediate isolation of DC01 is paramount to prevent further compromise or lateral movement, followed by a comprehensive incident response to understand the full scope and impact.",
+      "distractor_analysis": "Blocking the IP and resetting the password are good steps but insufficient if persistence is already established on DC01. Reviewing logs is part of the investigation but should not delay immediate containment. Attributing this to a misconfiguration ignores the clear signs of malicious activity.",
+      "analogy": "Imagine a fire alarm going off, followed by smoke and then visible flames in a critical server room. You don&#39;t investigate the alarm system or check if someone left a candle burning; you immediately contain the fire and then investigate the cause."
+    },
+    "code_snippets": [
+      {
+        "language": "powershell",
+        "code": "Get-NetAdapter | Where-Object {$_.Status -eq &#39;Up&#39;} | ForEach-Object { Disable-NetAdapter -Name $_.Name -Confirm:$false }",
+        "context": "PowerShell command to disable all active network adapters on a Windows server for immediate isolation (use with extreme caution and only as directed by IR plan)."
+      },
+      {
+        "language": "splunk",
+        "code": "index=windows (host=DC01 AND (EventCode=4624 OR EventCode=4688 OR EventCode=4698)) OR (index=vpn user=admin_backup src_ip!=&lt;expected_locations&gt;) | transaction user startswith=&quot;Unusual VPN login&quot; endswith=&quot;New scheduled task creation&quot; maxspan=5m | table _time, user, host, EventCode, CommandLine, src_ip",
+        "context": "Splunk query to correlate the observed events and identify the full sequence for the &#39;admin_backup&#39; user on DC01."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_IR",
+      "DEFENSE_FORENSICS"
+    ]
+  }
+]

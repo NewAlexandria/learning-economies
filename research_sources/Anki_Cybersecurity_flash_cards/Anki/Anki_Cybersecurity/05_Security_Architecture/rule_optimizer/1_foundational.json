@@ -1,0 +1,160 @@
+[
+  {
+    "question_text": "A SIEM rule detects &#39;Multiple Failed Logins from a Single Source IP&#39; (Event ID 4625, threshold 10 in 5 minutes). This rule frequently triggers for a legitimate network scanner performing vulnerability assessments. How should this rule be tuned to reduce false positives without losing detection for actual brute-force attacks?",
+    "correct_answer": "Add an exclusion filter for the IP address of the legitimate network scanner, ensuring the rule still applies to all other source IPs.",
+    "distractors": [
+      {
+        "question_text": "Increase the threshold to 50 failed logins in 5 minutes for all source IPs.",
+        "misconception": "Targets threshold misapplication: Student believes a universal threshold increase is the solution, but this significantly reduces sensitivity for actual attacks from other sources."
+      },
+      {
+        "question_text": "Disable the rule during the scheduled vulnerability assessment windows.",
+        "misconception": "Targets time-based blind spot: Student thinks time-based disabling is appropriate, but this creates a predictable window for attackers to perform brute-force attacks undetected."
+      },
+      {
+        "question_text": "Modify the rule to only alert on successful logins after multiple failures.",
+        "misconception": "Targets detection logic inversion: Student confuses reducing false positives with changing the core detection logic, which would miss the initial brute-force attempts and only detect successful compromises."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Legitimate network scanners are known entities. The most effective way to tune for them is to create a specific exclusion for their source IP address. This allows the original, sensitive threshold to remain active for all other IPs, ensuring that actual brute-force attempts are still detected promptly.",
+      "distractor_analysis": "Increasing the universal threshold makes the rule less effective against real threats. Disabling the rule during specific times creates a security gap. Changing to successful login detection misses the brute-force attempt itself, only alerting on a potential compromise.",
+      "analogy": "It&#39;s like having a security camera that alerts on anyone entering a restricted area. If a known, authorized maintenance worker triggers it, you give them a specific access card rather than making the camera less sensitive for everyone else."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "EventID=4625 | stats count by src_ip | where count &gt; 10 AND src_ip!=&quot;192.168.1.100&quot;",
+        "context": "Splunk query showing an IP exclusion for a network scanner."
+      },
+      {
+        "language": "yaml",
+        "code": "detection:\n  selection:\n    EventID: 4625\n  filter:\n    SourceIp: &#39;192.168.1.100&#39;\n  condition: selection and not filter | count() by SourceIp &gt; 10",
+        "context": "Sigma rule logic for excluding a specific source IP from a failed login count."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "SIEM_BASICS",
+      "WINDOWS_SECURITY_EVENTS",
+      "DETECTION_TUNING"
+    ]
+  },
+  {
+    "question_text": "A SIEM rule detects &#39;Excessive Failed Login Attempts&#39; (Event ID 4625) and is generating a high volume of false positives from a specific internal application&#39;s service account that frequently retries connections. The current rule aggregates 5 failed attempts within 60 seconds. How should this rule be tuned to reduce noise without creating a blind spot for actual brute-force attacks?",
+    "correct_answer": "Add an exclusion filter for the specific service account&#39;s `SubjectUserSid` to the rule, ensuring other accounts remain subject to the original threshold.",
+    "distractors": [
+      {
+        "question_text": "Increase the threshold to 20 failed attempts within 60 seconds for all accounts.",
+        "misconception": "Targets universal threshold adjustment: Student believes a higher universal threshold is the solution, but this significantly reduces sensitivity for all other accounts, potentially missing low-and-slow attacks."
+      },
+      {
+        "question_text": "Disable the rule entirely during the application&#39;s operational hours.",
+        "misconception": "Targets time-based blind spot: Student thinks disabling the rule during specific times is a viable solution, but this creates a predictable window for attackers to operate undetected."
+      },
+      {
+        "question_text": "Change the rule to only alert on successful logins after multiple failed attempts.",
+        "misconception": "Targets detection logic inversion: Student confuses reducing false positives with fundamentally altering the rule&#39;s purpose, shifting focus from failed attempts (brute-force) to successful ones (account compromise), which are different attack stages."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Excluding a specific, known-good service account by its immutable `SubjectUserSid` is the most precise way to reduce false positives without impacting the detection efficacy for other users or potential attackers. This allows the original, more sensitive threshold to remain active for all other entities, preserving the rule&#39;s ability to detect actual brute-force attempts.",
+      "distractor_analysis": "Increasing the universal threshold reduces the rule&#39;s sensitivity for all accounts, potentially allowing real attacks to go unnoticed. Disabling the rule during specific hours creates a significant security gap. Changing the rule to detect successful logins shifts its focus from brute-force attempts to post-compromise activity, missing the initial attack vector.",
+      "analogy": "Imagine a fire alarm that keeps going off because of a specific toaster. Instead of making the alarm less sensitive for the whole building, you fix the toaster or move it, so the alarm still works perfectly for actual fires."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "detection:\n  selection:\n    EventID: 4625\n  filter_service_account:\n    SubjectUserSid: &#39;S-1-5-21-XXX-YYY-ZZZ-12345&#39; # Replace with actual SID\n  condition: selection and not filter_service_account\n  timeframe: 60s\n  falsepositives:\n    - &#39;Legitimate service account retries&#39;",
+        "context": "Sigma rule snippet demonstrating a SID-based exclusion for a service account."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "WINDOWS_SECURITY_EVENTS",
+      "SIGMA_BASICS",
+      "SIEM_TUNING_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "A SIEM rule detects &#39;Multiple Password Resets&#39; for a single user within a short timeframe, triggering on 3 password resets in 10 minutes. This rule is generating false positives due to helpdesk staff legitimately assisting users with forgotten passwords. How can this rule be tuned to reduce noise while still detecting suspicious activity?",
+    "correct_answer": "Add an exclusion for `SubjectUserName` matching known helpdesk accounts or `SourceWorkstation` matching helpdesk workstations, while maintaining the original threshold for all other users/sources.",
+    "distractors": [
+      {
+        "question_text": "Increase the threshold to 10 password resets in 10 minutes for all users.",
+        "misconception": "Targets universal threshold adjustment: Student believes a higher universal threshold is the solution, but this significantly reduces sensitivity for all users, potentially missing actual account takeover attempts."
+      },
+      {
+        "question_text": "Disable the rule during business hours when helpdesk activity is highest.",
+        "misconception": "Targets time-based blind spot: Student thinks disabling the rule during specific times is a viable solution, but this creates a predictable window for attackers to operate undetected, especially during peak activity."
+      },
+      {
+        "question_text": "Change the rule to only alert on password resets initiated from external IP addresses.",
+        "misconception": "Targets network-based over-filtering: Student attempts to filter by network location, but legitimate helpdesk activity can occur remotely via VPN, and attackers can also operate from internal compromised hosts."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Legitimate password resets by helpdesk staff originate from specific accounts or workstations. By excluding these known-good sources, the rule can maintain its sensitive threshold for all other users and sources, effectively detecting suspicious activity without generating excessive false positives. This approach is precise and preserves detection coverage.",
+      "distractor_analysis": "Increasing the universal threshold reduces sensitivity for all users, potentially missing actual attacks. Disabling the rule during business hours creates a dangerous blind spot. Filtering by external IP addresses is too restrictive and can miss internal attacks or legitimate remote helpdesk activity.",
+      "analogy": "It&#39;s like a bank&#39;s fraud detection system. Instead of making the system less sensitive for everyone, it learns to recognize legitimate transactions from specific tellers, while still flagging suspicious activity from unknown sources."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "detection:\n  selection:\n    EventID: 4724 # Example for password reset event\n  filter_helpdesk:\n    SubjectUserName:\n      - &#39;HelpdeskUser1&#39;\n      - &#39;HelpdeskUser2&#39;\n    SourceWorkstation:\n      - &#39;HD-WS-01&#39;\n      - &#39;HD-WS-02&#39;\n  condition: selection and not filter_helpdesk\n  timeframe: 10m\n  count: 3",
+        "context": "Sigma rule snippet demonstrating exclusion for helpdesk accounts/workstations for password reset events."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "WINDOWS_SECURITY_EVENTS",
+      "ACTIVE_DIRECTORY",
+      "SIEM_TUNING_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "A SIEM rule detects &#39;Multiple Failed Logins from a Single Source IP&#39; (Event ID 4625, threshold 10 in 5 minutes). This rule is generating an excessive number of false positives from a specific internal vulnerability scanner. How should this rule be tuned to reduce noise without missing actual brute-force attacks?",
+    "correct_answer": "Add an exclusion filter for the IP address of the vulnerability scanner to the rule.",
+    "distractors": [
+      {
+        "question_text": "Increase the threshold to 50 failed logins in 5 minutes for all source IPs.",
+        "misconception": "Targets threshold misapplication: Student believes a universal threshold increase is the solution, but this would desensitize the rule for all other legitimate brute-force attempts."
+      },
+      {
+        "question_text": "Disable the rule during the vulnerability scanner&#39;s operational hours.",
+        "misconception": "Targets time-based blind spot: Student thinks time-based disabling is appropriate, but this creates a critical blind spot where actual attacks could occur undetected."
+      },
+      {
+        "question_text": "Change the rule to only alert on successful logins after multiple failures.",
+        "misconception": "Targets detection logic inversion: Student confuses reducing false positives with fundamentally altering the detection&#39;s purpose, missing the initial brute-force attempt entirely."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Legitimate, known-good activity from a vulnerability scanner should be explicitly excluded. Filtering by the scanner&#39;s source IP ensures that its expected behavior doesn&#39;t trigger alerts, while the rule remains fully effective for detecting malicious brute-force attempts from all other sources.",
+      "distractor_analysis": "Increasing the threshold globally would make the rule less sensitive to actual attacks. Disabling the rule creates a dangerous window of vulnerability. Changing to successful logins misses the initial attack phase.",
+      "analogy": "It&#39;s like telling your dog not to bark at the mailman (a known, harmless visitor) but still expecting it to bark at an intruder."
+    },
+    "code_snippets": [
+      {
+        "language": "splunk",
+        "code": "EventID=4625 | stats count by src_ip | where count &gt; 10 AND src_ip!=&quot;192.168.1.100&quot;",
+        "context": "Splunk query showing an IP exclusion for a vulnerability scanner."
+      },
+      {
+        "language": "yaml",
+        "code": "detection:\n  selection:\n    EventID: 4625\n  filter:\n    SourceIp: &#39;192.168.1.100&#39; # IP of the vulnerability scanner\n  timeframe: 5m\n  condition: selection and not filter | count() &gt; 10",
+        "context": "Sigma rule snippet demonstrating an IP exclusion."
+      }
+    ],
+    "difficulty": "foundational",
+    "question_type": "procedure",
+    "prerequisites": [
+      "SIEM_BASICS",
+      "WINDOWS_SECURITY_EVENTS",
+      "FALSE_POSITIVE_REDUCTION"
+    ]
+  }
+]

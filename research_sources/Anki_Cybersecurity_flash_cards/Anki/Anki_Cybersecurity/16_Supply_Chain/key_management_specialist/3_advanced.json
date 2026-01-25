@@ -1,0 +1,38 @@
+[
+  {
+    "question_text": "A penetration tester wants to dynamically load Python modules into a remote Trojan without installing them directly on the target machine. Which Python mechanism allows for customizing how modules are found and loaded, enabling remote retrieval from a repository?",
+    "correct_answer": "Modifying `sys.meta_path` with a custom import class",
+    "distractors": [
+      {
+        "question_text": "Using `pip install` with a custom repository URL",
+        "misconception": "Targets local installation confusion: Students might think `pip install` is the only way to get modules, even for remote, non-standard scenarios."
+      },
+      {
+        "question_text": "Directly executing module code using `exec()` from a remote source",
+        "misconception": "Targets partial understanding of execution: Students might know `exec()` runs code but miss the structured import mechanism for dependencies and module management."
+      },
+      {
+        "question_text": "Overriding `__import__` built-in function",
+        "misconception": "Targets similar but less flexible mechanism: Students might recall `__import__` as a customization point but `sys.meta_path` is the more modern and robust way for meta-level import control."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Python&#39;s import system is highly customizable. By appending a custom class (like `GitImporter`) to `sys.meta_path`, a penetration tester can intercept module import requests. If a module isn&#39;t found locally, the custom class&#39;s `find_module` method can retrieve it from a remote source (e.g., a GitHub repository), and its `load_module` method can then dynamically create and load the module into the Python interpreter, making it available to the Trojan.",
+      "distractor_analysis": "`pip install` is for installing packages locally and requires the target machine to have `pip` and network access to the specified repository, which is not always feasible or stealthy for a Trojan. Directly executing code with `exec()` would work for single scripts but doesn&#39;t handle dependencies or the structured nature of modules within the Python import system. Overriding `__import__` is an older and less flexible method compared to `sys.meta_path` for controlling the entire import process at a meta-level.",
+      "analogy": "Imagine Python&#39;s import system as a librarian. Normally, the librarian looks for books on local shelves. By adding a custom `GitImporter` to `sys.meta_path`, you&#39;re telling the librarian: &#39;If you can&#39;t find a book here, check this special online catalog, download it, and then add it to our library for everyone to use.&#39;"
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "import sys\nimport importlib.util\nimport base64\n\n# Assume github_connect() and get_file_contents() are defined elsewhere\n\nclass GitImporter:\n    def __init__(self):\n        self.current_module_code = &quot;&quot;\n\n    def find_module(self, name, path=None):\n        print(f&quot;[*] Attempting to retrieve {name}&quot;)\n        # self.repo = github_connect() # Placeholder for actual connection\n        # new_library = get_file_contents(&#39;modules&#39;, f&#39;{name}.py&#39;, self.repo) # Placeholder\n        \n        # Simulate finding a module remotely\n        if name == &#39;remote_module&#39;:\n            self.current_module_code = base64.b64encode(b&#39;def hello(): print(&quot;Hello from remote!&quot;)&#39;).decode(&#39;utf-8&#39;)\n            return self\n        return None\n\n    def load_module(self, name):\n        spec = importlib.util.spec_from_loader(name, loader=None, origin=&#39;remote_repo_url&#39;)\n        new_module = importlib.util.module_from_spec(spec)\n        exec(base64.b64decode(self.current_module_code), new_module.__dict__)\n        sys.modules[spec.name] = new_module\n        return new_module\n\nif __name__ == &#39;__main__&#39;:\n    sys.meta_path.append(GitImporter())\n    \n    try:\n        import remote_module\n        remote_module.hello()\n    except ImportError as e:\n        print(f&quot;Error importing remote_module: {e}&quot;)",
+        "context": "This code demonstrates how a custom `GitImporter` class is added to `sys.meta_path` to intercept module imports. When `import remote_module` is called, `find_module` and `load_module` are invoked to simulate retrieving and loading the module from a remote source."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  }
+]

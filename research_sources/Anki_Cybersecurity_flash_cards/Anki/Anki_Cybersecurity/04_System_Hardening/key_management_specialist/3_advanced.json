@@ -1,0 +1,68 @@
+[
+  {
+    "question_text": "What is the primary purpose of a Trusted Execution Environment (TEE) in the context of key management and sensitive data processing?",
+    "correct_answer": "To provide a secure enclave where sensitive computations can occur, protected even from a compromised operating system or hypervisor.",
+    "distractors": [
+      {
+        "question_text": "To encrypt all data at rest and in transit within the operating system&#39;s normal execution environment.",
+        "misconception": "Targets scope misunderstanding: Students might confuse TEEs with general encryption solutions, not realizing TEEs offer protection against a compromised OS itself."
+      },
+      {
+        "question_text": "To enforce strict access control lists (ACLs) and capabilities for user processes accessing kernel memory.",
+        "misconception": "Targets conflation with other security mechanisms: Students might confuse TEEs with traditional OS-level access controls like ACLs, which are ineffective if the OS is compromised."
+      },
+      {
+        "question_text": "To prevent null pointer dereferences and other memory corruption bugs within the kernel.",
+        "misconception": "Targets specific vulnerability confusion: Students might associate TEEs with general bug prevention, rather than their specific role in protecting against a malicious or compromised OS."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "A Trusted Execution Environment (TEE) creates a hardware-enforced secure area, or &#39;enclave,&#39; within a CPU. This enclave is designed to protect sensitive data and computations from unauthorized access, even by a fully compromised operating system, hypervisor, or system administrator. This is crucial for scenarios where the OS itself cannot be fully trusted, such as processing highly confidential algorithms or data in cloud environments.",
+      "distractor_analysis": "Encrypting data at rest/in transit is a general security practice but doesn&#39;t protect against a compromised OS accessing data in memory. ACLs and capabilities are OS-level controls that a compromised OS can bypass. Preventing null pointer dereferences is a software quality issue, not the primary function of a TEE, which focuses on isolation from a potentially malicious host OS.",
+      "analogy": "Think of a TEE as a bank vault built inside a larger, less secure building. Even if the building&#39;s security (the OS) is breached, the items inside the vault (sensitive data/code) remain protected by the vault&#39;s independent, hardware-level security."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "A security team is implementing a new key management system for their cloud infrastructure. They need to ensure that private keys generated for their services, particularly those used for signing and encryption, are protected against extraction even by privileged administrators. Which HSM feature directly addresses this requirement?",
+    "correct_answer": "Non-exportable key attributes enforced by hardware",
+    "distractors": [
+      {
+        "question_text": "FIPS 140-2 Level 2 certification for the HSM",
+        "misconception": "Targets certification level misunderstanding: Students might think any FIPS certification level guarantees non-exportability, but lower levels primarily focus on cryptographic module integrity and algorithm validation, not strict physical key protection against extraction by authorized users."
+      },
+      {
+        "question_text": "Implementation of a t-of-n Shamir Secret Sharing scheme for key components",
+        "misconception": "Targets key splitting confusion: Students might conflate key splitting for backup or multi-person control with preventing extraction of the *full* key from the HSM once it&#39;s assembled and in use within the hardware boundary."
+      },
+      {
+        "question_text": "Regular automated key rotation policies",
+        "misconception": "Targets lifecycle phase confusion: Students might confuse key rotation, which mitigates the impact of a compromise, with the preventative measure of preventing key extraction in the first place."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The &#39;non-exportable&#39; key attribute, when enforced by an HSM&#39;s hardware, ensures that a private key, once generated or imported into the HSM, cannot be physically extracted from the device. This means even an administrator with full access to the HSM cannot copy the raw key material, significantly enhancing security against insider threats or sophisticated attacks aimed at key exfiltration. The key can be used for cryptographic operations (signing, decryption) within the HSM, but it remains confined to its secure boundary.",
+      "distractor_analysis": "FIPS 140-2 Level 2 certification provides tamper evidence and role-based authentication, but it doesn&#39;t inherently guarantee non-exportability at the hardware level against a privileged administrator. Higher levels (3 and 4) are more relevant for strong physical protection. Shamir Secret Sharing is used for distributing key components for backup or multi-person authorization, but it doesn&#39;t prevent the assembled key from being extracted if the HSM itself allows it. Automated key rotation is a crucial security practice for limiting the impact of a compromised key, but it does not prevent the initial extraction of a key from a secure module.",
+      "analogy": "Think of it like a secure ATM. You can insert your card and perform transactions (use the key), but you cannot physically open the safe inside and take out the cash (extract the private key), even if you are an authorized bank employee with access to the ATM&#39;s software. The safe&#39;s physical design prevents it."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "# Example using PyKCS11 to generate a non-exportable key\nfrom PyKCS11 import *\n\n# Define attributes for a non-exportable private key\nprivate_key_template = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_TOKEN, True), # Stored on the token (HSM)\n    (CKA_PRIVATE, True),\n    (CKA_SENSITIVE, True),\n    (CKA_EXTRACTABLE, False), # CRITICAL: Prevents extraction\n    (CKA_DECRYPT, True),\n    (CKA_SIGN, True)\n]\n\n# Assuming &#39;session&#39; is an active PKCS#11 session\n# session.generateKeyPair(CKM_RSA_PKCS_KEY_PAIR_GEN, public_key_template, private_key_template)",
+        "context": "This Python snippet demonstrates how to specify the CKA_EXTRACTABLE attribute as False when generating a key using the PKCS#11 standard, which is commonly used to interface with HSMs. This attribute instructs the HSM to make the private key non-exportable."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  }
+]

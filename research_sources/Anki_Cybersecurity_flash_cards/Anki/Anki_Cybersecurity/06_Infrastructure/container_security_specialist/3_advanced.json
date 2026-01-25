@@ -1,0 +1,189 @@
+[
+  {
+    "question_text": "Which `securityContext` setting prevents a container from making changes to the host&#39;s kernel parameters via `sysctl`?",
+    "correct_answer": "sysctls: [] (empty list) or not specifying `sysctls` at all if `forbiddenSysctls` is configured cluster-wide",
+    "distractors": [
+      {
+        "question_text": "readOnlyRootFilesystem: true",
+        "misconception": "Targets scope confusion: Students might think making the root filesystem read-only prevents all host-level changes, but `sysctl` changes are kernel-level and not directly tied to the container&#39;s root filesystem."
+      },
+      {
+        "question_text": "privileged: false",
+        "misconception": "Targets incomplete understanding: While `privileged: true` allows all `sysctls`, `privileged: false` (the default) still allows a subset of &#39;safe&#39; `sysctls` by default, which might not be desired."
+      },
+      {
+        "question_text": "capabilities.drop: [&quot;ALL&quot;]",
+        "misconception": "Targets capability confusion: Dropping all capabilities is a strong control, but `sysctl` access is managed separately from Linux capabilities, although `CAP_SYS_ADMIN` can grant broad `sysctl` access."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Kubernetes allows `sysctls` to be configured at the pod level within the `securityContext`. By default, only &#39;safe&#39; `sysctls` are allowed. To explicitly prevent a container from modifying any `sysctls`, you can specify an empty `sysctls` list (`sysctls: []`). Alternatively, cluster administrators can use `PodSecurityAdmission` or `PodSecurityPolicy` (deprecated) with `forbiddenSysctls` to prevent specific or all `sysctls` from being set by pods.",
+      "distractor_analysis": "`readOnlyRootFilesystem: true` prevents writes to the container&#39;s root filesystem, but `sysctl` operations interact directly with the host kernel. `privileged: false` is the default and still allows &#39;safe&#39; `sysctls`. `capabilities.drop: [&quot;ALL&quot;]` drops all Linux capabilities, which is good practice, but `sysctl` access is a distinct control point, although `CAP_SYS_ADMIN` does grant broad `sysctl` access.",
+      "analogy": "Imagine `sysctls` as the control panel for the building&#39;s core systems (heating, ventilation). `sysctls: []` is like removing the access panel so no one can tamper with the controls. `readOnlyRootFilesystem` is like locking the filing cabinet in your office; it doesn&#39;t stop you from messing with the building&#39;s HVAC."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: no-sysctls-pod\nspec:\n  securityContext:\n    sysctls: [] # Explicitly disallow all sysctls for this pod\n  containers:\n  - name: my-container\n    image: busybox\n    command: [&quot;sh&quot;, &quot;-c&quot;, &quot;sleep 3600&quot;]",
+        "context": "Pod manifest demonstrating `sysctls: []` to prevent `sysctl` modifications."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "LINUX_KERNEL_SECURITY"
+    ]
+  },
+  {
+    "question_text": "To limit the blast radius of a compromised application container within a Kubernetes cluster, preventing it from communicating with other pods in the same namespace except for a specific database service, which NetworkPolicy configuration is most appropriate?",
+    "correct_answer": "Egress NetworkPolicy with `podSelector` for the database and `namespaceSelector` for the current namespace, and an Ingress NetworkPolicy allowing traffic from the application pod.",
+    "distractors": [
+      {
+        "question_text": "Ingress NetworkPolicy allowing only traffic from the application pod to the database pod.",
+        "misconception": "Targets incomplete policy application: Students might focus only on ingress to the database, neglecting the egress from the compromised application and its ability to initiate connections."
+      },
+      {
+        "question_text": "Egress NetworkPolicy denying all outbound traffic from the application pod.",
+        "misconception": "Targets over-restriction: Students might choose a blanket denial, which would break legitimate communication with the database, failing the &#39;except for a specific database service&#39; requirement."
+      },
+      {
+        "question_text": "Namespace-wide NetworkPolicy denying all traffic between pods in different namespaces.",
+        "misconception": "Targets incorrect scope: Students might apply a broader policy that doesn&#39;t address intra-namespace communication or the specific exception for the database."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To limit the blast radius, you need to control both inbound (Ingress) and outbound (Egress) traffic for the compromised application. An Egress NetworkPolicy applied to the application pod should deny all outbound traffic by default, then explicitly allow traffic only to the database service (using a `podSelector` for the database and potentially a `namespaceSelector` if the database is in another namespace, or just `podSelector` if in the same). An Ingress NetworkPolicy on the database pod would then ensure only the application pod can connect to it. This combination ensures the application can only talk to the database and nothing else.",
+      "distractor_analysis": "An Ingress NetworkPolicy on the database alone doesn&#39;t restrict the application&#39;s outbound connections to other services. An Egress NetworkPolicy denying all outbound traffic would prevent the application from reaching the legitimate database. A namespace-wide policy for inter-namespace traffic doesn&#39;t address the fine-grained intra-namespace control required here.",
+      "analogy": "This is like putting a security guard at the door of a specific room (Ingress to database) AND giving the person inside that room a very specific list of who they can call (Egress from application), preventing them from calling anyone else."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: app-egress-to-db\n  namespace: default\nspec:\n  podSelector:\n    matchLabels:\n      app: compromised-app\n  policyTypes:\n  - Egress\n  egress:\n  - to:\n    - podSelector:\n        matchLabels:\n          app: database-service\n    ports:\n    - protocol: TCP\n      port: 5432 # Example DB port\n---\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: db-ingress-from-app\n  namespace: default\nspec:\n  podSelector:\n    matchLabels:\n      app: database-service\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - podSelector:\n        matchLabels:\n          app: compromised-app\n    ports:\n    - protocol: TCP\n      port: 5432",
+        "context": "Kubernetes NetworkPolicies to restrict egress from a compromised app to only a database, and ingress to the database from only that app."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORKING",
+      "NETWORK_POLICIES"
+    ]
+  },
+  {
+    "question_text": "A Kubernetes cluster is deployed across a hybrid cloud environment, with some nodes on-premises and others in a public cloud. A critical application pod running on an on-premises node needs to communicate with a database service running in the public cloud. Which NetworkPolicy configuration ensures this communication while limiting lateral movement from the public cloud to other on-premises resources?",
+    "correct_answer": "An Egress NetworkPolicy on the application pod allowing traffic only to the public cloud database service IP/port, and an Ingress NetworkPolicy on the database service allowing traffic only from the application pod&#39;s IP/namespace.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy on the application pod allowing traffic from the public cloud database service IP/port, and an Egress NetworkPolicy on the database service allowing traffic only to the application pod&#39;s IP/namespace.",
+        "misconception": "Targets directionality confusion: Students often reverse Ingress/Egress logic, thinking Ingress applies to outbound traffic or Egress to inbound. This configuration would not initiate communication from the app."
+      },
+      {
+        "question_text": "A global NetworkPolicy allowing all traffic between on-premises and public cloud namespaces, with specific deny rules for sensitive services.",
+        "misconception": "Targets default-deny principle violation: Students might opt for a default-allow approach with deny rules, which is less secure and harder to manage than default-deny, especially in complex hybrid environments."
+      },
+      {
+        "question_text": "An Egress NetworkPolicy on the application pod allowing all outbound traffic to the public cloud, and no Ingress policy on the database service.",
+        "misconception": "Targets over-permissioning: Students might grant overly broad Egress permissions, failing to restrict traffic to only the necessary destination, which increases the blast radius if the application pod is compromised."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To secure communication in a hybrid cloud, NetworkPolicies must be applied at both ends. The application pod needs an Egress policy to explicitly allow outbound traffic to the specific IP address and port of the public cloud database. The database service (or its endpoint) in the public cloud needs an Ingress policy to explicitly allow inbound traffic only from the application pod&#39;s IP address or namespace, preventing unauthorized access from other public cloud resources or the internet. This adheres to the principle of least privilege and limits the blast radius.",
+      "distractor_analysis": "The first distractor reverses the Ingress/Egress logic, which would prevent the application from initiating communication. The second distractor violates the security best practice of &#39;default-deny&#39; by starting with a global allow, making it less secure and more complex to manage. The third distractor grants overly broad Egress permissions from the application pod, allowing it to connect to any service in the public cloud, not just the database, which increases the attack surface.",
+      "analogy": "Imagine the application pod as a person in a secure building (on-premises) needing to send a letter to a specific person in another secure building (public cloud). The Egress policy is like the building&#39;s rule allowing the person to send a letter only to that specific address. The Ingress policy is like the recipient&#39;s building&#39;s rule allowing only letters from that specific sender, preventing unsolicited mail from anyone else in the world."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: app-egress-to-db\n  namespace: onprem-app-ns\nspec:\n  podSelector:\n    matchLabels:\n      app: my-app\n  policyTypes:\n  - Egress\n  egress:\n  - to:\n    - ipBlock:\n        cidr: 192.0.2.10/32 # Public IP of the database service\n    ports:\n    - protocol: TCP\n      port: 5432 # Database port\n---\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: db-ingress-from-app\n  namespace: public-cloud-db-ns # Namespace where the database service is exposed\nspec:\n  podSelector:\n    matchLabels:\n      app: public-db\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels:\n          name: onprem-app-ns # Label of the namespace where the app runs\n      podSelector:\n        matchLabels:\n          app: my-app\n    ports:\n    - protocol: TCP\n      port: 5432",
+        "context": "Kubernetes NetworkPolicies for hybrid cloud communication, assuming the public cloud database is exposed as a Kubernetes Service with an external IP or accessible via a specific IP block, and namespaces are labeled appropriately."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "HYBRID_CLOUD_NETWORKING",
+      "LEAST_PRIVILEGE_PRINCIPLE"
+    ]
+  },
+  {
+    "question_text": "A security team wants to integrate Kubernetes audit logs with an external Security Information and Event Management (SIEM) system for real-time analysis. Which audit backend strategy should be configured?",
+    "correct_answer": "Webhook backend",
+    "distractors": [
+      {
+        "question_text": "Log backend",
+        "misconception": "Targets integration method confusion: Students might think the &#39;Log backend&#39; is sufficient, but it writes to a local file, requiring a separate agent to forward logs, which is less real-time and integrated than a webhook."
+      },
+      {
+        "question_text": "File backend",
+        "misconception": "Targets terminology confusion: Students might confuse &#39;File backend&#39; with &#39;Log backend&#39; or think it implies direct integration, but it&#39;s essentially the same as the log backend, writing to a local file."
+      },
+      {
+        "question_text": "Prometheus backend",
+        "misconception": "Targets tool function confusion: Students might incorrectly associate Prometheus, a metrics collection system, with an audit log forwarding mechanism, which is not its primary function."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Webhook backend for Kubernetes audit logging allows the API server to send audit events directly to an external HTTP endpoint. This is ideal for integrating with SIEM systems or other third-party security tools that can process these events in real-time for analysis, alerting, and automated response.",
+      "distractor_analysis": "The Log backend (or File backend) writes audit events to a local file on the control plane node, requiring an additional log forwarder to send them to a SIEM. Prometheus is a metrics collection and alerting system, not an audit log forwarding mechanism.",
+      "analogy": "Using a Webhook backend is like having a direct, dedicated pipeline from your Kubernetes control center to your central security operations center. A Log backend is like writing everything down in a notebook and then having someone manually pick up the notebook and deliver it later."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: audit.k8s.io/v1\nkind: Policy\n# ... audit policy rules ...\n--audit-webhook-config-file=/etc/kubernetes/audit-webhook-config.yaml\n--audit-webhook-batch-buffer-size=10000\n--audit-webhook-batch-max-wait=5s",
+        "context": "kube-apiserver flags for configuring a webhook audit backend, referencing an external configuration file."
+      },
+      {
+        "language": "yaml",
+        "code": "# audit-webhook-config.yaml\napiVersion: v1\nkind: Config\nclusters:\n  - name: siem-cluster\n    cluster:\n      server: &quot;https://siem.example.com/audit&quot;\n      certificate-authority: /etc/kubernetes/pki/ca.crt\nusers:\n  - name: audit-user\n    user:\n      client-certificate: /etc/kubernetes/pki/audit-client.crt\n      client-key: /etc/kubernetes/pki/audit-client.key\ncontexts:\n  - name: siem-context\n    context:\n      cluster: siem-cluster\n      user: audit-user\ncurrent-context: siem-context",
+        "context": "Example audit-webhook-config.yaml for sending audit events to a SIEM endpoint."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "KUBERNETES_AUDITING",
+      "KUBERNETES_SECURITY_OPERATIONS",
+      "SIEM_INTEGRATION"
+    ]
+  },
+  {
+    "question_text": "To limit the blast radius of a compromised web application container by preventing it from initiating connections to internal database services in a different namespace, which NetworkPolicy configuration is most appropriate?",
+    "correct_answer": "An Egress NetworkPolicy in the web application&#39;s namespace, denying traffic to the database namespace.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy in the web application&#39;s namespace, denying all incoming traffic.",
+        "misconception": "Targets confusion between ingress and egress: Students might focus on protecting the web app from external threats (ingress) rather than preventing it from attacking internal services (egress)."
+      },
+      {
+        "question_text": "An Egress NetworkPolicy in the database&#39;s namespace, allowing traffic only from the web application&#39;s namespace.",
+        "misconception": "Targets incorrect placement of policy: While this policy would protect the database, it doesn&#39;t directly limit the compromised web app&#39;s *egress* capabilities. The question asks to limit the web app&#39;s ability to initiate connections."
+      },
+      {
+        "question_text": "A ClusterRole that restricts the web application&#39;s ServiceAccount from accessing other namespaces.",
+        "misconception": "Targets confusion between RBAC and NetworkPolicy: Students might conflate network access control (NetworkPolicy) with API access control (RBAC). RBAC controls what a ServiceAccount can do with the Kubernetes API, not network traffic."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The goal is to prevent the compromised web application from *initiating connections* (egress) to internal database services. An Egress NetworkPolicy applied to the web application&#39;s namespace can define rules that explicitly deny traffic destined for the IP ranges or pod selectors of the database services, effectively segmenting the network and limiting lateral movement.",
+      "distractor_analysis": "An Ingress NetworkPolicy controls incoming traffic to the web app, not outgoing. While important, it doesn&#39;t address the specific requirement of preventing the web app from connecting to the database. An Egress NetworkPolicy in the database&#39;s namespace would protect the database, but the question asks to limit the *web application&#39;s* ability to initiate connections, which is best done with an egress policy on the web app itself. RBAC controls API access, not network traffic between pods.",
+      "analogy": "Think of the web application as a person in a room. An Egress NetworkPolicy is like locking the doors *from the inside* to prevent that person from leaving to other rooms (namespaces). An Ingress policy is like locking the doors *from the outside* to prevent others from entering the room."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-web-to-db-egress\n  namespace: web-app-ns\nspec:\n  podSelector:\n    matchLabels:\n      app: web-app\n  policyTypes:\n    - Egress\n  egress:\n    - to:\n        - namespaceSelector:\n            matchLabels:\n              name: db-ns\n      ports:\n        - protocol: TCP\n          port: 5432 # Example DB port\n    - to: [] # Deny all other egress by default if no other rules match",
+        "context": "Egress NetworkPolicy denying web-app pods in &#39;web-app-ns&#39; from connecting to pods in &#39;db-ns&#39; on port 5432."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "NETWORK_SEGMENTATION"
+    ]
+  }
+]

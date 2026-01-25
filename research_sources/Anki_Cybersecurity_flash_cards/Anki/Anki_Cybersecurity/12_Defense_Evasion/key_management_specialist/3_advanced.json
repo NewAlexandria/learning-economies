@@ -1,0 +1,151 @@
+[
+  {
+    "question_text": "What HSM feature protects private keys from being copied or moved outside the hardware boundary, even by authorized administrators?",
+    "correct_answer": "Non-exportable key attribute with hardware-enforced access controls",
+    "distractors": [
+      {
+        "question_text": "FIPS 140-2 Level 1 certification",
+        "misconception": "Targets certification confusion: Students may assume any FIPS certification prevents extraction, but Level 1 only requires approved algorithms, not physical protection."
+      },
+      {
+        "question_text": "Dual-control key ceremony procedures",
+        "misconception": "Targets procedural vs technical confusion: Students may conflate administrative controls with hardware-enforced cryptographic boundaries."
+      },
+      {
+        "question_text": "Encrypted key backup to secure storage",
+        "misconception": "Targets backup misconception: Students may think encrypted backups provide equivalent protection to non-exportable keys."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "HSMs provide hardware-enforced cryptographic boundaries where keys marked as non-exportable physically cannot leave the secure module, even in encrypted form. This is enforced at the silicon level, not through software policy. Administrators can use keys for operations but cannot extract the key material itself.",
+      "distractor_analysis": "FIPS 140-2 Level 1 only validates algorithm correctness, not physical security - Level 3+ addresses tamper resistance. Dual-control ceremonies prevent single-person compromise but do not prevent extraction if the HSM allows it. Encrypted backups still mean the key exists outside the HSM boundary.",
+      "analogy": "Like a bank vault where tellers can process transactions using money inside, but the vault physically prevents anyone from removing cash - versus a policy that says &#39;please do not take money&#39; which relies on compliance."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "# PKCS#11 key generation with non-exportable attribute\nfrom PyKCS11 import *\n\ntemplate = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_EXTRACTABLE, False),\n    (CKA_SENSITIVE, True),\n    (CKA_TOKEN, True)\n]",
+        "context": "Generate non-exportable key using PKCS#11 interface"
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "A security architect is designing a key management system for a new application. They need to ensure that private keys generated within a Hardware Security Module (HSM) cannot be extracted from the device, even by an administrator with full access. Which HSM feature directly addresses this requirement?",
+    "correct_answer": "Non-exportable key attributes enforced by hardware",
+    "distractors": [
+      {
+        "question_text": "FIPS 140-2 Level 3 certification",
+        "misconception": "Targets certification scope confusion: Students might think any higher FIPS level automatically guarantees non-exportability, but FIPS levels primarily define overall security requirements, not specific key attributes."
+      },
+      {
+        "question_text": "Dual-control key ceremony for key generation",
+        "misconception": "Targets procedural vs. technical control confusion: Students may conflate administrative procedures (dual-control) with the technical, hardware-enforced properties of the key itself."
+      },
+      {
+        "question_text": "Encrypted backups of private keys stored off-HSM",
+        "misconception": "Targets misunderstanding of &#39;non-exportable&#39;: Students might believe that encrypting a key before moving it off the HSM makes it non-exportable, but this is the opposite of the requirement; the key material has left the HSM."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "HSMs are designed to protect cryptographic keys. A critical feature for private keys is the &#39;non-exportable&#39; attribute, which, when enforced by the HSM&#39;s hardware and firmware, physically prevents the key material from ever leaving the secure boundary of the device. This means even an administrator cannot extract the raw private key, only use it for cryptographic operations within the HSM.",
+      "distractor_analysis": "FIPS 140-2 Level 3 certification indicates tamper-resistance and identity-based authentication, which are important for HSM security, but it doesn&#39;t specifically define or guarantee the non-exportability of keys. Dual-control key ceremonies are procedural controls to prevent a single person from compromising a key, but they don&#39;t prevent extraction if the HSM itself allows it. Encrypted backups, by definition, involve exporting the key material from the HSM, albeit in an encrypted form, which violates the &#39;cannot be extracted&#39; requirement.",
+      "analogy": "Imagine a secure safe (HSM) where you can put a valuable document (private key). The &#39;non-exportable&#39; feature is like the safe being designed so that you can read and use the document while it&#39;s inside, but there&#39;s no way to physically take the document out of the safe, even if you have the combination to open the safe&#39;s door."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "from PyKCS11 import *\n\n# Template for generating a non-exportable private key using PKCS#11\nprivate_key_template = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_TOKEN, True),  # Stored on the token (HSM)\n    (CKA_PRIVATE, True),\n    (CKA_SENSITIVE, True),\n    (CKA_EXTRACTABLE, False) # This is the critical attribute\n]",
+        "context": "Illustrates how the CKA_EXTRACTABLE attribute is set to False in PKCS#11 to ensure a private key cannot be exported from an HSM."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "A forensic investigator discovers a malicious kernel module (`p2.ko`) was loaded, executed, and then removed from a Linux system. Analysis reveals the module used an anti-forensics technique to avoid detection by standard `lsmod` or `check_modules` tools. What was the primary anti-forensics technique employed by `p2.ko` to achieve this stealth?",
+    "correct_answer": "The module&#39;s initialization function returned a negative value, causing the kernel to unload and free its components from memory.",
+    "distractors": [
+      {
+        "question_text": "It actively removed its entries from the kernel&#39;s module list and `sysfs` after execution.",
+        "misconception": "Targets active removal vs. passive non-registration: Students might assume direct manipulation of kernel structures is the only way to hide a module."
+      },
+      {
+        "question_text": "The module was designed to execute entirely in user space, never truly loading into the kernel.",
+        "misconception": "Targets misunderstanding of kernel modules: Students might confuse user-space processes with kernel modules, which by definition operate in kernel space."
+      },
+      {
+        "question_text": "It encrypted its module information, making it unreadable by forensic tools.",
+        "misconception": "Targets irrelevant obfuscation: Students might think encryption of metadata is a common anti-forensics technique for modules, which is not the primary method described for hiding module presence."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `p2.ko` module employed an anti-forensics technique where its `init` function (specifically, the `module_helper` function&#39;s last instructions) returned a negative value (e.g., -3). This signals to the kernel that the module failed to load successfully. Consequently, the kernel automatically unloads all the module&#39;s components and frees them from memory, preventing it from appearing in standard module listings like `lsmod` or `sysfs`.",
+      "distractor_analysis": "Actively removing entries from the kernel&#39;s module list and `sysfs` is a possible technique, but the text explicitly states that static analysis of the module did *not* show it doing so. Executing entirely in user space contradicts the nature of a kernel module, which by definition runs in kernel space. Encrypting module information is not the method described; the module&#39;s presence is hidden by the kernel&#39;s automatic cleanup due to a failed initialization return code.",
+      "analogy": "Imagine trying to sneak into a party, but the bouncer (kernel) sees you trip and fall at the entrance. Instead of letting you in and then kicking you out, the bouncer just immediately sends you away, and you never officially &#39;entered&#39; the party, so you won&#39;t be on the guest list."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "static int __init my_module_init(void)\n{\n    // Malicious operations\n    // ...\n    return -EINVAL; // Return a negative value to trigger unload\n}\n\nstatic void __exit my_module_exit(void)\n{\n    // Cleanup (might not even be called if init fails early)\n}\n\nmodule_init(my_module_init);\nmodule_exit(my_module_exit);",
+        "context": "Illustrative C code for a Linux kernel module&#39;s initialization function returning a negative value to cause automatic unloading."
+      },
+      {
+        "language": "bash",
+        "code": "# Example of a failed insmod command due to init function returning negative\n$ sudo insmod p2.ko\ninsmod: ERROR: could not insert &#39;p2.ko&#39;: Invalid argument\n# p2.ko will not appear in lsmod output",
+        "context": "Demonstrates the output of `insmod` when a module&#39;s init function returns a negative error code, and the subsequent absence from `lsmod`."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_IR"
+    ]
+  },
+  {
+    "question_text": "A forensic investigator is analyzing a macOS memory dump for hidden kernel extensions. They suspect a rootkit has manipulated the kernel&#39;s linked module list and zeroed out Mach-O headers to evade detection. Which Volatility plugin, leveraging a specific global variable, would be most effective in this scenario?",
+    "correct_answer": "mac_lsmod_kext_map, which uses the `g_kext_map` global variable",
+    "distractors": [
+      {
+        "question_text": "mac_lsmod, as it enumerates kernel extensions from the linked module list",
+        "misconception": "Targets direct method confusion: Students might choose the standard enumeration tool without considering the rootkit&#39;s anti-forensics techniques."
+      },
+      {
+        "question_text": "mac_lsmod_iokit, as it focuses on I/O Kit extensions which are often targeted by rootkits",
+        "misconception": "Targets specific scope confusion: Students might think focusing on I/O Kit is sufficient, but it doesn&#39;t address the core evasion technique of manipulating data structures."
+      },
+      {
+        "question_text": "mac_pslist, to identify suspicious processes that might be loading hidden kexts",
+        "misconception": "Targets indirect method confusion: Students might choose a process-centric approach, which is too high-level and doesn&#39;t directly address hidden kernel modules."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `mac_lsmod_kext_map` plugin specifically addresses rootkits that hide by manipulating the kernel&#39;s linked module list and zeroing out Mach-O headers. It achieves this by utilizing the `g_kext_map` global variable, which maintains a separate list of loaded kernel modules, including their original mapped addresses. This allows the investigator to find kernel extensions even when traditional methods fail.",
+      "distractor_analysis": "The `mac_lsmod` plugin relies on the linked module list, which the rootkit has already manipulated. `mac_lsmod_iokit` is too specific and doesn&#39;t overcome the data structure manipulation. `mac_pslist` enumerates processes, not kernel extensions, and wouldn&#39;t directly reveal hidden kernel modules.",
+      "analogy": "Imagine a secret club (rootkit) that removes its members from the official membership roster (linked module list) and burns their ID cards (Mach-O headers). The `mac_lsmod_kext_map` plugin is like finding a separate, hidden guest book (g_kext_map) that still lists everyone who ever entered, even if they tried to erase their tracks."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "volatility -f mac_memory.mem mac_lsmod_kext_map",
+        "context": "Example Volatility command to run the `mac_lsmod_kext_map` plugin on a macOS memory dump."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_IR"
+    ]
+  }
+]

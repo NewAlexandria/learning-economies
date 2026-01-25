@@ -1,0 +1,44 @@
+[
+  {
+    "question_text": "A security analyst is performing malware analysis on a Windows executable. They observe that the malware copies a DLL to `C:\\Windows\\System32`, modifies a legitimate system executable (`cisvc.exe`) by injecting shellcode, and then starts the `cisvc` service. Dynamic analysis shows that the modified `cisvc.exe` loads the copied DLL and calls an exported function from it, which then logs keystrokes. Which of the following techniques is the malware primarily using to maintain persistence and execute its malicious payload?",
+    "correct_answer": "Entry-point redirection and DLL sideloading/hijacking",
+    "distractors": [
+      {
+        "question_text": "Rootkit installation and kernel-mode hooking",
+        "misconception": "Targets scope misunderstanding: While rootkits are persistence mechanisms, the description focuses on user-mode modifications to an existing executable and DLL, not kernel-level stealth or hooking."
+      },
+      {
+        "question_text": "Scheduled tasks and service creation",
+        "misconception": "Targets process order errors: The malware does start a service, but the core persistence mechanism described is the modification of an *existing* service executable, not the creation of a new scheduled task or service entry."
+      },
+      {
+        "question_text": "Registry run keys and browser helper objects (BHOs)",
+        "misconception": "Targets terminology confusion: These are common persistence methods, but the scenario explicitly details modifying an executable&#39;s entry point and loading a DLL, not using registry run keys or browser extensions."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The malware copies `Lab11-03.dll` to `inet_epar32.dll` in `C:\\Windows\\System32`. It then modifies `cisvc.exe` by injecting shellcode and changing its entry point (entry-point redirection). When `cisvc.exe` is launched, the injected shellcode executes first, which then loads `inet_epar32.dll` (DLL sideloading/hijacking) and calls its malicious export (`zzz69806582`) before jumping to the original `cisvc.exe` entry point. This ensures the malicious DLL is loaded and executed whenever the legitimate `cisvc` service starts.",
+      "distractor_analysis": "Rootkit installation and kernel-mode hooking involve deeper system modifications, often to hide processes or files, which is not explicitly described here. Scheduled tasks and service creation are persistence methods, but the malware is modifying an *existing* service executable, not creating a new one or a scheduled task. Registry run keys and BHOs are also persistence methods, but they are not the techniques detailed in the scenario (entry-point redirection and DLL loading).",
+      "analogy": "This is like a malicious actor replacing the front door lock of a legitimate business (cisvc.exe) with their own modified lock. When an employee tries to open the door, they first trigger the malicious lock, which lets in an accomplice (inet_epar32.dll) to steal information, and then the original door opens as normal, so no one suspects anything."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "net start cisvc",
+        "context": "Command used by the malware to start the modified indexing service, triggering the malicious payload."
+      },
+      {
+        "language": "json",
+        "code": "{\n  &quot;entry_point_original&quot;: &quot;0000129B&quot;,\n  &quot;entry_point_trojanized&quot;: &quot;00001A28&quot;,\n  &quot;injected_shellcode_location&quot;: &quot;0x409030&quot;,\n  &quot;dll_to_load&quot;: &quot;C:\\\\WINDOWS\\\\System32\\\\inet_epar32.dll&quot;,\n  &quot;dll_export_called&quot;: &quot;zzz69806582&quot;\n}",
+        "context": "Summary of key indicators from the malware analysis showing entry-point redirection and DLL loading."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "MALWARE_ANALYSIS_BASICS",
+      "WINDOWS_INTERNALS",
+      "ASSEMBLY_BASICS"
+    ]
+  }
+]

@@ -1,0 +1,71 @@
+[
+  {
+    "question_text": "A critical business application server has been compromised by a zero-day exploit. After containment, what is the MOST critical step before restoring the server from a backup?",
+    "correct_answer": "Analyze the backup for the presence of the zero-day exploit or any persistence mechanisms",
+    "distractors": [
+      {
+        "question_text": "Immediately restore the server from the most recent full backup to minimize downtime",
+        "misconception": "Targets process order error: Students might prioritize RTO (minimizing downtime) over ensuring the restored system is clean, potentially reintroducing the threat."
+      },
+      {
+        "question_text": "Rebuild the operating system from a golden image and then restore data from backup",
+        "misconception": "Targets scope misunderstanding: While rebuilding the OS is good, it doesn&#39;t guarantee the data backup itself is clean of the exploit or persistence, which is the core issue."
+      },
+      {
+        "question_text": "Perform a full vulnerability scan on the restored server after it&#39;s back online",
+        "misconception": "Targets timing confusion: Scanning after restoration is too late; the exploit could already be active. The validation must happen *before* restoration."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "When a zero-day exploit compromises a system, there&#39;s a significant risk that the exploit or its persistence mechanisms (e.g., rootkits, backdoors) could be present in backups taken *after* the initial compromise. Before restoring, it is paramount to analyze the backup itself to ensure it is clean. Restoring a compromised backup would simply reintroduce the threat, leading to a cycle of re-infection. This analysis might involve scanning the backup image, mounting it in an isolated environment for forensic analysis, or comparing file hashes against known good states.",
+      "distractor_analysis": "Immediately restoring prioritizes RTO over security, risking re-infection. Rebuilding the OS is a good practice but doesn&#39;t address potential compromise within the data backup itself. Scanning after restoration is reactive and allows the exploit to reactivate, rather than preventing its reintroduction.",
+      "analogy": "Restoring from a backup without checking for the exploit is like trying to put out a fire with gasoline – you&#39;re just making the problem worse."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "# Example of mounting a backup image for analysis in an isolated environment\nmkdir /mnt/backup_analysis\nmount -o ro,loop /path/to/backup.img /mnt/backup_analysis\n\n# Example of scanning the mounted backup for malware\nclamscan -r --infected --bell /mnt/backup_analysis",
+        "context": "Commands to mount a disk image from a backup in read-only mode for analysis and then scan it for malware before committing to a full restoration."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "INCIDENT_RESPONSE_ADVANCED",
+      "BACKUP_RECOVERY_STRATEGIES",
+      "MALWARE_ANALYSIS_FUNDAMENTALS"
+    ]
+  },
+  {
+    "question_text": "A critical business application has been compromised by a sophisticated rootkit that bypasses standard network monitoring. What is the MOST effective recovery strategy to ensure no re-infection during restoration?",
+    "correct_answer": "Restore the application to a clean, isolated environment from a verified clean backup, then implement NDIS-level monitoring.",
+    "distractors": [
+      {
+        "question_text": "Restore from the most recent backup and immediately re-enable all existing security software.",
+        "misconception": "Targets threat persistence detection: Assumes existing security software will detect the rootkit, which it has already bypassed. Also, restoring without verification risks re-infection."
+      },
+      {
+        "question_text": "Rebuild the entire server from scratch, then restore only the application data from backup.",
+        "misconception": "Targets efficiency and scope: While rebuilding is thorough, it might be overkill if a clean OS image is available. More importantly, it doesn&#39;t explicitly address the rootkit&#39;s bypass mechanism or the need for NDIS-level monitoring."
+      },
+      {
+        "question_text": "Perform a full system scan with multiple antivirus tools, then restore the application in place.",
+        "misconception": "Targets detection limitations: Relies on traditional antivirus, which the rootkit has already demonstrated an ability to evade. &#39;In place&#39; restoration without a clean environment is risky."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The rootkit&#39;s ability to bypass standard network monitoring means that traditional security software might not detect its presence or activity. To ensure a clean recovery, the application must be restored to an environment known to be free of the rootkit. Verifying the backup&#39;s cleanliness is paramount. Implementing NDIS-level monitoring (Network Driver Interface Specification) is crucial because the rootkit bypasses higher-level network monitoring by directly manipulating the TCP/IP stack, but NDIS operates at a lower level, allowing visibility into traffic that the rootkit might attempt to hide.",
+      "distractor_analysis": "The distractors represent common but flawed recovery approaches. Restoring without verification or relying on bypassed security tools will likely lead to re-infection. Rebuilding from scratch is a valid step but doesn&#39;t specifically address the unique bypass mechanism of this rootkit or the need for specialized monitoring. Multiple AV scans are unlikely to catch a sophisticated rootkit that has already demonstrated evasion capabilities.",
+      "analogy": "Imagine a burglar who knows how to disable your house&#39;s alarm system. Simply turning the alarm back on after they leave won&#39;t stop them from coming back. You need to fix the alarm&#39;s vulnerability and perhaps install a new, lower-level security system they don&#39;t know about."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "procedure",
+    "prerequisites": [
+      "ROOTKIT_DETECTION",
+      "NETWORK_STACK_FUNDAMENTALS",
+      "INCIDENT_RECOVERY_PLANNING",
+      "CLEAN_ROOM_RECOVERY"
+    ]
+  }
+]

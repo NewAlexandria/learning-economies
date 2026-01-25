@@ -1,0 +1,96 @@
+[
+  {
+    "question_text": "To detect an attacker attempting to escalate privileges by patching an access token in a Windows kernel, which specific artifact or event would be the MOST direct indicator of this activity?",
+    "correct_answer": "Changes to the `_EPROCESS` structure&#39;s `Token` member or the `_TOKEN` object itself, indicating a modification of security context.",
+    "distractors": [
+      {
+        "question_text": "Monitoring for `NtSetInformationProcess` calls with unusual parameters",
+        "misconception": "Targets API call confusion: While `NtSetInformationProcess` can modify process attributes, direct patching of the kernel `_TOKEN` object or `_EPROCESS` `Token` member is a lower-level manipulation that bypasses standard API calls for token modification."
+      },
+      {
+        "question_text": "Observing an increase in `SeDebugPrivilege` usage by non-administrative processes",
+        "misconception": "Targets privilege usage vs. modification: `SeDebugPrivilege` allows debugging, which might be a precursor, but the direct act of patching the token is a modification of the security context, not just an exercise of an existing privilege."
+      },
+      {
+        "question_text": "Detecting unusual process creation events (Event ID 4688) with elevated privileges",
+        "misconception": "Targets post-exploitation vs. exploitation: Event ID 4688 indicates a process was created with certain privileges, which is a *result* of successful token patching, not the act of patching itself. The question asks for the direct indicator of the patching activity."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Patching an access token in the Windows kernel involves directly modifying the `_EPROCESS` structure&#39;s `Token` member or the `_TOKEN` object itself to elevate privileges. This is a low-level memory manipulation. Detection would require kernel-level monitoring (e.g., via a hypervisor or kernel callback functions) to observe changes to these specific kernel data structures.",
+      "distractor_analysis": "Monitoring `NtSetInformationProcess` is too high-level; token patching bypasses this. Increased `SeDebugPrivilege` usage is a symptom, not the direct act of patching. Event ID 4688 shows the *outcome* of privilege escalation, not the kernel manipulation that caused it.",
+      "analogy": "Detecting token patching is like catching someone changing the locks on a safe (the kernel object modification) rather than just seeing them open the safe with a new key (the elevated process creation)."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "ATTACK_EXPLOIT"
+    ]
+  },
+  {
+    "question_text": "To detect process-image modification techniques like hollowing, doppelgänging, herpaderping, or ghosting, which stage of the Windows process creation workflow offers a critical detection opportunity for EDRs?",
+    "correct_answer": "Monitoring the `FileObject` member of the `PS_CREATE_NOTIFY_INFO` structure for discrepancies after the process-creation notification is sent.",
+    "distractors": [
+      {
+        "question_text": "Validating parameters passed to the process-creation API before any objects are created.",
+        "misconception": "Targets early stage confusion: Students might think validation is a detection point, but image modification happens later, after initial validation."
+      },
+      {
+        "question_text": "Monitoring the final execution at the image entry point for unexpected behavior.",
+        "misconception": "Targets late stage confusion: Students might focus on post-execution behavior, but image modification aims to evade detection *before* execution is fully established and often before user-mode hooks can fire."
+      },
+      {
+        "question_text": "Analyzing the process object allocation (PEB) for anomalies before thread creation.",
+        "misconception": "Targets internal structure confusion: Students might focus on internal process structures, but the core issue is the remapping of the image section, which occurs earlier than PEB allocation and is exploited before notification."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Process-image modification techniques exploit a design decision where the kernel creates a section object from the target image (step 3) and caches it. This allows the image section to deviate from the original file. When the process-creation notification (step 7) is sent, the `FileObject` member of the `PS_CREATE_NOTIFY_INFO` structure might point to the original, legitimate file, even though the process&#39;s memory has been remapped with malicious code. Detecting this requires comparing the `FileObject` with the actual in-memory image.",
+      "distractor_analysis": "Validating parameters is too early; the modification hasn&#39;t occurred yet. Monitoring final execution is too late; the evasion has already succeeded in deceiving the initial process creation notification. Analyzing PEB allocation is also too late and doesn&#39;t directly address the image remapping issue that these techniques exploit.",
+      "analogy": "Imagine a security guard checking an ID at the entrance (process creation notification). The attacker shows a legitimate ID, but then quickly swaps their face with someone else&#39;s *after* the ID check but *before* the guard fully registers their presence. The `FileObject` is like the ID, and the actual in-memory image is the swapped face."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "ATTACK_EVASION"
+    ]
+  },
+  {
+    "question_text": "To detect a social engineering attack leveraging malicious attachments delivered via a trusted third-party platform (like the CareerBuilder example), which detection logic would be MOST effective in a SIEM?",
+    "correct_answer": "Correlation of email gateway logs showing attachments from trusted domains, with endpoint logs showing execution of suspicious processes or file writes from those attachments.",
+    "distractors": [
+      {
+        "question_text": "Monitoring network traffic for C2 beaconing after an attachment is opened, regardless of the sender.",
+        "misconception": "Targets post-exploitation vs. initial access: This focuses on a later stage of the attack, potentially missing the initial compromise and not specifically addressing the social engineering vector."
+      },
+      {
+        "question_text": "Creating a YARA rule to scan all incoming email attachments for known malware signatures.",
+        "misconception": "Targets signature-based limitations: While useful, this is signature-based and can be easily bypassed by new or polymorphic malware, and doesn&#39;t specifically address the social engineering aspect of trusted sender."
+      },
+      {
+        "question_text": "Alerting on any email containing an attachment from an external sender.",
+        "misconception": "Targets false positive overload: This would generate an overwhelming number of false positives from legitimate business communications, making it impractical for detection."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The CareerBuilder attack highlights that the malicious attachment comes from a &#39;trusted&#39; source. Therefore, simply blocking external attachments or relying solely on signatures is insufficient. Effective detection requires correlating the initial email delivery (even from trusted sources) with subsequent suspicious activity on the endpoint, such as process creation, file modifications, or network connections that indicate malware execution.",
+      "distractor_analysis": "Monitoring C2 is important but happens after initial compromise. YARA rules are signature-based and can be evaded. Alerting on all external attachments is too noisy and impractical for most environments.",
+      "analogy": "It&#39;s like not just checking the mail for suspicious packages, but also watching what happens after a seemingly legitimate package is opened inside the house."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "DEFENSE_LOG",
+      "SIEM_CORRELATION",
+      "FRAMEWORK_MITRE"
+    ]
+  }
+]

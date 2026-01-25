@@ -1,0 +1,558 @@
+[
+  {
+    "question_text": "Which Pod Security Standard would prevent a container from mounting the host&#39;s Docker socket (`/var/run/docker.sock`), a common technique for container escape and privilege escalation?",
+    "correct_answer": "Restricted",
+    "distractors": [
+      {
+        "question_text": "Baseline",
+        "misconception": "Targets insufficient protection: Students might think Baseline is enough, but it allows hostPath volumes, including `/var/run/docker.sock`, as long as they are not privileged. Restricted explicitly disallows hostPath volumes for sensitive paths."
+      },
+      {
+        "question_text": "Privileged",
+        "misconception": "Targets inverse understanding: Students might confuse Privileged as a security standard that *enforces* security, rather than one that *allows* maximum privileges, including mounting the Docker socket."
+      },
+      {
+        "question_text": "None of the above; this requires a custom Admission Controller.",
+        "misconception": "Targets lack of knowledge of built-in controls: Students might not be aware that Pod Security Standards (specifically Restricted) provide this capability natively, thinking a custom solution is always needed for advanced restrictions."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `Restricted` Pod Security Standard is designed to enforce hardening best practices and prevent known privilege escalation paths. It explicitly disallows the use of `hostPath` volumes for sensitive host paths, including `/var/run/docker.sock`. Mounting the Docker socket grants the container control over the Docker daemon on the host, effectively giving it root access to the host and enabling container escape.",
+      "distractor_analysis": "The `Baseline` standard permits `hostPath` volumes, making it insufficient to prevent mounting the Docker socket. The `Privileged` standard allows all privileges, including mounting the Docker socket. While custom Admission Controllers can enforce this, the `Restricted` Pod Security Standard provides a built-in, simpler way to achieve this specific security goal.",
+      "analogy": "If the Docker socket is the &#39;master key&#39; to the host, the `Restricted` Pod Security Standard is like a strict security policy that says &#39;no one is allowed to bring master keys into this secure area, period.&#39; The `Baseline` standard might say &#39;no one can bring *obviously dangerous* master keys,&#39; but might miss some. `Privileged` would be like &#39;everyone gets a master key!&#39;"
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: malicious-pod\nspec:\n  containers:\n  - name: attacker\n    image: ubuntu\n    volumeMounts:\n    - name: docker-socket\n      mountPath: /var/run/docker.sock\n  volumes:\n  - name: docker-socket\n    hostPath:\n      path: /var/run/docker.sock\n      type: Socket\n",
+        "context": "Example of a Pod attempting to mount the host&#39;s Docker socket, which would be blocked by the Restricted Pod Security Standard."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "POD_SECURITY_STANDARDS",
+      "CONTAINER_ESCAPE_TECHNIQUES",
+      "KUBERNETES_SECURITY_CONTEXTS"
+    ]
+  },
+  {
+    "question_text": "A containerized legacy FTP daemon is configured to run as root (`ftpd` typically requires binding to privileged port 20) and allows anonymous users to upload files to a world-writable directory. Which security context setting, combined with a suitable Pod Security Standard, would best mitigate the risk of an attacker using an FTP bounce attack or uploading malicious executables?",
+    "correct_answer": "Drop all capabilities, set `allowPrivilegeEscalation: false`, and enforce the Restricted Pod Security Standard.",
+    "distractors": [
+      {
+        "question_text": "Set `runAsNonRoot: true` and `readOnlyRootFilesystem: true`.",
+        "misconception": "Targets incomplete mitigation: Students might think `runAsNonRoot` is sufficient for privilege separation, but it doesn&#39;t prevent capabilities abuse if the process starts as root and then drops privileges. `readOnlyRootFilesystem` prevents writing to the root filesystem but not to mounted volumes or other writable directories, which is where malicious uploads would occur."
+      },
+      {
+        "question_text": "Apply a NetworkPolicy to restrict egress traffic and enable `seccompProfile: RuntimeDefault`.",
+        "misconception": "Targets control plane confusion: NetworkPolicy limits network blast radius but does not prevent the initial compromise or privilege escalation within the container. `RuntimeDefault` seccomp is a good baseline but may not block all syscalls needed for an FTP bounce or other advanced exploits if dangerous capabilities are still present."
+      },
+      {
+        "question_text": "Set `privileged: false` and `hostNetwork: false`.",
+        "misconception": "Targets scope misunderstanding: `privileged: false` is a good practice but doesn&#39;t explicitly drop specific dangerous capabilities like `CAP_NET_RAW` or `CAP_NET_BIND_SERVICE` that an FTP daemon might retain. `hostNetwork: false` isolates from the host network namespace but doesn&#39;t prevent internal container exploits or capability abuse."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The FTP daemon&#39;s need to bind to port 20 (a privileged port) often leads to it running as root or with `CAP_NET_BIND_SERVICE`. An FTP bounce attack leverages the `PORT` command to make the FTP server connect to arbitrary ports on arbitrary hosts, which can be used for port scanning or proxying attacks. Allowing anonymous uploads to a world-writable directory further exacerbates the risk by enabling attackers to place malicious files. To mitigate this, dropping all capabilities (`capabilities.drop: [&quot;ALL&quot;]`) is crucial to remove dangerous capabilities like `CAP_NET_RAW` (used in some bounce attacks) and `CAP_NET_BIND_SERVICE` (if the daemon can be configured to run without it or use `CAP_NET_RAW` for port 20). Setting `allowPrivilegeEscalation: false` prevents the process from gaining more privileges than its parent. Enforcing the Restricted Pod Security Standard ensures these critical security controls are applied, preventing the deployment of such a vulnerable configuration.",
+      "distractor_analysis": "`runAsNonRoot: true` would prevent the container from starting if `ftpd` requires root, but if `ftpd` starts as root and then drops privileges, it might still retain dangerous capabilities. `readOnlyRootFilesystem: true` is good but doesn&#39;t prevent writes to other mounted volumes. NetworkPolicy and `seccompProfile: RuntimeDefault` are valuable but are not direct preventative measures against capability-based attacks or the initial compromise via the FTP protocol itself. `privileged: false` is a baseline, but explicitly dropping capabilities is more granular and effective. `hostNetwork: false` is standard practice but doesn&#39;t address the internal container security posture.",
+      "analogy": "Imagine a bank vault (container) where the guard (FTP daemon) has a master key (root privileges) and a tool belt full of specialized tools (capabilities). Dropping all capabilities is like taking away all but the most essential tools, and `allowPrivilegeEscalation: false` is like ensuring the guard can&#39;t pick up new tools. The Restricted Pod Security Standard is the bank&#39;s policy that mandates these security measures for all guards and vaults."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: vulnerable-ftp\nspec:\n  containers:\n  - name: ftpd\n    image: legacy-ftpd-image:latest\n    securityContext:\n      allowPrivilegeEscalation: false\n      capabilities:\n        drop: [&quot;ALL&quot;]\n      # runAsUser: 65534 # Consider running as non-root if possible\n      # runAsGroup: 65534\n      # readOnlyRootFilesystem: true # Good practice, but doesn&#39;t prevent uploads to data volumes\n    volumeMounts:\n    - name: ftp-data\n      mountPath: /var/ftp/pub\n  volumes:\n  - name: ftp-data\n    emptyDir: {}\n",
+        "context": "Kubernetes Pod manifest demonstrating securityContext settings to mitigate FTP vulnerabilities. Note: `runAsUser` and `runAsGroup` are commented out as the prompt implies the daemon *requires* root for port binding, making `drop: [&quot;ALL&quot;]` and `allowPrivilegeEscalation: false` the primary mitigations for capability abuse."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "LINUX_CAPABILITIES",
+      "POD_SECURITY_STANDARDS",
+      "FTP_VULNERABILITIES"
+    ]
+  },
+  {
+    "question_text": "A Kubernetes cluster hosts multiple microservices, including a WordPress application and a separate Django API. To prevent the WordPress container from initiating connections to the Django API, which network policy configuration should be applied?",
+    "correct_answer": "An Egress NetworkPolicy on the WordPress namespace, denying traffic to the Django API&#39;s namespace/pods.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy on the Django API&#39;s namespace, denying traffic from the WordPress namespace.",
+        "misconception": "Targets ingress vs. egress confusion: While this would prevent the connection, the question asks to prevent the WordPress container from *initiating* the connection, which is an egress control from WordPress&#39;s perspective."
+      },
+      {
+        "question_text": "A Pod Security Policy (PSP) preventing network connections between namespaces.",
+        "misconception": "Targets control plane confusion: Students might confuse PSPs (deprecated, focused on pod creation) with NetworkPolicies (focused on network traffic). PSPs do not control network flow."
+      },
+      {
+        "question_text": "Setting `hostNetwork: false` in the WordPress pod&#39;s security context.",
+        "misconception": "Targets host network vs. pod network confusion: `hostNetwork: false` prevents the pod from using the host&#39;s network namespace, but doesn&#39;t control inter-pod communication within the cluster&#39;s overlay network."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To prevent the WordPress container from initiating connections to the Django API, an Egress NetworkPolicy should be applied to the WordPress namespace. This policy would explicitly deny outbound traffic from WordPress pods to the pods or namespace where the Django API resides. This enforces network segmentation and limits the blast radius if the WordPress application is compromised.",
+      "distractor_analysis": "An Ingress NetworkPolicy on the Django API would prevent connections *to* the Django API, but the question specifically asks to prevent the WordPress container from *initiating* the connection, which is an egress concern for WordPress. Pod Security Policies (PSPs) are deprecated and focus on pod creation restrictions, not network traffic flow. Setting `hostNetwork: false` ensures the pod uses its own network namespace, but it doesn&#39;t control traffic between pods within the cluster&#39;s network.",
+      "analogy": "This is like putting a firewall on a specific computer (WordPress pod) that prevents it from calling certain phone numbers (Django API). An Ingress policy on the Django API would be like the Django API&#39;s phone having call screening. PSPs are like building codes for the computer itself, and `hostNetwork: false` is like ensuring the computer has its own dedicated internet connection, not sharing the building&#39;s main one."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-wordpress-to-django\n  namespace: wordpress-namespace\nspec:\n  podSelector: {}\n  policyTypes:\n  - Egress\n  egress:\n  - to:\n    - namespaceSelector:\n        matchLabels:\n          name: django-namespace\n    ports:\n    - protocol: TCP\n      port: 8000 # Assuming Django API runs on port 8000\n    - to: [] # Deny all other egress to django-namespace\n",
+        "context": "Egress NetworkPolicy in the &#39;wordpress-namespace&#39; to deny connections to &#39;django-namespace&#39;"
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "NETWORK_SEGMENTATION",
+      "KUBERNETES_NAMESPACES"
+    ]
+  },
+  {
+    "question_text": "To limit the blast radius of a compromised web application pod, preventing it from initiating connections to internal database pods in a different namespace, which NetworkPolicy configuration is most appropriate?",
+    "correct_answer": "An Egress NetworkPolicy on the web application pod&#39;s namespace, denying traffic to the database pod&#39;s namespace, combined with an Ingress NetworkPolicy on the database pod&#39;s namespace, allowing only specific web application pods.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy on the web application pod, denying all incoming traffic except from the load balancer.",
+        "misconception": "Targets scope misunderstanding: Students might focus only on ingress to the compromised pod, but the question is about preventing *egress* from it to other internal services. This policy doesn&#39;t address the core problem."
+      },
+      {
+        "question_text": "An Egress NetworkPolicy on the web application pod, allowing only traffic to external internet endpoints.",
+        "misconception": "Targets incomplete solution: While this helps prevent exfiltration, it doesn&#39;t explicitly prevent communication with *internal* database pods, which is the specific blast radius concern mentioned. It&#39;s a good general practice but not the most direct answer to the problem."
+      },
+      {
+        "question_text": "A NetworkPolicy on the database pod&#39;s namespace, allowing ingress only from the web application pod&#39;s IP address.",
+        "misconception": "Targets dynamic IP issues and incomplete control: Relying on IP addresses for pod-to-pod communication is brittle in Kubernetes due to dynamic IPs. Also, this is only an ingress rule for the DB, not an egress rule for the web app, which is crucial for limiting the compromised pod&#39;s actions."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Limiting the blast radius from a compromised web application pod to internal database pods requires a multi-faceted approach using NetworkPolicies. An Egress NetworkPolicy applied to the web application&#39;s namespace can explicitly deny all outbound traffic to the database&#39;s namespace, preventing the compromised pod from initiating connections. Concurrently, an Ingress NetworkPolicy on the database pod&#39;s namespace should be configured to only allow incoming connections from the specific web application pods that legitimately need access, further reinforcing the isolation and preventing unauthorized access even if the egress policy is misconfigured or bypassed.",
+      "distractor_analysis": "An Ingress NetworkPolicy on the web application pod only controls incoming traffic, not outgoing traffic to the database. An Egress NetworkPolicy allowing only external internet traffic is a good general security practice but doesn&#39;t specifically address the internal communication to database pods. Relying solely on IP addresses for NetworkPolicies in Kubernetes is problematic due to the dynamic nature of pod IPs; using label selectors (`podSelector`, `namespaceSelector`) is the preferred and more robust method. Furthermore, an ingress policy on the database alone doesn&#39;t prevent the web app from *attempting* to connect elsewhere.",
+      "analogy": "Imagine a security guard at the web app&#39;s door (Egress Policy) who says, &#39;You cannot leave this building to go to the database building.&#39; And another guard at the database&#39;s door (Ingress Policy) who says, &#39;Only people from the web app building with a specific badge can enter here.&#39; Both are needed for robust protection."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-egress-to-db-namespace\n  namespace: web-app-ns # Namespace of the web application\nspec:\n  podSelector: {}\n  policyTypes: [&quot;Egress&quot;]\n  egress:\n  - to:\n    - namespaceSelector:\n        matchLabels:\n          name: db-ns # Label of the database namespace\n    ports:\n    - protocol: TCP\n      port: 5432 # Example DB port\n    - to: [] # Deny all other egress to this namespace\n---\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: allow-ingress-from-web-app\n  namespace: db-ns # Namespace of the database\nspec:\n  podSelector:\n    matchLabels:\n      app: database\n  policyTypes: [&quot;Ingress&quot;]\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels:\n          name: web-app-ns\n      podSelector:\n        matchLabels:\n          app: web-app\n    ports:\n    - protocol: TCP\n      port: 5432\n",
+        "context": "NetworkPolicies to restrict egress from web app to database namespace and ingress to database from web app."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "NETWORK_SEGMENTATION",
+      "BLAST_RADIUS_REDUCTION"
+    ]
+  },
+  {
+    "question_text": "To limit the blast radius of a compromised web application pod, preventing it from initiating connections to internal database services in a different namespace, which NetworkPolicy configuration is most appropriate?",
+    "correct_answer": "An Egress NetworkPolicy on the web application pod&#39;s namespace, denying all outbound traffic by default and explicitly allowing only necessary external connections.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy on the database pods, allowing connections only from the web application pod&#39;s IP address.",
+        "misconception": "Targets control direction confusion: While this protects the database, it doesn&#39;t limit the *compromised web app&#39;s* ability to initiate connections elsewhere. The question specifically asks to limit the *web application pod*."
+      },
+      {
+        "question_text": "A default Deny All Ingress NetworkPolicy on the web application pod&#39;s namespace.",
+        "misconception": "Targets policy type misunderstanding: A default deny *ingress* policy prevents incoming connections, but does nothing to restrict *outgoing* connections from a compromised pod, which is the focus of limiting blast radius."
+      },
+      {
+        "question_text": "Applying `hostNetwork: false` to the web application pod&#39;s manifest.",
+        "misconception": "Targets security context vs. network policy: `hostNetwork: false` is the default and prevents the pod from using the host&#39;s network namespace, but it doesn&#39;t restrict pod-to-pod or pod-to-service communication within the cluster, which is the role of NetworkPolicy."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "An Egress NetworkPolicy controls outbound traffic from pods. By implementing a default deny-all egress policy in the web application&#39;s namespace, you ensure that the compromised pod cannot initiate connections to unauthorized internal services (like databases in other namespaces) or external malicious endpoints. You then explicitly allow only the legitimate outbound connections the web app needs.",
+      "distractor_analysis": "An Ingress NetworkPolicy on the database protects the database but doesn&#39;t prevent the compromised web app from attacking other targets. A default Deny All Ingress policy on the web app prevents incoming connections, not outgoing ones. `hostNetwork: false` is a basic isolation setting but doesn&#39;t provide granular network segmentation like a NetworkPolicy.",
+      "analogy": "This is like putting a firewall on the outgoing side of a specific office (the web app&#39;s namespace). By default, nothing can leave, and you only open specific ports for legitimate business communication, preventing an insider threat from reaching other departments or external malicious actors."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: default-deny-egress\n  namespace: web-app-ns\nspec:\n  podSelector: {}\n  policyTypes: [&quot;Egress&quot;]\n  egress: [] # Denies all egress by default\n---\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: allow-egress-to-db\n  namespace: web-app-ns\nspec:\n  podSelector:\n    matchLabels:\n      app: web-app\n  policyTypes: [&quot;Egress&quot;]\n  egress:\n  - to:\n    - namespaceSelector:\n        matchLabels:\n          name: db-ns\n      podSelector:\n        matchLabels:\n          app: database\n    ports:\n    - protocol: TCP\n      port: 5432",
+        "context": "Kubernetes NetworkPolicies demonstrating default deny egress and specific allowance to a database in another namespace."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "NETWORK_SEGMENTATION",
+      "BLAST_RADIUS_REDUCTION"
+    ]
+  },
+  {
+    "question_text": "To limit the blast radius from a compromised web application pod, which network policy configuration would prevent it from initiating connections to internal database pods in a different namespace, while still allowing external ingress?",
+    "correct_answer": "An Egress NetworkPolicy on the web app pod&#39;s namespace, denying traffic to the database namespace, combined with an Ingress NetworkPolicy on the database namespace, denying traffic from the web app namespace.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy on the web app pod, denying all egress traffic.",
+        "misconception": "Targets misunderstanding of Ingress/Egress scope: Ingress policies control incoming traffic, not outgoing. Denying all egress would break the web app&#39;s functionality."
+      },
+      {
+        "question_text": "An Egress NetworkPolicy on the web app pod&#39;s namespace, allowing only traffic to external internet.",
+        "misconception": "Targets incomplete solution: While this restricts egress, it doesn&#39;t explicitly prevent the web app from trying to connect to the database if the database also has no ingress policy, or if the database is in the same namespace."
+      },
+      {
+        "question_text": "A default deny-all Ingress NetworkPolicy on the web app pod&#39;s namespace, with specific rules for external access.",
+        "misconception": "Targets incorrect policy type: A default deny-all Ingress policy would prevent external access to the web app itself, which contradicts the requirement of allowing external ingress."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To prevent a compromised web app from reaching internal database pods in a different namespace, you need a two-pronged approach. First, an Egress NetworkPolicy in the web app&#39;s namespace should explicitly deny traffic destined for the database namespace. Second, an Ingress NetworkPolicy in the database&#39;s namespace should deny traffic originating from the web app&#39;s namespace. This creates a robust barrier, ensuring that even if one policy is misconfigured, the other acts as a backup. Allowing external ingress to the web app is handled by separate rules within its own namespace&#39;s Ingress policy.",
+      "distractor_analysis": "An Ingress NetworkPolicy on the web app pod controls incoming traffic, not outgoing. An Egress NetworkPolicy allowing only external internet traffic is a good start but doesn&#39;t explicitly block internal cross-namespace communication to the database. A default deny-all Ingress policy on the web app&#39;s namespace would block legitimate external traffic to the web app.",
+      "analogy": "This is like having two security checkpoints: one at the exit of the web app&#39;s building saying &#39;no one from here goes to the database building,&#39; and another at the entrance of the database building saying &#39;no one from the web app building comes in here.&#39; Both must be in place for maximum security."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "# Egress Policy in web-app-namespace\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-web-to-db-egress\n  namespace: web-app-namespace\nspec:\n  podSelector: {}\n  policyTypes:\n  - Egress\n  egress:\n  - to:\n    - namespaceSelector:\n        matchLabels:\n          name: external-internet-access # Assuming a label for internet-facing services\n    ports:\n    - protocol: TCP\n      port: 80\n    - protocol: TCP\n      port: 443\n\n# Ingress Policy in db-namespace\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-web-app-to-db-ingress\n  namespace: db-namespace\nspec:\n  podSelector: {}\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - podSelector: {}\n      namespaceSelector:\n        matchLabels:\n          name: allowed-db-clients # Label for namespaces allowed to access DB\n    ports:\n    - protocol: TCP\n      port: 5432 # Example DB port",
+        "context": "NetworkPolicy examples for denying cross-namespace communication while allowing external ingress"
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "NETWORK_SEGMENTATION"
+    ]
+  },
+  {
+    "question_text": "An attacker has compromised a container and is attempting to escape to the host by exploiting CAP_SYS_ADMIN capabilities. Which combination of security controls provides defense in depth against this attack vector?",
+    "correct_answer": "Drop all capabilities, set allowPrivilegeEscalation: false, and enforce Restricted Pod Security Standard",
+    "distractors": [
+      {
+        "question_text": "Set privileged: false and use a read-only root filesystem",
+        "misconception": "Targets incomplete mitigation: Students think privileged: false removes all capabilities, but containers retain default capabilities including potentially dangerous ones; readOnlyRootFilesystem does not prevent capability abuse"
+      },
+      {
+        "question_text": "Apply NetworkPolicy to isolate the pod and enable audit logging",
+        "misconception": "Targets control plane confusion: Students conflate detection/containment controls (NetworkPolicy, audit) with prevention controls; these do not prevent container escape, only limit lateral movement after escape"
+      },
+      {
+        "question_text": "Use seccomp profile RuntimeDefault and set runAsNonRoot: true",
+        "misconception": "Targets partial solution bias: While these controls help, RuntimeDefault seccomp still allows many syscalls, and runAsNonRoot does not prevent capability-based escapes if capabilities are granted"
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "`CAP_SYS_ADMIN` is one of the most dangerous Linux capabilities, enabling mount operations, namespace manipulation, and other privileged actions that facilitate container escape. Defense in depth requires: (1) dropping all capabilities to remove `CAP_SYS_ADMIN`, (2) setting `allowPrivilegeEscalation: false` to prevent regaining capabilities, and (3) enforcing Restricted Pod Security Standard which mandates both controls cluster-wide.",
+      "distractor_analysis": "`privileged: false` still allows default capabilities. `NetworkPolicy` and audit logging are detective and containment controls, not preventive. `seccomp RuntimeDefault` and `runAsNonRoot` provide partial protection but do not explicitly drop capabilities.",
+      "analogy": "This is like securing a vault: dropping capabilities removes the tools to break in, `allowPrivilegeEscalation` prevents acquiring new tools, and Pod Security Standards ensure every vault in the building follows the same security policy."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "securityContext:\n  allowPrivilegeEscalation: false\n  capabilities:\n    drop: [&quot;ALL&quot;]\n  runAsNonRoot: true\n  seccompProfile:\n    type: RuntimeDefault",
+        "context": "Defense-in-depth security context against capability-based container escape"
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "LINUX_CAPABILITIES",
+      "CONTAINER_ESCAPE_TECHNIQUES",
+      "POD_SECURITY_STANDARDS"
+    ]
+  },
+  {
+    "question_text": "A critical application pod needs to communicate with a database service running in a different namespace (`db-namespace`) but should not be accessible from other pods in its own namespace (`app-namespace`). Which NetworkPolicy configuration achieves this specific isolation?",
+    "correct_answer": "An Egress NetworkPolicy in `app-namespace` allowing traffic to `db-namespace` and an Ingress NetworkPolicy in `app-namespace` denying traffic from other pods in `app-namespace`.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy in `app-namespace` allowing traffic from `db-namespace` and an Egress NetworkPolicy in `db-namespace` allowing traffic to `app-namespace`.",
+        "misconception": "Targets directionality and scope confusion: Students might confuse ingress/egress directions and apply policies to the wrong namespaces. The question is about protecting the application pod, not the database pod from the application pod&#39;s perspective."
+      },
+      {
+        "question_text": "A single NetworkPolicy in `app-namespace` with `podSelector: {}` and `namespaceSelector` for `db-namespace`.",
+        "misconception": "Targets NetworkPolicy rule complexity: Students might oversimplify NetworkPolicy rules. A single policy with `podSelector: {}` would apply to all pods, and a `namespaceSelector` alone doesn&#39;t differentiate between ingress/egress or internal namespace traffic."
+      },
+      {
+        "question_text": "An Egress NetworkPolicy in `app-namespace` allowing all outbound traffic and an Ingress NetworkPolicy in `app-namespace` allowing only traffic from `db-namespace`.",
+        "misconception": "Targets over-permissioning: Allowing &#39;all outbound traffic&#39; violates the principle of least privilege and doesn&#39;t address the requirement to deny traffic from other pods within its own namespace. The ingress part is partially correct but incomplete."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To achieve the desired isolation, two NetworkPolicies are needed. First, an Egress NetworkPolicy in `app-namespace` is required to explicitly allow the application pod to send traffic to the database service in `db-namespace`. By default, if any NetworkPolicy exists for a pod, all other traffic (ingress and egress) is denied. Second, an Ingress NetworkPolicy in `app-namespace` is needed to deny traffic from other pods within `app-namespace` while implicitly allowing traffic from the database (if the database initiates connections, or if the egress policy handles the return traffic). The most precise way to deny internal namespace traffic is to define an ingress policy that only allows specific sources (like the database) and implicitly denies others.",
+      "distractor_analysis": "The first distractor misapplies the policies, focusing on the database&#39;s perspective or incorrect directions. The second distractor attempts a single policy, which is insufficient for the complex requirements of both cross-namespace egress and intra-namespace ingress denial. The third distractor over-permits egress traffic and doesn&#39;t explicitly deny intra-namespace ingress, which is a key requirement.",
+      "analogy": "Imagine the `app-namespace` as a building. The Egress policy is like a rule for the building&#39;s residents: &#39;You can only send mail to the `db-namespace` building.&#39; The Ingress policy is like a rule for visitors: &#39;Only people from the `db-namespace` building can visit, and no one from within our own building can visit this specific apartment.&#39;"
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: allow-db-egress\n  namespace: app-namespace\nspec:\n  podSelector:\n    matchLabels:\n      app: critical-app\n  policyTypes:\n  - Egress\n  egress:\n  - to:\n    - namespaceSelector:\n        matchLabels:\n          name: db-namespace\n    ports:\n    - protocol: TCP\n      port: 5432 # Example DB port\n---\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-intra-namespace-ingress\n  namespace: app-namespace\nspec:\n  podSelector:\n    matchLabels:\n      app: critical-app\n  policyTypes:\n  - Ingress\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels:\n          name: db-namespace\n    ports:\n    - protocol: TCP\n      port: 8080 # Example app port",
+        "context": "Kubernetes NetworkPolicies for cross-namespace egress and intra-namespace ingress control"
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "NETWORK_SEGMENTATION_PRINCIPLES"
+    ]
+  },
+  {
+    "question_text": "A critical application pod needs to communicate only with a specific database service within the same namespace and expose its API only to an ingress controller in a different namespace. Which NetworkPolicy configuration effectively limits the blast radius if the application pod is compromised?",
+    "correct_answer": "Egress policy allowing traffic only to the database service, and Ingress policy allowing traffic only from the ingress controller.",
+    "distractors": [
+      {
+        "question_text": "Egress policy allowing all outbound traffic, and Ingress policy allowing traffic from the ingress controller.",
+        "misconception": "Targets over-permissioning: Students might prioritize ingress control but neglect egress, leaving the compromised pod free to connect to external C2 servers or other internal services."
+      },
+      {
+        "question_text": "Ingress policy allowing all inbound traffic, and Egress policy allowing traffic only to the database service.",
+        "misconception": "Targets incomplete ingress control: Students might focus on egress but leave ingress open, allowing any pod or external source to connect to the application, increasing the initial attack surface."
+      },
+      {
+        "question_text": "A single NetworkPolicy with `podSelector: {}` and `policyTypes: [&quot;Ingress&quot;, &quot;Egress&quot;]`.",
+        "misconception": "Targets scope misunderstanding: Students confuse an empty `podSelector` with applying to a specific pod. An empty `podSelector` applies the policy to ALL pods in the namespace, which is not specific enough for this scenario."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To limit the blast radius, both ingress (inbound) and egress (outbound) traffic must be strictly controlled. The ingress policy should only permit connections from the specified ingress controller (potentially using `namespaceSelector` and `podSelector`). The egress policy should only permit connections to the specific database service (using `podSelector` or `ipBlock` if external). This ensures the compromised pod cannot initiate connections to other internal services or external malicious endpoints, nor can it receive connections from unauthorized sources.",
+      "distractor_analysis": "Allowing all outbound traffic (distractor 1) defeats the purpose of limiting blast radius, as a compromised pod could exfiltrate data or spread malware. Allowing all inbound traffic (distractor 2) leaves the application vulnerable to initial compromise from any source. A single NetworkPolicy with `podSelector: {}` (distractor 3) would apply to all pods in the namespace, not just the critical application pod, and would need specific `ingress` and `egress` rules to achieve the desired effect, which is not implied by the general statement.",
+      "analogy": "Imagine a secure room (the pod). The ingress policy is the door, only allowing specific people (ingress controller) to enter. The egress policy is the phone line, only allowing calls to a specific number (database service). If either is left open, the room is not truly secure."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: app-db-policy\n  namespace: my-app-namespace\nspec:\n  podSelector:\n    matchLabels:\n      app: critical-app\n  policyTypes:\n  - Ingress\n  - Egress\n  ingress:\n  - from:\n    - namespaceSelector:\n        matchLabels:\n          name: ingress-namespace\n      podSelector:\n        matchLabels:\n          app: ingress-controller\n  egress:\n  - to:\n    - podSelector:\n        matchLabels:\n          app: database-service\n    ports:\n    - protocol: TCP\n      port: 5432 # Example DB port\n",
+        "context": "NetworkPolicy for a critical application pod, limiting ingress from an ingress controller and egress to a database service."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "NETWORK_SEGMENTATION_PRINCIPLES"
+    ]
+  },
+  {
+    "question_text": "Which Pod Security Standard (PSS) would prevent a container from mounting the host&#39;s Docker socket (`/var/run/docker.sock`), a common technique for container escape?",
+    "correct_answer": "Restricted",
+    "distractors": [
+      {
+        "question_text": "Baseline",
+        "misconception": "Targets incomplete understanding of PSS profiles: Students might think Baseline is sufficient for most security, but it explicitly allows hostPath volumes, including the Docker socket, as long as they are not privileged."
+      },
+      {
+        "question_text": "Privileged",
+        "misconception": "Targets inverse logic: Students might confuse &#39;Privileged&#39; as the standard that *prevents* privileged actions. In reality, the Privileged PSS imposes no restrictions, allowing such mounts."
+      },
+      {
+        "question_text": "Namespace-level Pod Security Admission (PSA) with `enforce: Baseline`",
+        "misconception": "Targets PSA configuration confusion: Students might confuse the PSA enforcement mechanism with the underlying PSS profile. Even with PSA, enforcing the Baseline profile would still permit the Docker socket mount."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `Restricted` Pod Security Standard is designed for highly-privileged workloads and explicitly disallows hostPath volumes, which includes mounting the Docker socket. Mounting the Docker socket grants the container control over the host&#39;s Docker daemon, effectively allowing it to create, delete, and manage containers on the host, leading to a full container escape. The Restricted profile enforces strict security best practices to prevent such vulnerabilities.",
+      "distractor_analysis": "The `Baseline` PSS allows hostPath volumes, making it unsuitable for preventing Docker socket mounts. The `Privileged` PSS imposes no restrictions and would allow the mount. While Namespace-level Pod Security Admission is the mechanism to enforce PSS, enforcing the `Baseline` profile (distractor 3) would still permit the Docker socket mount, as Baseline allows hostPath volumes.",
+      "analogy": "If your house has three security levels: &#39;Open Door&#39; (Privileged), &#39;Locked Door&#39; (Baseline), and &#39;Locked Door with Alarm and Guard&#39; (Restricted). Mounting the Docker socket is like giving a guest a key to the entire house. &#39;Locked Door&#39; might prevent some simple break-ins, but &#39;Locked Door with Alarm and Guard&#39; is needed to prevent someone from getting a master key."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: docker-socket-pod\nspec:\n  containers:\n  - name: my-container\n    image: my-image:latest\n    volumeMounts:\n    - name: docker-socket\n      mountPath: /var/run/docker.sock\n  volumes:\n  - name: docker-socket\n    hostPath:\n      path: /var/run/docker.sock\n      type: Socket\n",
+        "context": "Example Pod manifest attempting to mount the host&#39;s Docker socket, which would be blocked by the Restricted PSS."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "POD_SECURITY_STANDARDS",
+      "CONTAINER_ESCAPE_TECHNIQUES",
+      "KUBERNETES_VOLUMES"
+    ]
+  },
+  {
+    "question_text": "To prevent a compromised application container from initiating outbound connections to arbitrary external IP addresses, which Kubernetes NetworkPolicy configuration would be most effective?",
+    "correct_answer": "An Egress NetworkPolicy that denies all outbound traffic by default and explicitly allows only necessary connections to whitelisted IPs/ports.",
+    "distractors": [
+      {
+        "question_text": "An Ingress NetworkPolicy that denies all inbound traffic by default and explicitly allows only necessary connections.",
+        "misconception": "Targets confusion between ingress and egress: Students might focus on inbound traffic, but the question specifically asks about *outbound* connections, which is controlled by egress policies."
+      },
+      {
+        "question_text": "Setting `hostNetwork: false` in the Pod&#39;s spec.",
+        "misconception": "Targets misunderstanding of `hostNetwork`: Students might think `hostNetwork: false` (the default) prevents all external connections, but it only prevents the pod from using the host&#39;s network namespace directly; it doesn&#39;t restrict outbound connections from the pod&#39;s own network namespace."
+      },
+      {
+        "question_text": "Applying `capabilities.drop: [&quot;NET_RAW&quot;]` to the container&#39;s security context.",
+        "misconception": "Targets conflation of capabilities with network policies: Students might think dropping network-related capabilities is sufficient, but while `NET_RAW` prevents raw socket access, it doesn&#39;t prevent standard TCP/UDP connections to arbitrary IPs, which is the domain of NetworkPolicy."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "An Egress NetworkPolicy controls outbound traffic from pods. By default, if no NetworkPolicies apply to a pod, all egress traffic is allowed. To prevent a compromised container from connecting to arbitrary external IPs (e.g., C2 servers, data exfiltration targets), an Egress NetworkPolicy should be implemented that first denies all outbound traffic (`egress: []`) and then explicitly defines rules to permit only the necessary outbound connections to known, whitelisted IP addresses, CIDR blocks, or DNS names (if supported by the CNI). This implements a &#39;deny by default, allow by exception&#39; model for egress.",
+      "distractor_analysis": "An Ingress NetworkPolicy controls inbound traffic *to* a pod, not outbound traffic *from* it. While important for overall security, it doesn&#39;t address the specific problem of a compromised container initiating external connections. `hostNetwork: false` is the default and ensures the pod gets its own network namespace, but it does not restrict what the pod can do within that namespace regarding outbound connections. Dropping `CAP_NET_RAW` prevents a container from creating raw sockets, which can be used for advanced network attacks, but it does not prevent standard TCP/UDP connections to external IPs, which is the primary concern for C2 communication or data exfiltration.",
+      "analogy": "Think of an Egress NetworkPolicy as a firewall for outgoing calls from a specific phone. You set it to &#39;deny all&#39; by default, and then you explicitly add numbers (IPs/ports) that the phone is allowed to call. An Ingress policy would be for incoming calls. `hostNetwork: false` is like giving the phone its own line, but not restricting who it can call. Dropping `CAP_NET_RAW` is like removing the ability to make very specialized, low-level calls, but regular calls are still possible."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: deny-all-egress-except-dns\n  namespace: default\nspec:\n  podSelector:\n    matchLabels:\n      app: my-app\n  policyTypes:\n    - Egress\n  egress:\n    - to:\n        - ipBlock:\n            cidr: 0.0.0.0/0\n            except:\n              - 10.0.0.0/8\n              - 172.16.0.0/12\n              - 192.168.0.0/16\n      ports:\n        - protocol: UDP\n          port: 53 # Allow DNS resolution\n    # Add more rules here for specific allowed external IPs/ports",
+        "context": "Kubernetes NetworkPolicy denying all egress by default and allowing only DNS resolution as an example."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "CONTAINER_NETWORK_SECURITY",
+      "LEAST_PRIVILEGE_PRINCIPLE"
+    ]
+  },
+  {
+    "question_text": "In a Kubernetes environment adopting a Zero-Trust networking model, which network policy strategy best integrates vulnerability management as an authorization criterion for pods?",
+    "correct_answer": "Implement an admission controller that checks a pod&#39;s vulnerability scan status before allowing it to join the network, coupled with NetworkPolicies that restrict communication based on dynamic labels reflecting vulnerability state.",
+    "distractors": [
+      {
+        "question_text": "Apply a default deny-all NetworkPolicy to all pods and manually approve each connection request after a security review.",
+        "misconception": "Targets impractical manual processes: While &#39;deny-all&#39; is a good starting point, manual approval for every connection is not scalable or automated, which is a core tenet of integrating vulnerability management into Zero-Trust."
+      },
+      {
+        "question_text": "Configure NetworkPolicies to allow all internal pod-to-pod communication but block external ingress/egress unless explicitly whitelisted by IP address.",
+        "misconception": "Targets traditional perimeter thinking: This approach still relies on a network perimeter (internal vs. external) and IP whitelisting, which Zero-Trust aims to move beyond, especially for internal communication based on trust metrics."
+      },
+      {
+        "question_text": "Use a service mesh to encrypt all pod traffic and enforce mTLS, assuming encryption alone satisfies Zero-Trust principles for vulnerability management.",
+        "misconception": "Targets incomplete security: Students might conflate encryption and mTLS with comprehensive Zero-Trust. While essential for secure communication, mTLS verifies identity but doesn&#39;t inherently check for vulnerabilities as an authorization metric."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Zero-Trust requires explicit verification for every access request, moving beyond network perimeters. Integrating vulnerability management means a pod&#39;s vulnerability status becomes an authorization criterion. An admission controller can intercept pod creation/update requests, query a vulnerability management system, and apply labels or annotations to the pod reflecting its vulnerability status. NetworkPolicies can then dynamically enforce communication restrictions based on these labels, allowing only &#39;clean&#39; pods to communicate with sensitive resources. This automates the &#39;vulnerability-reporting agent&#39; concept described in the text for Kubernetes pods.",
+      "distractor_analysis": "Manually approving connections is not scalable for dynamic Kubernetes environments. Relying on IP whitelisting and internal/external perimeters contradicts the core Zero-Trust principle of &#39;never trust, always verify&#39; for all traffic. While a service mesh with mTLS is crucial for secure communication and identity verification, it doesn&#39;t inherently integrate vulnerability status as an authorization factor for network access without additional mechanisms.",
+      "analogy": "Imagine a secure building where every person (pod) needs a badge (identity) and a health certificate (vulnerability status) to enter any room (network segment). An admission controller is the security guard checking the health certificate at the entrance, and NetworkPolicies are the rules on the doors that only open for people with valid badges AND healthy certificates."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: allow-clean-to-db\n  namespace: default\nspec:\n  podSelector:\n    matchLabels:\n      app: backend\n  policyTypes:\n    - Egress\n  egress:\n    - to:\n        - podSelector:\n            matchLabels:\n              app: database\n              vulnerability-status: clean\n      ports:\n        - protocol: TCP\n          port: 5432",
+        "context": "Example NetworkPolicy allowing backend pods to connect to a database pod ONLY if the database pod has a &#39;clean&#39; vulnerability status label. This label would be dynamically applied by an admission controller or similar mechanism."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_NETWORK_POLICIES",
+      "KUBERNETES_ADMISSION_CONTROLLERS",
+      "ZERO_TRUST_PRINCIPLES",
+      "VULNERABILITY_MANAGEMENT_CONCEPTS"
+    ]
+  },
+  {
+    "question_text": "Which Kubernetes security context setting is most effective at preventing a container from gaining elevated privileges by exploiting vulnerabilities that require `CAP_SYS_ADMIN` or similar dangerous capabilities?",
+    "correct_answer": "capabilities.drop: [&quot;ALL&quot;] and allowPrivilegeEscalation: false",
+    "distractors": [
+      {
+        "question_text": "runAsNonRoot: true and seccompProfile.type: RuntimeDefault",
+        "misconception": "Targets partial solution bias: Students might think preventing root and using default seccomp is sufficient, but it doesn&#39;t explicitly drop all capabilities, leaving some dangerous ones (e.g., CAP_NET_RAW) available, and doesn&#39;t prevent privilege escalation if a vulnerability exists."
+      },
+      {
+        "question_text": "privileged: false and readOnlyRootFilesystem: true",
+        "misconception": "Targets incomplete mitigation: Students often confuse `privileged: false` with dropping all capabilities. While `privileged: true` grants ALL capabilities, `privileged: false` still leaves default capabilities, some of which are dangerous. `readOnlyRootFilesystem` prevents writing to the root filesystem but doesn&#39;t prevent capability abuse."
+      },
+      {
+        "question_text": "AppArmor profile and NetworkPolicy to restrict egress",
+        "misconception": "Targets control plane confusion: Students conflate different security layers. AppArmor provides mandatory access control for processes, and NetworkPolicy restricts network traffic. While valuable, neither directly prevents a container from using existing dangerous capabilities or escalating privileges within its current scope."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "To prevent a container from exploiting dangerous capabilities like `CAP_SYS_ADMIN` for privilege escalation or container escape, the most effective approach is to explicitly drop all capabilities (`capabilities.drop: [&quot;ALL&quot;]`). This ensures the container starts with the absolute minimum privileges. Additionally, `allowPrivilegeEscalation: false` prevents a process inside the container from gaining more privileges than its parent process, which is crucial for stopping common privilege escalation techniques, even if some capabilities were inadvertently left. This combination provides a strong defense-in-depth against capability-based attacks.",
+      "distractor_analysis": "1. `runAsNonRoot: true` prevents the container from running as UID 0, but doesn&#39;t address capabilities. `seccompProfile.type: RuntimeDefault` provides a baseline syscall filter but doesn&#39;t explicitly drop all capabilities, leaving potentially dangerous ones. 2. `privileged: false` only ensures the container isn&#39;t running with *all* host capabilities; it still retains a default set, some of which are dangerous. `readOnlyRootFilesystem: true` prevents writes to the root filesystem but doesn&#39;t stop capability-based attacks. 3. AppArmor provides MAC for processes, and NetworkPolicy restricts network access. While important for overall security, they don&#39;t directly prevent the exploitation of dangerous Linux capabilities or privilege escalation within the container&#39;s process context.",
+      "analogy": "Imagine a secure vault (container). `capabilities.drop: [&quot;ALL&quot;]` is like removing all tools (capabilities) from anyone entering the vault. `allowPrivilegeEscalation: false` is like ensuring no one can find or create new tools once inside. Other measures like `runAsNonRoot` are like ensuring only non-managers enter, and `readOnlyRootFilesystem` is like making the vault walls unchangeable, but neither directly addresses the tools available for breaking out."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: secure-pod\nspec:\n  containers:\n  - name: my-app\n    image: my-image:latest\n    securityContext:\n      allowPrivilegeEscalation: false\n      capabilities:\n        drop: [&quot;ALL&quot;]\n      runAsNonRoot: true\n      runAsUser: 1000\n      seccompProfile:\n        type: RuntimeDefault",
+        "context": "Kubernetes Pod securityContext configuration for strong privilege reduction"
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "LINUX_CAPABILITIES",
+      "CONTAINER_ESCAPE_TECHNIQUES",
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "POD_SECURITY_STANDARDS"
+    ]
+  },
+  {
+    "question_text": "A sophisticated malware variant attempts to hide its presence by unlinking its service record from the Service Control Manager (SCM) linked list in a Windows container. Which container security control is most effective at preventing this type of host-level system manipulation?",
+    "correct_answer": "Restricting container capabilities by dropping CAP_SYS_ADMIN",
+    "distractors": [
+      {
+        "question_text": "Implementing a strict NetworkPolicy to isolate the container&#39;s network traffic",
+        "misconception": "Targets control plane confusion: Students confuse network isolation (NetworkPolicy) with host-level process manipulation prevention. NetworkPolicy limits communication but doesn&#39;t prevent a compromised container from altering host-level data structures if it has the necessary privileges."
+      },
+      {
+        "question_text": "Setting `readOnlyRootFilesystem: true` in the container&#39;s security context",
+        "misconception": "Targets scope misunderstanding: Students might think making the filesystem read-only prevents all host-level changes. However, unlinking a service record is a memory-based operation, not a filesystem write, and `readOnlyRootFilesystem` doesn&#39;t restrict memory access or capabilities."
+      },
+      {
+        "question_text": "Enforcing `runAsNonRoot: true` for the container&#39;s user ID",
+        "misconception": "Targets partial solution bias: While `runAsNonRoot` is good practice, it only prevents the container from running as UID 0. It does not inherently prevent a non-root user from exploiting vulnerabilities or using granted capabilities (like CAP_SYS_ADMIN) to perform host-level manipulations if those capabilities are still present."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Blazgel malware hides services by manipulating the `Flink` and `Blink` pointers of the `_SERVICE_RECORD` structure in memory. This type of low-level system manipulation, especially involving kernel data structures or system services, typically requires elevated privileges on the host. In a Linux-based container environment (which Windows containers often leverage for security contexts), the `CAP_SYS_ADMIN` capability grants a wide range of administrative operations, including the ability to perform such system-level memory modifications or interact with kernel components in ways that could facilitate service unlinking. Dropping `CAP_SYS_ADMIN` (and other dangerous capabilities) severely restricts the container&#39;s ability to perform these host-level manipulations, thus preventing the service hiding technique.",
+      "distractor_analysis": "NetworkPolicy focuses on network communication, not host process integrity. `readOnlyRootFilesystem` protects the filesystem but not memory structures or the ability to manipulate them. `runAsNonRoot` prevents running as root but doesn&#39;t remove dangerous capabilities that a non-root user could still exploit for host-level attacks.",
+      "analogy": "Imagine a security guard (container) who is trying to remove a record from a physical filing cabinet (SCM linked list). Dropping `CAP_SYS_ADMIN` is like taking away the guard&#39;s master key and special tools that allow them to access and tamper with the cabinet&#39;s internal mechanisms. NetworkPolicy is like putting a fence around the filing cabinet room, which doesn&#39;t stop the guard inside. `readOnlyRootFilesystem` is like making the cabinet&#39;s exterior unchangeable, but not its contents. `runAsNonRoot` is like making sure the guard isn&#39;t the &#39;head&#39; guard, but they might still have tools to tamper if not explicitly removed."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: secure-container\nspec:\n  containers:\n  - name: my-app\n    image: my-image:latest\n    securityContext:\n      capabilities:\n        drop: [&quot;ALL&quot;]\n      allowPrivilegeEscalation: false\n      runAsNonRoot: true\n      seccompProfile:\n        type: RuntimeDefault",
+        "context": "Kubernetes Pod security context demonstrating how to drop all capabilities, including CAP_SYS_ADMIN, to prevent host-level manipulation."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "LINUX_CAPABILITIES",
+      "CONTAINER_ESCAPE_TECHNIQUES",
+      "POD_SECURITY_STANDARDS",
+      "WINDOWS_SERVICE_MANAGEMENT"
+    ]
+  },
+  {
+    "question_text": "A containerized application uses a third-party library that, when invoked, attempts to read a configuration file from the user&#39;s home directory (`~/.config/app.conf`). If this application runs with elevated privileges (e.g., as root) inside the container, which security context setting is most effective at preventing a privilege escalation attack where an attacker manipulates this library to read sensitive host files?",
+    "correct_answer": "readOnlyRootFilesystem: true combined with a non-root user (runAsNonRoot: true)",
+    "distractors": [
+      {
+        "question_text": "allowPrivilegeEscalation: false",
+        "misconception": "Targets scope misunderstanding: Students might think this prevents any privilege-related attack. However, allowPrivilegeEscalation prevents a process from gaining *more* privileges than its parent, but it doesn&#39;t prevent an already privileged process (like root inside the container) from abusing its existing privileges to read files."
+      },
+      {
+        "question_text": "capabilities.drop: [&quot;ALL&quot;]",
+        "misconception": "Targets incomplete understanding of capabilities: While dropping capabilities is crucial for preventing many escapes, reading arbitrary files via a library vulnerability doesn&#39;t necessarily require specific Linux capabilities if the process is already running as root and the filesystem is writable."
+      },
+      {
+        "question_text": "seccompProfile: RuntimeDefault",
+        "misconception": "Targets overestimation of seccomp&#39;s default protection: Students might believe the default seccomp profile is sufficient. While it blocks many dangerous syscalls, it might not block the specific file I/O operations if they are deemed &#39;normal&#39; for a process, especially if the process is already root and the filesystem is writable."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The vulnerability described involves a privileged process (running as root inside the container) being tricked by a library into reading an arbitrary file from the host filesystem. To prevent this, two key controls are needed: 1. `readOnlyRootFilesystem: true` makes the container&#39;s root filesystem read-only, preventing the library from writing to or modifying files outside its intended scope, and crucially, preventing it from reading files from the host if the host&#39;s filesystem is mounted into the container as part of the root filesystem. 2. `runAsNonRoot: true` ensures the application doesn&#39;t run as root in the first place, significantly reducing the impact even if a file is read, as a non-root user would have limited access to sensitive host files. The combination provides defense in depth.",
+      "distractor_analysis": "`allowPrivilegeEscalation: false` prevents a process from gaining *new* privileges, but the attack here leverages *existing* root privileges. `capabilities.drop: [&quot;ALL&quot;]` is excellent for preventing many container escapes, but if the process is already root and the filesystem is writable, reading a file doesn&#39;t necessarily require specific capabilities. `seccompProfile: RuntimeDefault` provides a good baseline, but it might not block the specific file read operation if it&#39;s considered a standard syscall, especially if the process is root and the filesystem is writable.",
+      "analogy": "Imagine a bank vault (the container) with a security guard (the privileged application). `allowPrivilegeEscalation: false` is like preventing the guard from getting a master key if they only have a regular key. `capabilities.drop: [&quot;ALL&quot;]` is like taking away all the guard&#39;s tools. However, if the guard already has a master key (is root) and the vault door is unlocked (writable filesystem), they can still open any safe. `readOnlyRootFilesystem: true` is like welding the vault door shut, and `runAsNonRoot: true` is like ensuring the guard never gets a master key in the first place."
+    },
+    "code_snippets": [
+      {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: vulnerable-app\nspec:\n  containers:\n  - name: my-app\n    image: my-vulnerable-image:latest\n    securityContext:\n      readOnlyRootFilesystem: true\n      runAsNonRoot: true\n      runAsUser: 1000 # Example non-root user ID\n      allowPrivilegeEscalation: false\n      capabilities:\n        drop: [&quot;ALL&quot;]\n    volumeMounts:\n    - name: config-volume\n      mountPath: /etc/app/config\n  volumes:\n  - name: config-volume\n    configMap: # Or other secure volume type\n      name: app-config",
+        "context": "Kubernetes Pod manifest demonstrating security context settings to prevent library-based privilege escalation."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "KUBERNETES_SECURITY_CONTEXTS",
+      "CONTAINER_PRIVILEGE_ESCALATION",
+      "LINUX_FILESYSTEM_PERMISSIONS"
+    ]
+  }
+]

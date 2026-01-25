@@ -1,0 +1,207 @@
+[
+  {
+    "question_text": "A security team is planning to deploy a new wireless network for a high-security facility. They need to ensure that all cryptographic keys used for WPA3 encryption are generated with sufficient entropy and are stored securely. Which of the following is the most secure method for generating and storing these keys?",
+    "correct_answer": "Generate keys within a Hardware Security Module (HSM) with non-exportable attributes and FIPS 140-2 Level 3 certification.",
+    "distractors": [
+      {
+        "question_text": "Generate keys using a software-based random number generator and store them in an encrypted file on a server.",
+        "misconception": "Targets software vs. hardware security: Students may underestimate the risks of software-based key generation and storage, not realizing the vulnerability to OS-level attacks or insufficient entropy."
+      },
+      {
+        "question_text": "Generate keys on an offline workstation and then manually transfer them to access points via a secure USB drive.",
+        "misconception": "Targets physical security over cryptographic security: Students might prioritize air-gapping without considering the risks of manual transfer, potential for key compromise during transfer, or lack of hardware-backed protection."
+      },
+      {
+        "question_text": "Use a pre-shared key (PSK) derived from a strong passphrase and distribute it to all devices.",
+        "misconception": "Targets key type confusion: Students may confuse PSK for WPA3-Personal with the robust key management required for enterprise-grade security, overlooking the scalability and security limitations of PSKs for large deployments."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "For high-security environments, cryptographic keys, especially those for WPA3, must be generated with high-quality entropy and protected against extraction. An HSM provides a tamper-resistant environment for key generation and storage. The &#39;non-exportable&#39; attribute ensures the private key material never leaves the HSM, and FIPS 140-2 Level 3 certification indicates strong physical and logical security controls, including tamper detection and response, which are crucial for protecting keys.",
+      "distractor_analysis": "Software-based generation relies on the operating system&#39;s entropy sources, which can be less robust than dedicated hardware, and storing keys in encrypted files on a server is vulnerable if the server is compromised. Generating keys offline and transferring them manually introduces risks during the transfer process and doesn&#39;t provide hardware-backed protection for the key&#39;s lifecycle. Using a PSK, while common for WPA3-Personal, is not suitable for enterprise-level security due to the challenges of secure distribution, rotation, and the &#39;one key to rule them all&#39; vulnerability.",
+      "analogy": "Think of an HSM as a high-security bank vault for your most valuable keys. Not only does it generate the keys inside, but it also ensures they can never be taken out, only used for their intended purpose within the vault. Other methods are like keeping keys under a mattress or in a regular safe – better than nothing, but not truly secure against determined attackers."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "# Example of PKCS#11 attributes for non-exportable key generation\nfrom PyKCS11 import *\n\ntemplate = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_KEY_TYPE, CKK_RSA),\n    (CKA_TOKEN, True), # Stored on token (HSM)\n    (CKA_PRIVATE, True),\n    (CKA_SENSITIVE, True),\n    (CKA_EXTRACTABLE, False) # Crucial for non-exportability\n]\n\n# session.generateKeyPair(template, public_key_template)",
+        "context": "Illustrates the use of PKCS#11 attributes to specify a key as non-exportable and sensitive when generated within an HSM."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN",
+      "CRYPTO_PKI"
+    ]
+  },
+  {
+    "question_text": "A security architect is designing a key management solution for an Azure environment. They need to ensure that cryptographic keys used for sensitive data encryption are generated and stored in a way that prevents their extraction from the hardware module, even by privileged administrators. Which HSM property directly addresses this requirement?",
+    "correct_answer": "Non-exportable key attribute with hardware-enforced access controls",
+    "distractors": [
+      {
+        "question_text": "FIPS 140-2 Level 3 certification",
+        "misconception": "Targets certification misunderstanding: Students might assume any higher FIPS level automatically guarantees non-exportability, but FIPS levels describe overall security, not specifically key export control."
+      },
+      {
+        "question_text": "Dual-control key ceremony for key generation",
+        "misconception": "Targets procedural vs. technical confusion: Students may conflate administrative controls (dual-control) with the technical, hardware-enforced inability to extract a key."
+      },
+      {
+        "question_text": "Key wrapping with a master key for storage",
+        "misconception": "Targets encryption vs. non-exportability: Students might think encrypting a key (key wrapping) provides the same level of protection as preventing its physical extraction from the HSM."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The non-exportable key attribute, enforced by the HSM&#39;s hardware, is the specific property that prevents private keys from ever leaving the secure boundary of the module. This means even an administrator with full access to the HSM cannot extract the raw key material. This is a fundamental security feature of HSMs for protecting sensitive cryptographic keys.",
+      "distractor_analysis": "FIPS 140-2 Level 3 certification indicates tamper-evidence and physical protection, but the specific mechanism for preventing key extraction is the non-exportable attribute. Dual-control key ceremonies are crucial for secure key generation and management but are procedural controls, not hardware-enforced non-exportability. Key wrapping encrypts a key for storage or transport, but it still means the key material exists outside the HSM in an encrypted form, which is not the same as being non-exportable from the hardware module itself.",
+      "analogy": "Think of it like a secure safe deposit box where you can put items in and take them out, but the box itself is welded to the floor and cannot be moved or opened by anyone, even the bank manager, without specific, hardware-enenforced protocols. The non-exportable key is like an item that can be used inside the box but can never be physically removed from it."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "In an MPLS/VPN hub-and-spoke topology, why is it crucial to assign a different Route Distinguisher (RD) for each spoke site VRF if the hub and spoke sites are connected to the same Provider Edge (PE) router?",
+    "correct_answer": "To prevent the BGP selection process from incorrectly filtering or losing essential routing information from other spoke sites due to the automatic VPN-IPv4 route filtering feature not applying in this specific scenario.",
+    "distractors": [
+      {
+        "question_text": "To ensure that each spoke site can directly exchange routing information with other spoke sites without passing through the hub.",
+        "misconception": "Targets misunderstanding of hub-and-spoke purpose: Students might think RDs are for direct spoke-to-spoke communication, which contradicts the fundamental design of a hub-and-spoke topology where the hub is the transit point."
+      },
+      {
+        "question_text": "To allow the hub PE router to import routes from all spoke sites using a single Route Target (RT) value.",
+        "misconception": "Targets confusion between RD and RT roles: Students may conflate the roles of RDs and RTs, thinking RDs facilitate RT import, when RTs are primarily for route import/export policies."
+      },
+      {
+        "question_text": "To simplify the configuration of MP-iBGP updates between the PE routers and the Customer Edge (CE) routers.",
+        "misconception": "Targets simplification fallacy: Students might assume that using different RDs simplifies BGP configuration, whereas it&#39;s a critical mechanism for correct route isolation and propagation, not simplification of BGP updates to CEs."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "When hub and spoke sites are on the same PE router, using the same Route Distinguisher (RD) for spoke VRFs can lead to the BGP selection process incorrectly filtering routes. The automatic VPN-IPv4 route filtering feature, which normally prevents this in distributed topologies, does not apply when VRFs share the same PE. This means that if all spoke VRFs have the same RD, the PE router will include routes from other spoke sites (which are not configured to be imported by a given spoke) in its BGP selection process, potentially leading to the loss of the &#39;best&#39; route for a specific spoke.",
+      "distractor_analysis": "The hub-and-spoke model inherently routes all inter-spoke traffic through the hub, so direct spoke-to-spoke communication is not the goal. RDs are for making VPN-IPv4 routes unique within the BGP routing table, not for simplifying MP-iBGP updates or allowing a single RT to import all routes. RTs define import/export policies, while RDs ensure route uniqueness. Using different RDs is a critical configuration to maintain correct routing behavior and prevent route loss in this specific same-PE scenario.",
+      "analogy": "Imagine a post office (PE router) handling mail for several apartment buildings (spoke VRFs) that all share the same street address (RD). If the post office doesn&#39;t have a specific rule to separate mail for each building (automatic filtering not applying), it might accidentally put mail for Building A into Building B&#39;s box because it only sees the shared street address, leading to lost mail. Giving each building a unique apartment number (different RD) ensures mail goes to the correct recipient, even if they&#39;re at the same street address."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "CRYPTO_PKI"
+    ]
+  },
+  {
+    "question_text": "Which Nmap scan type allows for a truly blind TCP port scan of a target, meaning no packets are sent from the scanner&#39;s real IP address to the target, by exploiting IP fragmentation ID sequence generation on an intermediary host?",
+    "correct_answer": "Idle scan (-sI)",
+    "distractors": [
+      {
+        "question_text": "Custom TCP scan (--scanflags)",
+        "misconception": "Targets feature confusion: Students might confuse custom flag setting with the blind nature of the idle scan, as both are advanced techniques."
+      },
+      {
+        "question_text": "IP protocol scan (-sO)",
+        "misconception": "Targets scope confusion: Students might confuse scanning IP protocols with scanning TCP ports blindly, as both use the -p option and are advanced scans."
+      },
+      {
+        "question_text": "SYN scan (-sS)",
+        "misconception": "Targets basic vs. advanced: Students might default to a common, stealthy scan type but miss the &#39;truly blind&#39; aspect, which SYN scan does not provide."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Idle scan (-sI) is a highly advanced and stealthy Nmap technique. It performs a truly blind TCP port scan by leveraging a &#39;zombie host&#39; and exploiting its IP fragmentation ID sequence generation. The scanner never sends packets directly to the target; instead, it probes the zombie host to infer the target&#39;s port status based on changes in the zombie&#39;s IP ID sequence. This makes the scan appear to originate from the zombie, not the actual scanner.",
+      "distractor_analysis": "Custom TCP scan (--scanflags) allows for arbitrary TCP flag combinations but still sends packets directly from the scanner to the target. IP protocol scan (-sO) identifies supported IP protocols, not TCP port states, and also sends packets directly from the scanner. SYN scan (-sS) is a common, relatively stealthy scan, but it is not &#39;truly blind&#39; as it sends SYN packets directly from the scanner&#39;s IP address to the target.",
+      "analogy": "Imagine you want to know if a store is open without being seen. Instead of looking yourself, you ask a friend (the zombie host) to walk past the store. You then observe your friend&#39;s behavior (their IP ID sequence) to deduce if the store is open, without ever approaching the store yourself."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "nmap -sI &lt;zombie_host&gt; &lt;target_ip&gt;",
+        "context": "Example of an Nmap idle scan command, where &lt;zombie_host&gt; is an idle machine and &lt;target_ip&gt; is the system being scanned."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "The Festi rootkit bypasses security software monitoring network access by directly sending IRP_MJ_CREATE requests to the transport driver. What key management principle is implicitly violated by this technique, making it difficult for security software to detect?",
+    "correct_answer": "Principle of Least Privilege (for security software&#39;s monitoring capabilities)",
+    "distractors": [
+      {
+        "question_text": "Secure by Design",
+        "misconception": "Targets general security principle confusion: Students might think &#39;secure by design&#39; is always the answer for security issues, but it&#39;s too broad here and doesn&#39;t pinpoint the specific mechanism."
+      },
+      {
+        "question_text": "Defense in Depth",
+        "misconception": "Targets layered security misunderstanding: Students might assume any bypass means defense in depth failed, but Festi specifically targets a single layer&#39;s monitoring method, not the entire layered approach."
+      },
+      {
+        "question_text": "Separation of Duties",
+        "misconception": "Targets administrative control confusion: Students might conflate technical bypasses with organizational controls, which are unrelated to how Festi operates at the kernel level."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The Festi rootkit bypasses security software by directly manipulating kernel objects and sending IRP_MJ_CREATE requests to the transport driver, thereby avoiding the standard interception points used by security software. This effectively means the security software, which should have the privilege to monitor all network access, is circumvented. The principle of least privilege, when applied to security software, implies it should have sufficient privilege to perform its monitoring function without being bypassed by lower-level manipulations. Festi&#39;s technique exploits a gap in the security software&#39;s privilege or its ability to enforce its privilege, allowing it to operate with more privilege than the security software can effectively monitor.",
+      "distractor_analysis": "Secure by Design is a broad concept; while the OS design might have vulnerabilities, Festi&#39;s method specifically exploits how security software monitors. Defense in Depth refers to multiple layers of security; Festi bypasses a specific monitoring layer, but other layers (like NDIS-level monitoring) might still catch it. Separation of Duties is an administrative control, not a technical mechanism for bypassing kernel-level monitoring.",
+      "analogy": "Imagine a security guard (security software) who is supposed to check everyone entering a building through the main door. Festi is like someone who knows a secret tunnel directly to the building&#39;s interior, completely bypassing the main door and the guard&#39;s checkpoint. The guard&#39;s &#39;privilege&#39; to check everyone is undermined because not everyone is forced to use the monitored entry point."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "NTSTATUS ZwCreateFile(\n  PHANDLE            FileHandle,\n  ACCESS_MASK        DesiredAccess,\n  POBJECT_ATTRIBUTES ObjectAttributes,\n  PIO_STATUS_BLOCK   IoStatusBlock,\n  PLARGE_INTEGER     AllocationSize,\n  ULONG              FileAttributes,\n  ULONG              ShareAccess,\n  ULONG              CreateDisposition,\n  ULONG              CreateOptions,\n  PVOID              EaBuffer,\n  ULONG              EaLength\n);",
+        "context": "The standard Windows system service that Festi&#39;s custom implementation mimics and bypasses."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  },
+  {
+    "question_text": "A security team is implementing a new key management system for a critical application. They need to ensure that the private keys generated and stored within a Hardware Security Module (HSM) cannot be physically extracted, even by authorized administrators. Which key attribute, when enforced by the HSM, directly addresses this requirement?",
+    "correct_answer": "Non-exportable key attribute with hardware-enforced access controls",
+    "distractors": [
+      {
+        "question_text": "FIPS 140-2 Level 2 certification",
+        "misconception": "Targets certification level confusion: Students may assume any FIPS certification level guarantees non-exportability, but FIPS 140-2 Level 2 primarily focuses on tamper evidence, not strict non-exportability."
+      },
+      {
+        "question_text": "Dual-control key generation ceremony",
+        "misconception": "Targets procedural vs. technical control confusion: Students may conflate strong administrative procedures with hardware-level enforcement, but dual control prevents single-person compromise during generation, not physical extraction from the HSM."
+      },
+      {
+        "question_text": "Encrypted backup of the private key to an offsite location",
+        "misconception": "Targets backup security misconception: Students might think that encrypting a key backup makes it equivalent to a non-exportable key, but an encrypted backup still means the key material exists outside the HSM&#39;s secure boundary and could theoretically be compromised if the encryption key is found."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The &#39;non-exportable&#39; key attribute, when enforced by an HSM, means that the private key material is generated and stored within the secure cryptographic boundary of the HSM and cannot be physically extracted from it, even by administrators with full access. This is a hardware-enforced security measure, often tied to tamper-resistant features, ensuring the key&#39;s integrity and confidentiality within the module.",
+      "distractor_analysis": "FIPS 140-2 Level 2 certification provides tamper evidence, meaning attempts to tamper with the module are detectable, but it doesn&#39;t strictly guarantee non-exportability of keys. Higher levels (3 and 4) are typically required for strong non-exportability. Dual-control key generation ceremonies are excellent procedural controls to prevent a single individual from compromising a key during its creation, but they don&#39;t prevent extraction if the HSM itself allows it. Encrypted backups, while a good practice for disaster recovery, mean the key material exists outside the HSM&#39;s secure boundary, making it vulnerable if the backup encryption is ever compromised, which is not the same as being non-exportable from the HSM itself.",
+      "analogy": "Think of a non-exportable key in an HSM like a secret formula locked inside a secure laboratory. Scientists can use the formula to create products (perform cryptographic operations), but the formula itself (the private key) can never leave the lab, no matter who the scientist is or what their credentials are. An encrypted backup would be like having a copy of the formula in a locked safe outside the lab – it&#39;s protected, but it&#39;s no longer within the primary secure perimeter."
+    },
+    "code_snippets": [
+      {
+        "language": "python",
+        "code": "# Example using PyKCS11 to generate a non-exportable RSA private key\nfrom PyKCS11 import *\n\n# Assuming &#39;session&#39; is an active PKCS#11 session\n\nprivate_key_template = [\n    (CKA_CLASS, CKO_PRIVATE_KEY),\n    (CKA_KEY_TYPE, CKK_RSA),\n    (CKA_TOKEN, True),        # Store on token (HSM)\n    (CKA_PRIVATE, True),      # Private key\n    (CKA_SENSITIVE, True),    # Sensitive key\n    (CKA_EXTRACTABLE, False), # CRITICAL: Key cannot be extracted\n    (CKA_DECRYPT, True),\n    (CKA_SIGN, True)\n]\n\npublic_key_template = [\n    (CKA_CLASS, CKO_PUBLIC_KEY),\n    (CKA_KEY_TYPE, CKK_RSA),\n    (CKA_TOKEN, True),\n    (CKA_ENCRYPT, True),\n    (CKA_VERIFY, True)\n]\n\n# Generate key pair\npublic_key_handle, private_key_handle = session.generateKeyPair(\n    CKM_RSA_PKCS_KEY_PAIR_GEN, public_key_template, private_key_template\n)",
+        "context": "This Python snippet demonstrates how to specify the CKA_EXTRACTABLE attribute as False when generating a key pair using the PKCS#11 standard, which is commonly used to interface with HSMs. This attribute instructs the HSM to prevent the private key material from being exported."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "CRYPTO_BASICS",
+      "DEFENSE_HARDEN"
+    ]
+  }
+]

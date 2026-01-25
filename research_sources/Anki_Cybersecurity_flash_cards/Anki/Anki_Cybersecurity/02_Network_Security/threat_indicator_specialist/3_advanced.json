@@ -1,0 +1,172 @@
+[
+  {
+    "question_text": "A threat intelligence analyst identifies a new campaign by a sophisticated threat actor, &#39;APT29&#39;, targeting government entities. The campaign primarily uses spear-phishing emails containing malicious attachments. Which type of IOC, when correlated with other data, would be MOST effective for attributing this activity to &#39;APT29&#39; with high confidence?",
+    "correct_answer": "Unique malware family hash (e.g., SHA-256) associated exclusively with APT29",
+    "distractors": [
+      {
+        "question_text": "IP address of a command and control (C2) server used in the campaign",
+        "misconception": "Targets IOC lifespan and uniqueness: Students might overemphasize C2 IPs, not realizing they are often rotated or shared among actors, reducing attribution confidence."
+      },
+      {
+        "question_text": "Email sender address used in the spear-phishing attacks",
+        "misconception": "Targets ease of spoofing: Students may not fully grasp how easily sender addresses can be spoofed or changed, making them unreliable for high-confidence attribution."
+      },
+      {
+        "question_text": "Domain name registered for the phishing landing page",
+        "misconception": "Targets domain rotation and shared infrastructure: Students might consider domains unique, but actors frequently register new ones or use compromised legitimate domains, making them less reliable for specific actor attribution over time."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Unique malware family hashes, especially those with specific characteristics or code overlaps known to be exclusive to a particular threat actor like APT29, provide strong evidence for attribution. While other IOCs can be rotated or spoofed, the underlying malware code often contains unique fingerprints that are harder to change without significant effort, making it a more reliable indicator for high-confidence attribution when correlated with other intelligence.",
+      "distractor_analysis": "IP addresses and domain names are infrastructure-based IOCs that threat actors frequently change or share, making them less reliable for high-confidence attribution to a specific group over time. Email sender addresses are easily spoofed and can be changed for each campaign, offering very low confidence for attribution without additional context.",
+      "analogy": "Think of it like a criminal investigation: an IP address or domain is like a getaway car (easily changed or shared), an email sender is like a disguise (easily put on or taken off), but a unique malware hash is like a specific, rare tool found at multiple crime scenes – it strongly points to the same perpetrator."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "FRAMEWORK_MITRE",
+      "FRAMEWORK_KILLCHAIN",
+      "DEFENSE_DETECT"
+    ]
+  },
+  {
+    "question_text": "A threat actor has compromised a Linux server and is attempting to hide their activity by manipulating swap space. Which of the following actions would be MOST difficult for a sophisticated attacker to achieve for persistent concealment?",
+    "correct_answer": "Modifying the `magic.magic` string in the `swap_header` of an active swap area without detection during system operation.",
+    "distractors": [
+      {
+        "question_text": "Creating a new swap file on a non-standard partition to store malicious data.",
+        "misconception": "Targets operational complexity: Students might think creating new swap areas is inherently difficult or easily detectable, but the kernel supports multiple swap areas and files."
+      },
+      {
+        "question_text": "Increasing the priority of a specific swap area to ensure their data is swapped out first.",
+        "misconception": "Targets configuration flexibility: Students may not realize that swap area priorities are configurable and can be manipulated by an attacker with root privileges."
+      },
+      {
+        "question_text": "Using a `SWAP_MAP_MAX` counter value to make a page slot &#39;permanent&#39; and prevent its removal.",
+        "misconception": "Targets misunderstanding of `SWAP_MAP_MAX` purpose: Students might interpret &#39;permanent&#39; as an attacker&#39;s ability to indefinitely hide data, rather than a kernel mechanism to prevent counter overflow."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The `magic.magic` string (&#39;SWAPSPACE2&#39;) is a critical identifier located at a fixed offset within the first page slot of a swap area. It&#39;s checked during activation (`sys_swapon()`) to unambiguously identify a valid swap area. Modifying this string in an *active* swap area would likely corrupt the swap area&#39;s integrity from the kernel&#39;s perspective, leading to system instability or immediate deactivation, making it difficult for an attacker to achieve persistent, undetected concealment through this method. While an attacker could create a new swap area with a modified magic string, activating it would fail due to the kernel&#39;s validation.",
+      "distractor_analysis": "Creating new swap files or partitions is a standard system administration task and can be done by an attacker with root privileges. Manipulating swap area priorities is also a configurable option. While `SWAP_MAP_MAX` makes a page slot &#39;permanent&#39; in the sense that its counter won&#39;t overflow, it&#39;s a kernel-level mechanism for integrity, not an attacker&#39;s tool for indefinite concealment; the page can still be swapped in and out, and the swap area can be deactivated.",
+      "analogy": "Trying to change the `magic.magic` string of an active swap area is like trying to change the serial number on a running engine part while the car is driving – it&#39;s fundamental to its operation and tampering would likely cause immediate failure or detection."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "mkswap /dev/sdb1\nswapon /dev/sdb1",
+        "context": "Commands used to create and activate a swap partition, which involves writing the `swap_header`."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "attack",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "FRAMEWORK_MITRE"
+    ]
+  },
+  {
+    "question_text": "A threat actor is attempting to maintain a low profile while exfiltrating data from a compromised Windows server. They are using a custom tool that leverages asynchronous I/O operations. Which IOC type, if observed, would be MOST indicative of this specific I/O completion port abuse, rather than general network activity?",
+    "correct_answer": "Unusual `NtCreateIoCompletion` or `NtSetIoCompletion` system service calls",
+    "distractors": [
+      {
+        "question_text": "High volume of outbound network connections to a new IP address",
+        "misconception": "Targets scope misunderstanding: Students might focus on the network aspect of exfiltration rather than the specific I/O mechanism being abused."
+      },
+      {
+        "question_text": "Presence of a new executable in a temporary directory",
+        "misconception": "Targets general malware detection: Students might identify a common malware IOC rather than one specific to I/O completion port abuse."
+      },
+      {
+        "question_text": "Spikes in CPU utilization by a svchost.exe process",
+        "misconception": "Targets generic performance anomaly: Students might attribute general system anomalies to the threat without linking it to the specific I/O mechanism."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "Observing unusual system service calls related to I/O completion ports, such as `NtCreateIoCompletion` (used to create a completion port) or `NtSetIoCompletion` (used to queue a packet to a port), would be highly indicative of a threat actor specifically abusing this mechanism. These calls are part of the internal Windows I/O management and are less commonly directly invoked by typical user-mode applications for malicious purposes, making their unusual presence a strong indicator.",
+      "distractor_analysis": "High outbound network connections are a general indicator of exfiltration but don&#39;t specify the underlying I/O mechanism. A new executable in a temporary directory is a common malware IOC but doesn&#39;t point to I/O completion port abuse. Spikes in CPU utilization are generic performance anomalies and could be caused by many legitimate or malicious activities, not specifically I/O completion port abuse.",
+      "analogy": "If you suspect someone is using a specific, obscure tool to pick a lock, finding the lock-picking tool itself (the system service call) is more direct evidence than just seeing the door open (network connections) or finding a suspicious person near the door (new executable)."
+    },
+    "code_snippets": [
+      {
+        "language": "c",
+        "code": "HANDLE hCompletionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);",
+        "context": "Example of `CreateIoCompletionPort` API call, which internally uses `NtCreateIoCompletion`."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "defense",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "FRAMEWORK_MITRE"
+    ]
+  },
+  {
+    "question_text": "A network analyst observes an SMTP &#39;handshake&#39; completing successfully, but subsequent data transmission fails, indicated by an ICMP Type 3 Code 4 packet. The sending device supports Path MTU Discovery but does not retransmit with a smaller MTU. What is the MOST likely cause of this issue?",
+    "correct_answer": "A firewall performing TCP sequence number randomization, causing the sending device to reject the ICMP packet.",
+    "distractors": [
+      {
+        "question_text": "The SMTP server&#39;s mailbox quota is exceeded, preventing further data transfer.",
+        "misconception": "Targets application layer confusion: Students might attribute a network layer issue to an application layer problem, overlooking the ICMP message."
+      },
+      {
+        "question_text": "The IPsec VPN tunnel is intermittently dropping packets due to misconfigured encryption settings.",
+        "misconception": "Targets general VPN issues: Students might broadly blame VPN instability without connecting it to the specific ICMP Type 3 Code 4 and MTU context."
+      },
+      {
+        "question_text": "The sending device&#39;s network interface card (NIC) driver is outdated, preventing proper MTU negotiation.",
+        "misconception": "Targets client-side software issues: Students might look for a client-side software problem rather than a network device&#39;s security feature interfering with a network protocol."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The ICMP Type 3 Code 4 packet (Destination Unreachable, Fragmentation Needed and Don&#39;t Fragment bit set) indicates an MTU issue. However, the sending device&#39;s failure to retransmit with a smaller MTU, despite supporting Path MTU Discovery, points to a deeper problem. The key is that a firewall performing TCP sequence number randomization alters the TCP header. When the ICMP packet arrives, it contains the *original* sequence number, which the sending device no longer recognizes as its own, leading it to reject the ICMP message as a security measure. This prevents the MTU discovery process from completing.",
+      "distractor_analysis": "Exceeded mailbox quotas are an application-layer issue and would not typically manifest with an ICMP Type 3 Code 4. Intermittent VPN drops might cause retransmissions or timeouts, but not specifically this ICMP message combined with a failure of PMTUD. Outdated NIC drivers are a plausible general issue but don&#39;t directly explain the specific interaction between TCP sequence randomization and ICMP rejection.",
+      "analogy": "Imagine sending a letter with a tracking number. The post office tries to deliver it but says it&#39;s too big for the mailbox and sends a &#39;return to sender&#39; note, referencing the tracking number. If a mischievous friend changed your letter&#39;s tracking number *after* you sent it, you wouldn&#39;t recognize the &#39;return to sender&#39; note as yours, even though it&#39;s about your letter. The firewall is the mischievous friend, and the ICMP is the &#39;return to sender&#39; note."
+    },
+    "code_snippets": [],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "NET_BASICS",
+      "DEFENSE_DETECT"
+    ]
+  },
+  {
+    "question_text": "A network analyst observes slow file transfers from Server A to Server B, but fast transfers in the opposite direction. Wireshark traces reveal that Server B is retransmitting data packets and Server A is sending Duplicate ACKs. Further investigation shows an &#39;intelligent security device&#39; along the path is stripping the Selective ACK (SACK) option from TCP headers and generating Duplicate ACKs. What is the primary cause of the slow performance?",
+    "correct_answer": "The security device is interfering with TCP&#39;s congestion control mechanisms by disabling SACK and generating spurious Duplicate ACKs, leading to unnecessary retransmissions and a reduced congestion window.",
+    "distractors": [
+      {
+        "question_text": "Server A has a misconfigured TCP window size, causing it to send too much data too quickly for Server B to process.",
+        "misconception": "Targets misattribution of cause: Students might focus on server-side misconfigurations (window size) rather than an intermediary device&#39;s active interference, especially when retransmissions are observed."
+      },
+      {
+        "question_text": "Network congestion is causing packet loss, and the lack of SACK support on Server A forces full window retransmissions instead of selective ones.",
+        "misconception": "Targets incomplete understanding of the problem: While packet loss and SACK are related to retransmissions, the core issue is the *device causing* the perceived loss and disabling SACK, not just general congestion or a server&#39;s inherent lack of SACK."
+      },
+      {
+        "question_text": "The FTP application on Server B is poorly optimized, leading to inefficient handling of incoming data and triggering retransmissions.",
+        "misconception": "Targets application layer misattribution: Students might blame the application (FTP) for performance issues, overlooking underlying TCP/network layer problems, especially when the problem is directional and involves specific TCP options."
+      }
+    ],
+    "detailed_explanation": {
+      "core_logic": "The &#39;intelligent security device&#39; is actively modifying TCP traffic by removing the Selective ACK (SACK) option and generating Duplicate ACKs. This interference causes Server B to believe packets are lost when they are not, leading to unnecessary retransmissions. Without SACK, Server B retransmits a larger block of data than necessary, further exacerbating the problem. The perceived &#39;lost packets&#39; also cause the TCP congestion window to shrink, significantly slowing down the data transfer rate.",
+      "distractor_analysis": "A misconfigured TCP window size on Server A would likely affect transfers in both directions or manifest differently. While network congestion can cause packet loss, the key here is the *device&#39;s active interference* creating the illusion of loss and disabling SACK, not just general congestion. Blaming the FTP application is incorrect because the trace clearly shows TCP-level issues (retransmissions, SACK removal, Duplicate ACKs) caused by an intermediary device, indicating a network or transport layer problem rather than an application layer one.",
+      "analogy": "Imagine a postal service where a mischievous sorting machine occasionally throws away valid &#39;delivery confirmation&#39; slips and then sends fake &#39;please resend&#39; requests. The sender then resends entire batches of mail, even though only one letter was &#39;lost&#39; (or not lost at all), causing massive delays."
+    },
+    "code_snippets": [
+      {
+        "language": "bash",
+        "code": "tshark -r aside-bad.pcap -Y &quot;tcp.analysis.retransmission or tcp.analysis.duplicate_ack&quot;",
+        "context": "Using TShark to filter for retransmissions and duplicate ACKs in a capture file, which would highlight the symptoms observed in the case study."
+      }
+    ],
+    "difficulty": "advanced",
+    "question_type": "analysis",
+    "prerequisites": [
+      "DEFENSE_DETECT",
+      "NET_BASICS",
+      "FRAMEWORK_KILLCHAIN"
+    ]
+  }
+]
