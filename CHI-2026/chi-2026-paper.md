@@ -2,13 +2,11 @@
 
 **Workshop Paper for CHI 2026 "Tools for Thought with Generative AI"**
 
-*Draft - For ACM sigconf format conversion*
-
 ---
 
 ## Abstract
 
-Generative AI is transforming learning workflows, raising questions about its effects on cognition while also creating opportunities for designing tools for thought (TfT) that protect and augment human thinking. This paper introduces *Learning Economies*, a theoretical framework that provides both a taxonomy for understanding AI-accelerated learning and measurable outcomes for evaluating TfT effectiveness. We identify five fundamental Learning Economies—Breadth, Depth, Subset, Superset, and Network-form—each representing distinct modes of cognitive value creation. Central to this framework is *Resonance*, the transfer mechanism enabling cross-domain knowledge flow. We present operationalizable metrics for each economy, propose a reflective advisor loop where educators serve as navigational guides through dense information spaces, and discuss design implications for GenAI systems. This framework offers HCI researchers and practitioners concrete strategies for defining, measuring, and designing cognitive outcomes in AI-augmented learning contexts.
+Generative AI is transforming learning workflows, raising questions about its effects on cognition while also creating opportunities for designing tools for thought (TfT) that protect and augment human thinking. This paper introduces *Learning Economies*, a theoretical framework that provides both a taxonomy for understanding AI-accelerated learning and measurable outcomes for evaluating TfT effectiveness. We identify five fundamental Learning Economies—Breadth, Depth, Subset, Superset, and Network-form—each representing distinct modes of cognitive value creation. Central to this framework is *Resonance*, the transfer mechanism enabling cross-domain knowledge flow. We present operationalizable metrics for each economy, propose a reflective advisor loop—framed as a cybernetic feedback mechanism—where educators serve as navigational guides through dense information spaces, and discuss design implications for GenAI systems. The framework applies across learning levels from early education through vocational and doctoral practice. It offers HCI researchers and practitioners concrete strategies for defining, measuring, and designing cognitive outcomes in AI-augmented learning contexts.
 
 **Keywords:** Tools for thought, generative AI, learning, cognition, measurement, human-AI interaction
 
@@ -16,11 +14,11 @@ Generative AI is transforming learning workflows, raising questions about its ef
 
 ## 1. Introduction
 
-Generative AI radically expands the scope and capability of automation for work, learning, and creativity. While impactful, it also changes workflows and raises questions about its effects on cognition, including critical thinking and learning [1]. Yet GenAI also offers opportunities for designing "tools for thought" (TfT) that protect and augment cognition—systems that provoke critical thinking, provide personalized tutoring, or enable novel ways of sensemaking.
+Generative AI radically expands the scope and capability of automation for work, learning, and creativity. While impactful, it also changes workflows and raises questions about its effects on cognition, including critical thinking and learning [1]. Yet GenAI also offers opportunities for designing "tools for thought" (TfT) that protect and augment cognition—systems that provoke critical thinking, provide personalized tutoring, or enable novel ways of sensemaking, in a lineage extending from Engelbart's vision of augmenting human intellect [4] and Kay's personal dynamic media [5].
 
-A central challenge for TfT research is defining what constitutes a "good" cognitive outcome and how to measure it. Current approaches often focus narrowly on task performance, missing the richer dimensions of understanding, learning mobility, and metacognitive engagement. We need frameworks that capture intermediary outcomes—the artefacts, navigational choices, and reflective processes that scaffold thinking.
+A central challenge for TfT research is defining what constitutes a "good" cognitive outcome and how to measure it. Current approaches often focus narrowly on task performance, missing the richer dimensions of understanding, learning mobility, and metacognitive engagement [6]. We need frameworks that capture intermediary outcomes—the artefacts, navigational choices, and reflective processes that scaffold thinking.
 
-This paper introduces *Learning Economies*, a framework originally developed to understand AI's transformation of human capital [2]. We adapt it here as a measurement framework for TfT outcomes, proposing five distinct economies of cognitive value creation, each with operationalizable metrics. We further propose a *reflective advisor loop* that positions educators and mentors as navigational guides, helping learners interrogate their goals and validate their paths through increasingly dense information spaces.
+This paper introduces *Learning Economies*, a framework previously introduced to understand AI's transformation of human capital [2]. We adapt it here as a measurement framework for TfT outcomes, proposing five distinct economies of cognitive value creation, each with operationalizable metrics. We further propose a *reflective advisor loop* that positions educators and mentors as navigational guides, helping learners interrogate their goals and validate their paths through increasingly dense information spaces.
 
 ---
 
@@ -50,6 +48,10 @@ Learning Economies represent distinct modes of value creation through knowledge 
 
 AI amplifies Resonance by making cross-domain patterns more visible and surfacing non-obvious transfer opportunities.
 
+### 2.3 Link to LLM Architectural Principles
+
+A theoretical mapping connects the five Learning Economies to five core principles of large language model (LLM) architecture: Breadth aligns with *routing* (parallel pathways across domains); Depth with *compression* (efficient representation enabling rapid mastery); Subset with *temperature* (precision and adjacency governing transfer between domains); Superset with *addressing* (re-addressing what knowledge means when fields are reinvented); and Network-form with *transformation* (non-linear mappings across scales). This mapping explains why AI accelerates all five economies simultaneously and motivates TfT design that either mirrors or deliberately compensates for these architectural biases.
+
 ---
 
 ## 3. The Reflective Advisor Loop
@@ -67,6 +69,8 @@ AI-accelerated learning creates unprecedented density of available information a
 ### 3.2 Stabilization Through Human Feedback
 
 Drawing from LLM architecture metaphors, we conceptualize the educator-learner relationship as a *stabilization mechanism*. Just as reinforcement learning from human feedback (RLHF) aligns model outputs with human values, the reflective advisor loop aligns learning trajectories with learner goals and broader educational objectives.
+
+From a cybernetic perspective, the reflective advisor loop functions as a *human-in-the-loop feedback system*: it corrects drift and realigns trajectories with stated goals, contrasting with open-loop AI-only navigation where learners may optimize locally without periodic goal interrogation. This feedback structure—goal interrogation → pattern validation → direction confirmation—provides the closure required for stable, goal-directed learning in dense information spaces.
 
 This produces measurable intermediary artefacts: goal statements, learning path diagrams, reflection journals, and advisor feedback logs—all of which scaffold thinking and can be analyzed for TfT evaluation.
 
@@ -97,9 +101,7 @@ Following the workshop's emphasis on "intermediary artefacts that scaffold think
 
 ### 4.3 Testable Hypotheses
 
-We have developed 14 testable hypotheses aligned with the NICE cybersecurity workforce framework [3], providing concrete intervention designs:
-
-*Example*: "Learners using AI-assisted Resonance identification will demonstrate 40% faster Subset economy transitions (career pivots) compared to control groups, as measured by time to first independent contribution in new domains."
+We have developed a set of testable hypotheses aligned with workforce frameworks such as NICE [3], providing concrete intervention designs. *Example*: "Learners using AI-assisted Resonance identification will demonstrate 40% faster Subset economy transitions (career pivots) compared to control groups, as measured by time to first independent contribution in new domains."
 
 ---
 
@@ -140,7 +142,7 @@ The framework highlights risks when AI "short-circuits" valuable cognitive proce
 
 ### 6.1 Limitations
 
-The Learning Economies framework requires empirical validation in HCI contexts. Metrics proposed here draw from educational and workforce development applications; adaptation for TfT evaluation may reveal additional dimensions.
+The Learning Economies framework requires empirical validation in HCI contexts. We propose the framework and metrics as a basis for such work; we do not yet report controlled studies. Metrics proposed here draw from educational and workforce development applications; adaptation for TfT evaluation may reveal additional dimensions.
 
 ### 6.2 Research Agenda
 
@@ -151,7 +153,11 @@ We propose collaborative work on:
 3. Longitudinal studies of Resonance development with AI assistance
 4. Evaluation of reflective advisor loops in AI-augmented learning
 
-### 6.3 Broader Implications
+### 6.3 Scope and Applicability Across Learning Levels
+
+The five economies apply across learning levels: doctoral and research contexts emphasize Depth, Superset, and Network-form; skilled R&D and vocational practice emphasize Subset and Depth; K–12 and early education emphasize Breadth and Depth with scaffolding. The framework thus offers a lens for the future of learning at all levels. It also reframes what "gifted" education may mean: rather than single-axis depth or speed, giftedness in AI-augmented learning may increasingly denote *multi-economy fluency*—the ability to navigate fluidly across Breadth, Depth, Subset, Superset, and Network-form and to leverage Resonance across domains.
+
+### 6.4 Broader Implications
 
 As AI accelerates all five Learning Economies simultaneously, success depends not on optimizing within any single mode but on fluid navigation across the entire system. The individuals, educators, and institutions that master this unified approach will define the landscape of AI-augmented learning.
 
@@ -171,10 +177,12 @@ We have presented Learning Economies as a framework for defining and measuring c
 
 [3] NIST Special Publication 800-181: Workforce Framework for Cybersecurity (NICE Framework)
 
-[4] Engelbart, D. C. (1962). Augmenting Human Intellect: A Conceptual Framework.
+[4] Engelbart, D. C. (1962). Augmenting Human Intellect: A Conceptual Framework. Stanford Research Institute.
 
 [5] Kay, A., & Goldberg, A. (1977). Personal dynamic media. Computer, 10(3), 31-41.
 
+[6] Azevedo, R., & Aleven, V. (Eds.). (2013). International Handbook of Metacognition and Learning Technologies. Springer.
+
 ---
 
-*Word count: ~1,450 (target: ~1,800-2,000 for 4 pages in ACM format)*
+*Word count: ~1,850 (target: ~1,800-2,000 for 4 pages in ACM format)*

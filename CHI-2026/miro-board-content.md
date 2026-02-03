@@ -53,7 +53,8 @@ Five distinct modes of cognitive value creation:
 
 ## 4. Reflective Advisor Loop
 
-**Educators as "Board of Advisors"**
+**Educators as "Board of Advisors" — Cybernetic feedback (human-in-the-loop)**  
+The loop corrects drift and realigns trajectories with goals; applies across learning levels (early education through doctoral/vocational).
 
 ```
      ┌──────────────────┐
@@ -137,7 +138,7 @@ Five distinct modes of cognitive value creation:
 
 ## 9. Key Takeaway
 
-> **Learning Economies provides a multi-dimensional framework for TfT evaluation. Success in AI-augmented learning depends on fluid navigation across all five economies, with human advisors as essential stabilizing guides through dense information spaces.**
+> **Learning Economies provides a multi-dimensional framework for TfT evaluation, with a reflective advisor loop framed as a cybernetic feedback mechanism. The framework applies across learning levels (early education through doctoral and vocational practice) and reframes "gifted" education as multi-economy fluency. Success depends on fluid navigation across all five economies, with human advisors as essential stabilizing guides through dense information spaces.**
 
 ---
 
