@@ -18,6 +18,10 @@ Central to this framework is **Resonance** - the universal transfer mechanism en
 
 [See our presentation on this at GuildCon 2025](https://www.youtube.com/watch?app=desktop&v=kIBo1JevzuE), at Hackers Guild PGH.
 
+## Skills (Anthropic pptx)
+
+This repo includes the **Anthropic pptx skill** ([anthropics/skills/pptx](https://github.com/anthropics/skills/tree/main/skills/pptx)) under `skills/pptx/`: instructions and scripts for creating and editing PowerPoint (.pptx) files. A Cursor rule (`.cursor/rules/pptx-skill.mdc`) tells the agent to use it when working with pptx. The CHI 2026 slides have a second version built with this skill: HTML slides in `CHI-2026/pptx-slides/` and `node CHI-2026/build-pptx.js` produces `chi-2026-slides-skill.pptx`. See [skills/pptx/README.md](./skills/pptx/README.md) and [Simon Willison on Claude skills](https://simonwillison.net/2025/Oct/10/claude-skills/).
+
 ## Repository Contents
 
 ### Core Research Documents
