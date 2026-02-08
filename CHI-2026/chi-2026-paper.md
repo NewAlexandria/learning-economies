@@ -142,7 +142,7 @@ The framework highlights risks when AI "short-circuits" valuable cognitive proce
 
 ### 6.1 Limitations
 
-The Learning Economies framework requires empirical validation in HCI contexts. We propose the framework and metrics as a basis for such work; we do not yet report controlled studies. Metrics proposed here draw from educational and workforce development applications; adaptation for TfT evaluation may reveal additional dimensions.
+The Learning Economies framework requires empirical validation in HCI contexts. We propose the framework and metrics as a basis for such work; we do not yet report controlled studies. Metrics proposed here draw from educational and workforce development applications; adaptation for TfT evaluation may reveal additional dimensions. A comprehensive metrics map and literature-grounded rationale are documented in this repository (metrics-map-learning-economies.md and metrics-literature-sources.md in CHI-2026) for exhaustive search and validation.
 
 ### 6.2 Research Agenda
 

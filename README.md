@@ -184,6 +184,15 @@ Rather than creating a new "symbiosis" learning economy, AI serves as an **accel
 
 This repository represents ongoing research into the transformation of education and human capital in the AI era. The work combines theoretical economic analysis with practical implementation frameworks, aiming to provide both conceptual understanding and actionable guidance for educational transformation.
 
+## Metrics and literature for Learning Economies
+
+A **comprehensive metrics map** and **literature sources** for the five Learning Economies (Breadth, Depth, Subset, Superset, Network-form) are documented in the CHI 2026 folder to support exhaustive search and validation:
+
+- **[CHI-2026/metrics-literature-sources.md](./CHI-2026/metrics-literature-sources.md)** — Structured list of literatures (cognitive outcomes, TfT/HCI, transfer, expertise, breadth/interdisciplinary, vocational, gifted, AIEd, cybernetics/feedback), example journals/sources, search strategy notes, and pointers to existing repo refs.
+- **[CHI-2026/metrics-map-learning-economies.md](./CHI-2026/metrics-map-learning-economies.md)** — Per-economy candidate metrics with suitability rationale, data sources, intermediary outcomes, context (evolutionarily advanced / AI-augmented learning), and an annex on **unsuitable metrics** with rationale.
+
+These documents support the framework in [chi-2026-paper.md](./CHI-2026/chi-2026-paper.md) and the operational hypotheses in [NIST-800-181-testable-templates.md](./NIST-800-181-testable-templates.md).
+
 ## Contributing
 
 This appears to be a personal research repository. For questions or collaboration opportunities, please refer to the individual document authors.
