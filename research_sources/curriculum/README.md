@@ -31,6 +31,14 @@ This directory contains curriculum information for various cybersecurity and Ope
    - Type: Professional training and certification programs
    - Key Courses: ICS410, ICS515, GICSP certification
 
+### Additional Sources (Reference / Translated)
+
+5. **Xinjiang Police College - Cyberspace Security Comprehensive Laboratory Construction Project (Third Tender)**
+   - File: `xinjiang-police-college-cyberspace-security-lab-en.md`
+   - Source: （审定稿）新疆警察学院网络空间安全综合实验室建设项目（三次）.docx (Chinese government procurement bidding document)
+   - Focus: Cyberspace security and cybersecurity-and-law-enforcement lab build: teaching platform, courses, attack-defense/CTF training, AI course, faculty training, hardware and integration
+   - Type: Translated reference for strategy comparison (Chinese vs US cybersecurity education breadth); see `ingestion/WIP US overcome chinese edcation strategy.md`
+
 ## OT Security Relevance
 
 ### Programs with Direct OT Security Focus
@@ -42,6 +50,7 @@ This directory contains curriculum information for various cybersecurity and Ope
 
 ## Additional Files
 
+- **xinjiang-police-college-cyberspace-security-lab-en.md**: English translation of Xinjiang Police College cyberspace security lab bidding document (for strategy reference)
 - **curriculum-summary-table.md**: Summary table comparing all programs
 - **additional-programs-to-research.md**: List of additional programs that may be worth researching
 - **SCRAPING-GUIDE.md**: Comprehensive guide for gathering program information (detailed instructions)
@@ -56,4 +65,4 @@ This directory contains curriculum information for various cybersecurity and Ope
 - Professional training programs (like SANS) offer certifications and practical training, while academic programs offer degrees
 
 ## Last Updated
-2025-01-27
+2025-02-09
