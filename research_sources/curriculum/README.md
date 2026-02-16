@@ -34,7 +34,9 @@ This directory contains curriculum information for various cybersecurity and Ope
 ### Additional Sources (Reference / Translated)
 
 5. **Xinjiang Police College - Cyberspace Security Comprehensive Laboratory Construction Project (Third Tender)**
-   - File: `xinjiang-police-college-cyberspace-security-lab-en.md`
+   - File (EN): `Xinjiang Police College/xinjiang-police-college-cyberspace-security-lab-en.md`
+   - File (bilingual, audit-friendly): `Xinjiang Police College/xinjiang-police-college-cyberspace-security-lab-bilingual.md`
+   - Validation report: `Xinjiang Police College/translation_validation_report.md`
    - Source: （审定稿）新疆警察学院网络空间安全综合实验室建设项目（三次）.docx (Chinese government procurement bidding document)
    - Focus: Cyberspace security and cybersecurity-and-law-enforcement lab build: teaching platform, courses, attack-defense/CTF training, AI course, faculty training, hardware and integration
    - Type: Translated reference for strategy comparison (Chinese vs US cybersecurity education breadth); see `ingestion/WIP US overcome chinese edcation strategy.md`
@@ -50,7 +52,9 @@ This directory contains curriculum information for various cybersecurity and Ope
 
 ## Additional Files
 
-- **xinjiang-police-college-cyberspace-security-lab-en.md**: English translation of Xinjiang Police College cyberspace security lab bidding document (for strategy reference)
+- **Xinjiang Police College/xinjiang-police-college-cyberspace-security-lab-en.md**: English translation of Xinjiang Police College cyberspace security lab bidding document (for strategy reference)
+- **Xinjiang Police College/xinjiang-police-college-cyberspace-security-lab-bilingual.md**: Bilingual aligned ZH/EN translation for audit/review
+- **Xinjiang Police College/translation_validation_report.md**: Automated completeness/numeric-fidelity validation report for the translation output
 - **curriculum-summary-table.md**: Summary table comparing all programs
 - **additional-programs-to-research.md**: List of additional programs that may be worth researching
 - **SCRAPING-GUIDE.md**: Comprehensive guide for gathering program information (detailed instructions)
@@ -65,4 +69,4 @@ This directory contains curriculum information for various cybersecurity and Ope
 - Professional training programs (like SANS) offer certifications and practical training, while academic programs offer degrees
 
 ## Last Updated
-2025-02-09
+2026-02-09
