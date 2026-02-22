@@ -197,6 +197,24 @@ These documents support the framework in [chi-2026-paper.md](./CHI-2026/chi-2026
 
 This appears to be a personal research repository. For questions or collaboration opportunities, please refer to the individual document authors.
 
+## Education Resources / learning modalities
+- Lectures / instructor‑led training (ILT)
+- Hands‑on labs (physical or virtual)
+- Capture‑the‑flag (CTF) exercises
+- Workshops
+- Tutorials / demos
+- Self‑paced e‑learning / CBT (computer‑based training)
+- Project‑based learning
+- Simulations / cyber ranges
+- Pair programming / peer instruction
+- Flipped classroom (content at home, practice in class)
+- Problem‑based learning / case studies
+- ole‑playing / tabletop exercises
+- Mentored coaching or apprenticeship
+
+Study groups / discussion‑based seminars
+
+Microlearning (short, focused modules)
 ---
 
 ## Exsiting Research
