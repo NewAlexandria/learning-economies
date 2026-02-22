@@ -197,7 +197,7 @@ These documents support the framework in [chi-2026-paper.md](./CHI-2026/chi-2026
 
 This appears to be a personal research repository. For questions or collaboration opportunities, please refer to the individual document authors.
 
-## Education Resources / learning modalities
+## Learning modalities
 - Lectures / instructor‑led training (ILT)
 - Hands‑on labs (physical or virtual)
 - Capture‑the‑flag (CTF) exercises
