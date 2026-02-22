@@ -214,7 +214,7 @@ This appears to be a personal research repository. For questions or collaboratio
 - Study groups / discussion‑based seminars
 
 ## Co-laborating Opportunities
-- SEI/VTE
+- SEI / VTE
 - Pgh Public Schools / Pittsburgh Gifted Center
 - RMU
 - Pitt
