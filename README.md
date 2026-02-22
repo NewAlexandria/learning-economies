@@ -211,8 +211,7 @@ This appears to be a personal research repository. For questions or collaboratio
 - Problem‑based learning / case studies
 - ole‑playing / tabletop exercises
 - Mentored coaching or apprenticeship
-
-Study groups / discussion‑based seminars
+- Study groups / discussion‑based seminars
 
 Microlearning (short, focused modules)
 ---
