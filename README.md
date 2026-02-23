@@ -213,11 +213,14 @@ This appears to be a personal research repository. For questions or collaboratio
 - Mentored coaching or apprenticeship
 - Study groups / discussion‑based seminars
 
-## Co-laborating Opportunities
+## Pilot Co-laborating Opportunities
 - SEI / VTE
 - Pgh Public Schools / Pittsburgh Gifted Center
-- RMU
-- Pitt
+- The University of Pittsburgh 
+- Sliipery Rock University
+- Robert Morris University
+- Corpration
+- Non profits
 
 Microlearning (short, focused modules)
 ---
