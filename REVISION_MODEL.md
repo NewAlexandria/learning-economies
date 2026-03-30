@@ -3,12 +3,12 @@
 ## Purpose
 
 - Capture a concise, actionable model to guide revisions to the Learning Economies repo.
-- Organize content around **three main objectives** (engagement, curriculum/platform, epochs/analysis), with a clear documentation story at the root and per pillar.
+- Organize content around **three main objectives** (engagement, curriculum/platform, epochs/analysis utilizing the [`autoresearch`](lib/autoresearch/README.md) improvement loop to develop viable patterns for simulation and training), with a clear documentation story at the root and per pillar.
 
 ## Scope
 
 - Focus: repository organization and content needed to support curriculum design, rubrics, and agentic workflows for education and workforce pipelines (K-12 → PhD → vocational).
-- Tools: integrate existing assets (NIST/NICE templates, microcredentials, stochastic-context-eval, verne/Jules/agentzero/openclaw).
+- Tools: integrate existing assets (NIST/NICE templates, microcredentials, stochastic-context-eval, verne/Jules/agentzero/openclaw, and the `autoresearch` improvement loop framework).
 
 ## Three repository objectives
 
@@ -25,10 +25,11 @@ The repo holds three complementary streams. Naming below is descriptive; exact t
 - Multi-agent models, human user / learner types, prompts and skills, and integration patterns.
 - Application or deployed code, connectors, pilots, and experiment protocols.
 
-### 3. Epoch outputs and analysis
+### 3. Epoch outputs and analysis (Autoresearch Loop)
 
-- Epoch (or run) outputs: artifacts produced by defined periods or batch processes.
-- Data analysis methods and code, analysis outputs (figures, tables, reports), and **schemas** that describe those outputs for reuse and tooling.
+- The **autoresearch improvement loop**: continuously evaluates and optimizes instructional/agentic models by utilizing autonomous experimentation to develop viable patterns for simulation and training.
+- Epoch (or run) outputs: artifacts produced by defined periods or batch processes, which feed directly into automated research tracking.
+- Data analysis methods and code, analysis outputs (figures, tables, reports), and **schemas** that describe those outputs for reuse and tooling by both human analysts and autonomous agents.
 
 ## Documentation layout
 
@@ -72,7 +73,8 @@ Group top-level folders by the three objectives. Subfolders can evolve; the head
 
 ### Pillar 3 — Epochs and analysis
 
-- `epochs/` *(or `analysis/` if you prefer that name)* — epoch/run outputs, analysis code and notebooks, derived tables and figures, and **schemas** for outputs and metadata.
+- `epochs/` *(or `analysis/` if you prefer that name)* — epoch/run outputs, analysis code and notebooks, derived tables and figures, and **schemas** for outputs and metadata. This serves as the testing ground for the `autoresearch` improvement loops.
+- `autoresearch/` — documentation, prompts, and training loop setups (e.g., iterating on `train.py` or agent orchestration) for automated simulation and training runs.
 
 ### Root `docs/`
 
@@ -122,6 +124,7 @@ Group top-level folders by the three objectives. Subfolders can evolve; the head
 - PDFs: use `stochastic-context-eval` for parsing and extracting curriculum/references from PDFs. Store transcripts and vector indexes in `integrations/` docs.
 - Deep-task queue: document `verne_durand` + Jules CLI usage for long-running reasoning tasks (research threads). Include MCP/CLI setup notes.
 - Agent frameworks: provide quick-start examples for AgentZero and OpenClaw; list relevant skill libraries (promptintel, openclaw-shield, molt).
+- Autoresearch: utilize the `lib/autoresearch` framework to run autonomous experiments for model training and simulation improvement. Document the baseline `program.md` setups and strategies for scaling the agentic research loop.
 
 ## Implementation Checklist (first pass)
 
@@ -131,14 +134,41 @@ Group top-level folders by the three objectives. Subfolders can evolve; the head
 4. Add the two rubric templates as editable markdown plus a JSON schema for machine scoring.
 5. Add agent skill examples (short scripts + prompt templates) into `agents/` and document runtime requirements in that folder’s README.
 6. Add `integrations/` guides: `stochastic-context-eval` ingestion example, verne/Jules queue example, and AgentZero/OpenClaw quickstarts.
-7. Define **`epochs/`** (or `analysis/`) layout: where raw outputs, code, and schemas live; document in that folder’s README.
+7. Define **`epochs/`** (or `analysis/`) layout: where raw outputs, code, and schemas live. Integrate the basic `autoresearch` loop into this pillar for simulation and training; document in that folder’s README.
 8. Draft two small pilots: (a) Cybersecurity microcredential using NIST-800-181 testable templates; (b) Breadth portfolio pilot for an interdisciplinary cohort.
 
 ## Next steps (for me or collaborators)
 
-- I can: (A) scaffold folders and README stubs for all three pillars; (B) migrate selected docs into the new structure; (C) add rubric JSON schemas and a sample agent prompt set.
+- I can: (A) scaffold folders and README stubs for all three pillars; (B) migrate selected docs into the new structure; (C) add rubric JSON schemas, a sample agent prompt set, and a baseline `autoresearch` experiment setup.
 - Ask: confirm whether you want the new files under the submodule path (recommended), preferred name for pillar 3 (`epochs/` vs `analysis/`), and whether to update `ingest_URLS.md` to link to this model.
 
 ## References & provenance
 
 - Source: cleaned from `ingest_URLS.md` learning-economies notes and the submodule `submodules/modeling/learning-economies` content.
+
+## 2026-03-29
+
+Training Data target
+epoch iteration
+malware analysis
+top talents for NIST 800-181 talents
+analogues to cyber field/models
+phd research papers as learning targets.  analogues to papers: malware collections: (vx-underground/etc), demos: github/huggingface/context7, vendor tools/offerings
+'outcomes of the framework': "what are the measurables that 'mentorship' is designed to do, and how do we know if it's working?"
+
+### domains of cyber
+
+web sec
+app sec
+net sec
+physical sec / OT
+social engineering
+AI sec
+data sec
+cloud sec (auth/policy/identity)
+
+### analogues to cyber field/models
+
+test the efficacy of using analogies to teach cyber concepts
+broad stroke analogies (viruses, immune system, etc.)
+specific analogies of practices (software viruses, etc)
